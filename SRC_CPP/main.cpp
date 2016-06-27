@@ -1,4 +1,5 @@
 #include "INCLUDE/mainwindow.h"
+#include "INCLUDE/cpu.h"
 
 #include <QApplication>
 
