@@ -1,4 +1,4 @@
-#include "INCLUDE/debugregisterswindow.h"
+#include "GUI/Qt/INCLUDE/debugregisterswindow.h"
 #include "ui_debugregisterswindow.h"
 
 DebugRegistersWindow::DebugRegistersWindow(QWidget *parent) :

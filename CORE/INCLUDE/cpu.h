@@ -3,7 +3,6 @@
 
 #include <iostream>
 
-// Taille de la mémoire = 64 Ko
 /*! \brief	Taille de la mémoire
  *
  * La gameboy a 64 ko de mémoire.

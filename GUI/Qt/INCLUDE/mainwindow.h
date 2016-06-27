@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 
-#include "INCLUDE/debugregisterswindow.h"
-#include "INCLUDE/debugmemorywindow.h"
+#include "GUI/Qt/INCLUDE/debugregisterswindow.h"
+#include "GUI/Qt/INCLUDE/debugmemorywindow.h"
 
 namespace Ui
 {

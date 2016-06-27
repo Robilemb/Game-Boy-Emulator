@@ -1,4 +1,4 @@
-#include "INCLUDE/debugmemorywindow.h"
+#include "GUI/Qt/INCLUDE/debugmemorywindow.h"
 #include "ui_debugmemorywindow.h"
 
 DebugMemoryWindow::DebugMemoryWindow(QWidget *parent) :
