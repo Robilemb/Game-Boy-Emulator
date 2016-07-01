@@ -12,6 +12,7 @@ Thumbs.db
 #############################
 *.pro
 *.pro.user
+*.rc
 
 # Fichiers build QtCreator #
 ############################

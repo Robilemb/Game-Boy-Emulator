@@ -24,6 +24,9 @@ private slots:
     void openDebugMemoryWindow();
 
 private:
+    void closeEvent(QCloseEvent*);
+
+private:
     Ui::MainWindow* ui;
 
     DebugRegistersWindow*   debugRegistersWindow;

@@ -84,8 +84,8 @@
    <slot>openDebugRegistersWindow()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>99</x>
-     <y>20</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>119</x>
@@ -100,8 +100,8 @@
    <slot>openDebugMemoryWindow()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>78</x>
-     <y>7</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>83</x>
