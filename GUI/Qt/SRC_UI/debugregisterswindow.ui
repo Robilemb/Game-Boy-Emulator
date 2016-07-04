@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>DebugRegistersWindow</class>
  <widget class="QWidget" name="DebugRegistersWindow">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -83,7 +86,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_7">
+      <widget class="QLabel" name="labelRegisterF">
        <property name="text">
         <string>F = 0</string>
        </property>
@@ -97,7 +100,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="label_8">
+      <widget class="QLabel" name="labelRegisterL">
        <property name="text">
         <string>L = 0</string>
        </property>

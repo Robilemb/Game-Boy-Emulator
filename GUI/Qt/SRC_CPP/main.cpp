@@ -1,5 +1,4 @@
 #include "GUI/Qt/INCLUDE/mainwindow.h"
-#include "CORE/INCLUDE/cpu.h"
 
 #include <QApplication>
 

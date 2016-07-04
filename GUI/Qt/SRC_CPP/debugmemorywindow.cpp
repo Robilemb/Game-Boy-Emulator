@@ -2,7 +2,7 @@
 #include "ui_debugmemorywindow.h"
 
 DebugMemoryWindow::DebugMemoryWindow(QWidget *parent) :
-    QWidget(parent),
+    QDialog(parent),
     ui(new Ui::DebugMemoryWindow)
 {
     ui->setupUi(this);

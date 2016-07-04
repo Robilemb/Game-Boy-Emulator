@@ -113,6 +113,9 @@ public:
     // Accesseur registre SP
     std::uint16_t getRegisterSP();
 
+    // Accesseur structure registres
+    te_registers getRegisters();
+
 private:
     te_registers 	m_registers;				// Registres 8-16 bits
     std::uint16_t	m_pc;						// Program Counter
