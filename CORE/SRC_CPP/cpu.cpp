@@ -7,6 +7,14 @@
 // Constructeur
 Cpu::Cpu()
 {
+    m_registers.s8bits.a = 17;
+    m_registers.s8bits.b = 23;
+    m_registers.s8bits.c = 8;
+    m_registers.s8bits.d = 10;
+    m_registers.s8bits.e = 1;
+    m_registers.s8bits.f = 2;
+    m_registers.s8bits.h = 14;
+    m_registers.s8bits.l = 16;
 }
 
 // Destructeur
@@ -130,4 +138,10 @@ std::uint16_t Cpu::getRegisterPC()
 std::uint16_t Cpu::getRegisterSP()
 {
     return m_sp;
+}
+
+// Accesseur structure registres
+te_registers Cpu::getRegisters()
+{
+    return m_registers;
 }

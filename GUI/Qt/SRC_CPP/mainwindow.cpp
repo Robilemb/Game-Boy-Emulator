@@ -7,23 +7,43 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    debugRegistersWindow    = new DebugRegistersWindow();
-    debugMemoryWindow       = new DebugMemoryWindow();
+    this->setWindowTitle("Game Boy Emulator");
+    this->setWindowIcon(QIcon("../IMG/nintendo-game-boy-icon.png"));
+
+    mp_gameboy                  = new Gameboy();
+
+    mp_debugRegistersWindow     = new DebugRegistersWindow(this);
+    mp_debugMemoryWindow        = new DebugMemoryWindow(this);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 
-    delete debugRegistersWindow;
+    delete mp_debugRegistersWindow;
+    delete mp_debugMemoryWindow;
+
+    delete mp_gameboy;
+}
+
+Gameboy* MainWindow::getGameBoy()
+{
+    return mp_gameboy;
 }
 
 void MainWindow::openDebugRegistersWindow()
 {
-    debugRegistersWindow->show();
+    mp_debugRegistersWindow->show();
+    ui->actionRegisters->setEnabled(false);
 }
 
 void MainWindow::openDebugMemoryWindow()
 {
-    debugMemoryWindow->show();
+    mp_debugMemoryWindow->show();
+    ui->actionMemory->setEnabled(false);
+}
+
+void MainWindow::closeEvent(QCloseEvent*)
+{
+    qApp->quit();
 }
