@@ -17,6 +17,9 @@ public:
     ~DebugMemoryWindow();
 
 private:
+    void reject();
+
+private:
     Ui::DebugMemoryWindow *ui;
 };
 

@@ -5,7 +5,7 @@
 
 #include "GUI/Qt/INCLUDE/debugregisterswindow.h"
 #include "GUI/Qt/INCLUDE/debugmemorywindow.h"
-#include "CORE/INCLUDE/cpu.h"
+#include "CORE/INCLUDE/gameboy.h"
 
 namespace Ui
 {
@@ -20,24 +20,25 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    Cpu getCpu();
+    Gameboy*        getGameBoy();
 
 private slots:
     void openDebugRegistersWindow();
     void openDebugMemoryWindow();
 
-    void on_pushButton_clicked();
-
 private:
     void closeEvent(QCloseEvent*);
 
+public:
+    Ui::MainWindow*         ui;
+
 private:
-    Ui::MainWindow* ui;
+    //Ui::MainWindow*         ui;
 
-    DebugRegistersWindow*   m_debugRegistersWindow;
-    DebugMemoryWindow*      m_debugMemoryWindow;
+    DebugRegistersWindow*   mp_debugRegistersWindow;
+    DebugMemoryWindow*      mp_debugMemoryWindow;
 
-    Cpu                     m_cpu;
+    Gameboy*                mp_gameboy;
 };
 
 #endif // MAINWINDOW_H

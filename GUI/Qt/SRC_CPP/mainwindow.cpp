@@ -10,32 +10,36 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowTitle("Game Boy Emulator");
     this->setWindowIcon(QIcon("../IMG/nintendo-game-boy-icon.png"));
 
-    m_debugRegistersWindow  = new DebugRegistersWindow(this);
-    m_debugMemoryWindow     = new DebugMemoryWindow(this);
+    mp_gameboy                  = new Gameboy();
+
+    mp_debugRegistersWindow     = new DebugRegistersWindow(this);
+    mp_debugMemoryWindow        = new DebugMemoryWindow(this);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 
-    delete m_debugRegistersWindow;
-    delete m_debugMemoryWindow;
+    delete mp_debugRegistersWindow;
+    delete mp_debugMemoryWindow;
+
+    delete mp_gameboy;
 }
 
-Cpu MainWindow::getCpu()
+Gameboy* MainWindow::getGameBoy()
 {
-    return m_cpu;
+    return mp_gameboy;
 }
 
 void MainWindow::openDebugRegistersWindow()
 {
-    m_debugRegistersWindow->show();
+    mp_debugRegistersWindow->show();
     ui->actionRegisters->setEnabled(false);
 }
 
 void MainWindow::openDebugMemoryWindow()
 {
-    m_debugMemoryWindow->show();
+    mp_debugMemoryWindow->show();
     ui->actionMemory->setEnabled(false);
 }
 

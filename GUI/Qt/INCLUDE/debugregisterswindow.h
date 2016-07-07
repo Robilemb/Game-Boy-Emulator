@@ -19,6 +19,9 @@ public:
     void refresh();
 
 private:
+    void reject();
+
+private:
     Ui::DebugRegistersWindow *ui;
 };
 

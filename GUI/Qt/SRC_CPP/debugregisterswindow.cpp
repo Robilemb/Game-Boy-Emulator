@@ -1,9 +1,12 @@
 #include "GUI/Qt/INCLUDE/debugregisterswindow.h"
 #include "ui_debugregisterswindow.h"
 #include "GUI/Qt/INCLUDE/mainwindow.h"
+#include "ui_mainwindow.h"
+#include "CORE/INCLUDE/cpu.h"
+#include "CORE/INCLUDE/gameboy.h"
 
-DebugRegistersWindow::DebugRegistersWindow(QWidget *parent) :
-    QDialog(parent),
+DebugRegistersWindow::DebugRegistersWindow(QWidget *ai_parent) :
+    QDialog(ai_parent),
     ui(new Ui::DebugRegistersWindow)
 {
     ui->setupUi(this);
@@ -18,33 +21,37 @@ DebugRegistersWindow::~DebugRegistersWindow()
     delete ui;
 }
 
+void DebugRegistersWindow::reject()
+{
+    static_cast<MainWindow*>(parent())->ui->actionRegisters->setEnabled(true);
+    QDialog::reject();
+}
+
 void DebugRegistersWindow::refresh()
 {
-    std::cout << "Registre A = " << (std::uint16_t)static_cast<MainWindow*>(parent())->getCpu().getRegisterA() << std::endl;
-
     // Registres 8 bits
-    std::uint8_t w_registerA = static_cast<MainWindow*>(parent())->getCpu().getRegisterA();
-    std::uint8_t w_registerB = static_cast<MainWindow*>(parent())->getCpu().getRegisterB();
-    std::uint8_t w_registerC = static_cast<MainWindow*>(parent())->getCpu().getRegisterC();
-    std::uint8_t w_registerD = static_cast<MainWindow*>(parent())->getCpu().getRegisterD();
-    std::uint8_t w_registerE = static_cast<MainWindow*>(parent())->getCpu().getRegisterE();
-    std::uint8_t w_registerF = static_cast<MainWindow*>(parent())->getCpu().getRegisterF();
-    std::uint8_t w_registerH = static_cast<MainWindow*>(parent())->getCpu().getRegisterH();
-    std::uint8_t w_registerL = static_cast<MainWindow*>(parent())->getCpu().getRegisterL();
+    std::uint8_t w_registerA = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterA();
+    std::uint8_t w_registerB = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterB();
+    std::uint8_t w_registerC = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterC();
+    std::uint8_t w_registerD = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterD();
+    std::uint8_t w_registerE = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterE();
+    std::uint8_t w_registerF = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterF();
+    std::uint8_t w_registerH = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterH();
+    std::uint8_t w_registerL = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterL();
 
     // Registres 16 bits
-    std::uint16_t w_registerAF = static_cast<MainWindow*>(parent())->getCpu().getRegisterAF();
-    std::uint16_t w_registerBC = static_cast<MainWindow*>(parent())->getCpu().getRegisterBC();
-    std::uint16_t w_registerDE = static_cast<MainWindow*>(parent())->getCpu().getRegisterDE();
-    std::uint16_t w_registerHL = static_cast<MainWindow*>(parent())->getCpu().getRegisterHL();
-    std::uint16_t w_registerPC = static_cast<MainWindow*>(parent())->getCpu().getRegisterPC();
-    std::uint16_t w_registerSP = static_cast<MainWindow*>(parent())->getCpu().getRegisterSP();
+    std::uint16_t w_registerAF = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterAF();
+    std::uint16_t w_registerBC = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterBC();
+    std::uint16_t w_registerDE = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterDE();
+    std::uint16_t w_registerHL = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterHL();
+    std::uint16_t w_registerPC = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterPC();
+    std::uint16_t w_registerSP = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getRegisterSP();
 
     // Flags
-    std::uint8_t w_flagZ = static_cast<MainWindow*>(parent())->getCpu().getFlagZ();
-    std::uint8_t w_flagN = static_cast<MainWindow*>(parent())->getCpu().getFlagN();
-    std::uint8_t w_flagH = static_cast<MainWindow*>(parent())->getCpu().getFlagH();
-    std::uint8_t w_flagC = static_cast<MainWindow*>(parent())->getCpu().getFlagC();
+    std::uint8_t w_flagZ = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getFlagZ();
+    std::uint8_t w_flagN = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getFlagN();
+    std::uint8_t w_flagH = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getFlagH();
+    std::uint8_t w_flagC = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getFlagC();
 
     // Mise à jour des labels
     ui->labelRegisterA->setText("A = " + QString::number(w_registerA));
