@@ -3,13 +3,6 @@
 
 #include <iostream>
 
-/*! \brief	Taille de la mémoire
- *
- * La gameboy a 64 ko de mémoire.
- * Cf le mapping ci-dessous.
- */
-#define CPU_MEMORY_SIZE 			65535
-
 /*! \brief	Union codant les différents registres de la gameboy
  *
  */
@@ -120,7 +113,6 @@ private:
     te_registers 	m_registers;				// Registres 8-16 bits
     std::uint16_t	m_pc;						// Program Counter
     std::uint16_t	m_sp;						// Stack Pointer
-    std::uint8_t 	m_memory[CPU_MEMORY_SIZE];	// Mémoire
 
 };
 

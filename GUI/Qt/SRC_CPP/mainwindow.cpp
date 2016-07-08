@@ -52,3 +52,29 @@ void MainWindow::closeEvent(QCloseEvent*)
 {
     qApp->quit();
 }
+
+void MainWindow::selectROMFileName()
+{
+    // Variable locale
+    Status w_status = E_UNDEFINED;
+
+    // Selection de la ROM
+    QString w_ROMFileName = QFileDialog::getOpenFileName(this,
+                                                         tr("Selectionner la ROM"),
+                                                         "./",
+                                                         tr("ROM (*.gb)"));
+
+    if (!w_ROMFileName.isNull())
+    {
+        // Chargement de la ROM
+        w_status = mp_gameboy->loadROM(w_ROMFileName.toStdString());
+
+        // Gestion des erreurs
+        if (w_status == E_ERROR)
+        {
+            QMessageBox w_msgBox;
+            w_msgBox.setText("ROM introuvable ou illisible.");
+            w_msgBox.exec();
+        }
+    }
+}

@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QFileDialog>
+#include <QMessageBox>
 
 #include "GUI/Qt/INCLUDE/debugregisterswindow.h"
 #include "GUI/Qt/INCLUDE/debugmemorywindow.h"
@@ -26,6 +28,7 @@ public:
 private slots:
     void openDebugRegistersWindow();
     void openDebugMemoryWindow();
+    void selectROMFileName();
 
 private:
     void closeEvent(QCloseEvent*);
