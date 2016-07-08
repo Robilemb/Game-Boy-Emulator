@@ -21,6 +21,7 @@ public:
     ~MainWindow();
 
     Gameboy*        getGameBoy();
+    Ui::MainWindow* getUi();
 
 private slots:
     void openDebugRegistersWindow();
@@ -29,11 +30,8 @@ private slots:
 private:
     void closeEvent(QCloseEvent*);
 
-public:
-    Ui::MainWindow*         ui;
-
 private:
-    //Ui::MainWindow*         ui;
+    Ui::MainWindow*         ui;
 
     DebugRegistersWindow*   mp_debugRegistersWindow;
     DebugMemoryWindow*      mp_debugMemoryWindow;

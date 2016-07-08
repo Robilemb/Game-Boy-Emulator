@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     this->setWindowTitle("Game Boy Emulator");
-    this->setWindowIcon(QIcon("../IMG/nintendo-game-boy-icon.png"));
+    this->setWindowIcon(QIcon("../IMG/Icon.png"));
 
     mp_gameboy                  = new Gameboy();
 
@@ -29,6 +29,11 @@ MainWindow::~MainWindow()
 Gameboy* MainWindow::getGameBoy()
 {
     return mp_gameboy;
+}
+
+Ui::MainWindow* MainWindow::getUi()
+{
+    return ui;
 }
 
 void MainWindow::openDebugRegistersWindow()

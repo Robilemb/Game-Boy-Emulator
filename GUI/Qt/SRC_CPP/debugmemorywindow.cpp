@@ -17,6 +17,6 @@ DebugMemoryWindow::~DebugMemoryWindow()
 
 void DebugMemoryWindow::reject()
 {
-    static_cast<MainWindow*>(parent())->ui->actionMemory->setEnabled(true);
+    static_cast<MainWindow*>(parent())->getUi()->actionMemory->setEnabled(true);
     QDialog::reject();
 }

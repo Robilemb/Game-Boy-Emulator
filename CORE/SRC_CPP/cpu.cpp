@@ -15,6 +15,9 @@ Cpu::Cpu()
     m_registers.s8bits.f = 2;
     m_registers.s8bits.h = 14;
     m_registers.s8bits.l = 16;
+    m_sp                 = 65535;
+    m_pc                 = 65535;
+    m_registers.sFlags.n = 1;
 }
 
 // Destructeur
