@@ -20,13 +20,15 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
     <property name="title">
      <string>Fichier</string>
     </property>
+    <addaction name="actionOpen"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuDebug">
@@ -55,6 +57,11 @@
   <action name="actionMemory">
    <property name="text">
     <string>Mémoire</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Ouvrir</string>
    </property>
   </action>
  </widget>
@@ -109,9 +116,26 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionOpen</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>selectROMFileName()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>46</x>
+     <y>48</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>openDebugRegistersWindow()</slot>
   <slot>openDebugMemoryWindow()</slot>
+  <slot>selectROMFileName()</slot>
  </slots>
 </ui>

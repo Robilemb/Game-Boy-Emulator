@@ -7,17 +7,16 @@
 // Constructeur
 Cpu::Cpu()
 {
-    m_registers.s8bits.a = 17;
-    m_registers.s8bits.b = 23;
-    m_registers.s8bits.c = 8;
-    m_registers.s8bits.d = 10;
-    m_registers.s8bits.e = 1;
-    m_registers.s8bits.f = 2;
-    m_registers.s8bits.h = 14;
-    m_registers.s8bits.l = 16;
-    m_sp                 = 65535;
-    m_pc                 = 65535;
-    m_registers.sFlags.n = 1;
+    m_registers.s8bits.a = 0;
+    m_registers.s8bits.b = 0;
+    m_registers.s8bits.c = 0;
+    m_registers.s8bits.d = 0;
+    m_registers.s8bits.e = 0;
+    m_registers.s8bits.f = 0;
+    m_registers.s8bits.h = 0;
+    m_registers.s8bits.l = 0;
+    m_sp                 = 0;
+    m_pc                 = 0;
 }
 
 // Destructeur
