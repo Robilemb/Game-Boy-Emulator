@@ -123,8 +123,8 @@
    <slot>selectROMFileName()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>49</x>
-     <y>12</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>46</x>
