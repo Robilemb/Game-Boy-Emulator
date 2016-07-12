@@ -49,9 +49,9 @@ Status Gameboy::loadROM(std::string ai_ROMFileName)
     if(w_ROMFile)
     {
         // Chargement du contenu de la ROM dans la mémoire
-        while((w_ROMFile.get(w_caractere)) || (w_i < GB_MEMORY_CARD_SIZE))
+        while((w_ROMFile.get(w_caractere)) || (w_i < GB_MEMORY_CARD_BANK_0_SIZE))
         {
-            m_memory[GB_MEMORY_CARD_OFFSET + w_i] = static_cast<std::uint8_t>(w_caractere);
+            m_memory[GB_MEMORY_CARD_BANK_0_OFFSET + w_i] = static_cast<std::uint8_t>(w_caractere);
             w_i++;
         }
 
@@ -71,12 +71,29 @@ Status Gameboy::loadROM(std::string ai_ROMFileName)
 // AFFICHAGE DE LA ROM
 // ********************************************************
 
-void Gameboy::printROM()
+void Gameboy::printROMBank0()
 {
-    // Affichage de la ROM
-    for (std::uint16_t w_k = 0; w_k < GB_MEMORY_CARD_SIZE; w_k++)
+    // Affichage de la ROM BANK 0
+    for (std::uint16_t w_k = 0; w_k < GB_MEMORY_CARD_BANK_0_SIZE; w_k++)
     {
-        std::cout << std::hex << std::uppercase << static_cast<std::uint16_t>(m_memory[w_k]) << " ";
+        std::cout << std::hex << std::uppercase << static_cast<std::uint16_t>(m_memory[GB_MEMORY_CARD_BANK_0_OFFSET + w_k]) << " ";
     }
     std::cout << std::endl;
+}
+
+
+// ********************************************************
+// EXECUTION DE L'EMULATION
+// ********************************************************
+
+Status Gameboy::run()
+{
+    // Exécution de la ROM à partir de 0x150 jusqu'à 0x17A
+    for (std::uint16_t w_i = 0x150; w_i < 0x17A; w_i++)
+    {
+        // Exécution de l'opcode à l'adresse de PC
+        mp_cpu->executeOpcode(&m_memory[mp_cpu->getRegisterPC()]);
+    }
+
+    return E_OK;
 }

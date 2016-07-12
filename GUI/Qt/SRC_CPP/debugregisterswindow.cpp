@@ -54,21 +54,21 @@ void DebugRegistersWindow::refresh()
     std::uint8_t w_flagC = static_cast<MainWindow*>(parent())->getGameBoy()->getCpu()->getFlagC();
 
     // Mise à jour des labels
-    ui->labelRegisterA->setText("A = " + QString::number(w_registerA));
-    ui->labelRegisterB->setText("B = " + QString::number(w_registerB));
-    ui->labelRegisterC->setText("C = " + QString::number(w_registerC));
-    ui->labelRegisterD->setText("D = " + QString::number(w_registerD));
-    ui->labelRegisterE->setText("E = " + QString::number(w_registerE));
-    ui->labelRegisterF->setText("F = " + QString::number(w_registerF));
-    ui->labelRegisterH->setText("H = " + QString::number(w_registerH));
-    ui->labelRegisterL->setText("L = " + QString::number(w_registerL));
+    ui->labelRegisterA->setText("A = 0x" + QString::number(w_registerA, 16).toUpper());
+    ui->labelRegisterB->setText("B = 0x" + QString::number(w_registerB, 16).toUpper());
+    ui->labelRegisterC->setText("C = 0x" + QString::number(w_registerC, 16).toUpper());
+    ui->labelRegisterD->setText("D = 0x" + QString::number(w_registerD, 16).toUpper());
+    ui->labelRegisterE->setText("E = 0x" + QString::number(w_registerE, 16).toUpper());
+    ui->labelRegisterF->setText("F = 0x" + QString::number(w_registerF, 16).toUpper());
+    ui->labelRegisterH->setText("H = 0x" + QString::number(w_registerH, 16).toUpper());
+    ui->labelRegisterL->setText("L = 0x" + QString::number(w_registerL, 16).toUpper());
 
-    ui->labelRegisterAF->setText("AF = " + QString::number(w_registerAF));
-    ui->labelRegisterBC->setText("BC = " + QString::number(w_registerBC));
-    ui->labelRegisterDE->setText("DE = " + QString::number(w_registerDE));
-    ui->labelRegisterHL->setText("HL = " + QString::number(w_registerHL));
-    ui->labelRegisterPC->setText("PC = " + QString::number(w_registerPC));
-    ui->labelRegisterSP->setText("SP = " + QString::number(w_registerSP));
+    ui->labelRegisterAF->setText("AF = 0x" + QString::number(w_registerAF, 16).toUpper());
+    ui->labelRegisterBC->setText("BC = 0x" + QString::number(w_registerBC, 16).toUpper());
+    ui->labelRegisterDE->setText("DE = 0x" + QString::number(w_registerDE, 16).toUpper());
+    ui->labelRegisterHL->setText("HL = 0x" + QString::number(w_registerHL, 16).toUpper());
+    ui->labelRegisterPC->setText("PC = 0x" + QString::number(w_registerPC, 16).toUpper());
+    ui->labelRegisterSP->setText("SP = 0x" + QString::number(w_registerSP, 16).toUpper());
 
     ui->labelFlagZ->setText("Z = " + QString::number(w_flagZ));
     ui->labelFlagN->setText("N = " + QString::number(w_flagN));

@@ -10,13 +10,13 @@
  * La gameboy a 64 ko de mémoire.
  * Cf le mapping ci-dessous.
  */
-#define GB_MEMORY_SIZE 			65535
+#define GB_MEMORY_SIZE                  65535
 
 // Offset mémoire pour accès à la cartouche
-#define GB_MEMORY_CARD_OFFSET   0
+#define GB_MEMORY_CARD_BANK_0_OFFSET    0
 
 // Nombre d'octet en mémoire de la cartouche (32 ko)
-#define GB_MEMORY_CARD_SIZE     32768
+#define GB_MEMORY_CARD_BANK_0_SIZE      16383
 
 // Enum des status de fonction
 enum Status
@@ -38,8 +38,11 @@ public:
     // Chargement de la ROM en mémoire
     Status loadROM(std::string ai_ROMFileName);
 
-    // Affichage de la ROM
-    void printROM();
+    // Affichage de la ROM BANK 0
+    void printROMBank0();
+
+    // Exécution de l'émulatiion
+    Status run();
 
 private:
     Cpu*            mp_cpu;                     // CPU
