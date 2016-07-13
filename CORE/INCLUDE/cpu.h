@@ -2,6 +2,7 @@
 #define CPU_H
 
 #include <iostream>
+#include <cstdint>
 
 /*! \brief	Union codant les différents registres de la gameboy
  *
