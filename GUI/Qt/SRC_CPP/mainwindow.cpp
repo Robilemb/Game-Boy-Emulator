@@ -38,6 +38,7 @@ Ui::MainWindow* MainWindow::getUi()
 
 void MainWindow::openDebugRegistersWindow()
 {
+    mp_debugRegistersWindow->refresh();
     mp_debugRegistersWindow->show();
     ui->actionRegisters->setEnabled(false);
 }
@@ -75,6 +76,16 @@ void MainWindow::selectROMFileName()
             QMessageBox w_msgBox;
             w_msgBox.setText("ROM introuvable ou illisible.");
             w_msgBox.exec();
+        }
+
+        // Exécution de la ROM
+        if (w_status == E_OK)
+        {
+            // Exécution de la ROM à partir de 0x150 jusqu'à 0x17A
+            for (std::uint16_t w_i = 0x150; w_i < 0x17A; w_i++)
+            {
+                mp_gameboy->run();
+            }
         }
     }
 }
