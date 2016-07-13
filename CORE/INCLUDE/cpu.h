@@ -3,6 +3,9 @@
 
 #include <iostream>
 
+#define CPU_NB_OPCODES_8_BITS   51
+#define CPU_NB_OPCODES_16_BITS  8
+
 /*! \brief	Union codant les différents registres de la gameboy
  *
  */
@@ -42,8 +45,22 @@ typedef union
 } te_registers;
 
 
+// Structure des masques et identifiants des opcodes
+typedef struct
+{
+    std::uint8_t masque8bits[CPU_NB_OPCODES_8_BITS];
+    std::uint8_t id8bits[CPU_NB_OPCODES_8_BITS];
+    std::uint8_t masque16bitsLSW[CPU_NB_OPCODES_16_BITS];
+    std::uint8_t id16bitsLSW[CPU_NB_OPCODES_16_BITS];
+} sOpcodesDesc;
+
+
 class Cpu
 {
+
+private:
+    // Décodage d'un opcode
+    std::uint8_t decodeOpcode(std::uint8_t ai_opcode);
 
 public:
     explicit Cpu();
@@ -109,10 +126,15 @@ public:
     // Accesseur structure registres
     te_registers getRegisters();
 
+    // Exécution d'un opcode
+    void executeOpcode(std::uint8_t* ai_opcode);
+
 private:
     te_registers 	m_registers;				// Registres 8-16 bits
     std::uint16_t	m_pc;						// Program Counter
     std::uint16_t	m_sp;						// Stack Pointer
+
+    sOpcodesDesc    m_opcodesDesc;              // Masque et identifiant des opcodes
 
 };
 
