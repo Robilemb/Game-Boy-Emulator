@@ -88,12 +88,8 @@ void Gameboy::printROMBank0()
 
 Status Gameboy::run()
 {
-    // Exécution de la ROM à partir de 0x150 jusqu'à 0x17A
-    for (std::uint16_t w_i = 0x150; w_i < 0x17A; w_i++)
-    {
-        // Exécution de l'opcode à l'adresse de PC
-        mp_cpu->executeOpcode(&m_memory[mp_cpu->getRegisterPC()]);
-    }
+    // Exécution de l'opcode à l'adresse de PC
+    mp_cpu->executeOpcode(&m_memory[mp_cpu->getRegisterPC()]);
 
     return E_OK;
 }
