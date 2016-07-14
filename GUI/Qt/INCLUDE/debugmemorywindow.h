@@ -2,6 +2,7 @@
 #define DEBUGMEMORYWINDOW_H
 
 #include <QDialog>
+#include <QStyle>
 
 namespace Ui
 {

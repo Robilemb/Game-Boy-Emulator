@@ -8,6 +8,11 @@ DebugMemoryWindow::DebugMemoryWindow(QWidget *parent) :
     ui(new Ui::DebugMemoryWindow)
 {
     ui->setupUi(this);
+
+    this->setFixedSize(470, 340);
+
+    ui->upButton->setIcon(style()->standardIcon(QStyle::SP_ArrowUp));
+    ui->downButton->setIcon(style()->standardIcon(QStyle::SP_ArrowDown));
 }
 
 DebugMemoryWindow::~DebugMemoryWindow()
