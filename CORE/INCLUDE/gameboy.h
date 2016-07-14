@@ -41,8 +41,12 @@ public:
     // Affichage de la ROM BANK 0
     void printROMBank0();
 
-    // Exécution de l'émulatiion
+    // Exécution de l'émulation
     Status run();
+
+private:
+    // Initialisation de la mémoire
+    void initMemory();
 
 private:
     Cpu*            mp_cpu;                     // CPU

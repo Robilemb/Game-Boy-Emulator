@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>260</width>
-    <height>440</height>
+    <height>480</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -292,7 +292,40 @@
     </property>
    </widget>
   </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>440</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Rafraîchir</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>DebugRegistersWindow</receiver>
+   <slot>refreshDebugRegistersWindow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>72</x>
+     <y>451</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>128</x>
+     <y>452</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>refreshDebugRegistersWindow()</slot>
+ </slots>
 </ui>
