@@ -82,7 +82,7 @@ void MainWindow::selectROMFileName()
         if (w_status == E_OK)
         {
             // Exécution de la ROM à partir de 0x150 jusqu'à 0x17A
-            for (std::uint16_t w_i = 0x150; w_i < 0x17A; w_i++)
+            while(mp_gameboy->getCpu()->getRegisterPC() < 0x17A)
             {
                 mp_gameboy->run();
             }

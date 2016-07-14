@@ -11,7 +11,7 @@ DebugRegistersWindow::DebugRegistersWindow(QWidget *ai_parent) :
 {
     ui->setupUi(this);
 
-    this->setFixedSize(260, 440);
+    this->setFixedSize(260, 480);
 
     refresh();
 }
@@ -25,6 +25,11 @@ void DebugRegistersWindow::reject()
 {
     static_cast<MainWindow*>(parent())->getUi()->actionRegisters->setEnabled(true);
     QDialog::reject();
+}
+
+void DebugRegistersWindow::refreshDebugRegistersWindow()
+{
+    refresh();
 }
 
 void DebugRegistersWindow::refresh()

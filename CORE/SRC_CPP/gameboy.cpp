@@ -10,10 +10,7 @@ Gameboy::Gameboy()
     mp_cpu = new Cpu();
 
     // Initialisation de la mémoire
-    for (std::uint16_t w_i = 0; w_i < GB_MEMORY_SIZE; w_i++)
-    {
-        m_memory[w_i] = 0;
-    }
+    initMemory();
 }
 
 // Destructeur
@@ -34,6 +31,20 @@ Cpu* Gameboy::getCpu()
 
 
 // ********************************************************
+// INITIALISATION DE LA MEMOIRE
+// ********************************************************
+
+void Gameboy::initMemory()
+{
+    // Initialisation de la mémoire
+    for (std::uint16_t w_i = 0; w_i < GB_MEMORY_SIZE; w_i++)
+    {
+        m_memory[w_i] = 0;
+    }
+}
+
+
+// ********************************************************
 // CHARGEMENT DE LA ROM EN MEMOIRE
 // ********************************************************
 
@@ -43,14 +54,20 @@ Status Gameboy::loadROM(std::string ai_ROMFileName)
     char w_caractere;
     std::uint16_t w_i = 0;
 
+    // Réinitialisation de l'émulation
+    initMemory();
+    mp_cpu->initRegisters();
+
     // Ouverture du fichier en lecture
-    std::ifstream w_ROMFile(ai_ROMFileName, std::ios::in);
+    std::ifstream w_ROMFile(ai_ROMFileName, std::ios::in | std::ifstream::binary);
 
     if(w_ROMFile)
     {
-        // Chargement du contenu de la ROM dans la mémoire
-        while((w_ROMFile.get(w_caractere)) || (w_i < GB_MEMORY_CARD_BANK_0_SIZE))
+        // Chargement du contenu de la ROM dans la mémoire BANK0
+        while(w_i < GB_MEMORY_CARD_BANK_0_SIZE)
         {
+            w_ROMFile.get(w_caractere);
+
             m_memory[GB_MEMORY_CARD_BANK_0_OFFSET + w_i] = static_cast<std::uint8_t>(w_caractere);
             w_i++;
         }

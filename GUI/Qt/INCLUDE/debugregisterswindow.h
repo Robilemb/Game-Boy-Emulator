@@ -18,6 +18,9 @@ public:
 
     void refresh();
 
+private slots:
+    void refreshDebugRegistersWindow();
+
 private:
     void reject();
 
