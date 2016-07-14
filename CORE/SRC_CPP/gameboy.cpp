@@ -59,13 +59,15 @@ Status Gameboy::loadROM(std::string ai_ROMFileName)
     mp_cpu->initRegisters();
 
     // Ouverture du fichier en lecture
-    std::ifstream w_ROMFile(ai_ROMFileName, std::ios::in);
+    std::ifstream w_ROMFile(ai_ROMFileName, std::ios::in | std::ifstream::binary);
 
     if(w_ROMFile)
     {
-        // Chargement du contenu de la ROM dans la mémoire
-        while((w_ROMFile.get(w_caractere)) || (w_i < GB_MEMORY_CARD_BANK_0_SIZE))
+        // Chargement du contenu de la ROM dans la mémoire BANK0
+        while(w_i < GB_MEMORY_CARD_BANK_0_SIZE)
         {
+            w_ROMFile.get(w_caractere);
+
             m_memory[GB_MEMORY_CARD_BANK_0_OFFSET + w_i] = static_cast<std::uint8_t>(w_caractere);
             w_i++;
         }
@@ -77,8 +79,6 @@ Status Gameboy::loadROM(std::string ai_ROMFileName)
     {
         return E_ERROR;
     }
-
-    printROMBank0();
 
     return E_OK;
 }

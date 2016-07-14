@@ -277,9 +277,6 @@ void Cpu::executeOpcode(std::uint8_t* ai_opcode)
             // Mise à jour de PC
             m_pc = m_pc + 1;
 
-            // On passe 4 cycles
-            std::cout << "NOP" << std::endl;
-
             break;
         }
 
@@ -303,17 +300,6 @@ void Cpu::executeOpcode(std::uint8_t* ai_opcode)
             // Mise à jour de PC
             m_pc = m_pc + 2;
 
-            // On passe 4 (ou 8 si HL) cycles
-            std::cout << "LD ";
-            if (w_register8bits == 0) std::cout << "B";
-            else if (w_register8bits == 1) std::cout << "C";
-            else if (w_register8bits == 2) std::cout << "D";
-            else if (w_register8bits == 3) std::cout << "E";
-            else if (w_register8bits == 4) std::cout << "H";
-            else if (w_register8bits == 5) std::cout << "L";
-            else if (w_register8bits == 7) std::cout << "A";
-            std::cout << std::hex << std::uppercase << ",0x" << static_cast<std::uint16_t>(w_data8bits) << std::endl;
-
             break;
         }
 
@@ -321,8 +307,6 @@ void Cpu::executeOpcode(std::uint8_t* ai_opcode)
         {
             // Mise à jour de PC
             m_pc = m_pc + 1;
-
-            std::cout << std::hex << std::uppercase << "Opcode 0x" << static_cast<std::uint16_t>(*ai_opcode) << " non reconnu." << std::endl;
 
             break;
         }
