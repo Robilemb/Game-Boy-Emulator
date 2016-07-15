@@ -208,6 +208,15 @@ bool		_command_disp(std::vector<std::string>& ai_vInput, Gameboy& ai_gb)
 // **************************************
 bool		_command_exec(std::vector<std::string>& ai_vInput, Gameboy& ai_gb)
 {
+	std::uint16_t	w_pos = ai_gb.getCpu()->getRegisterPC();
+
+	if (ai_vInput.size() > 1)
+	{
+		w_pos = strtol((ai_vInput[1]).c_str(), NULL, 16);
+	}
+
+	_exec_ins(ai_gb, w_pos);
+
 	return true;
 }
 
@@ -341,12 +350,29 @@ void		_display_reg(Gameboy& ai_gb)
 void		_display_ins(Gameboy& ai_gb, std::uint16_t ai_start)
 {
 	std::uint16_t		w_pos = ai_start;
+	std::string			w_str = "";
 
 	if (ai_start == 0)
 	{
 		w_pos = ai_gb.getCpu()->getRegisterPC();
 	}
 
-	// UTILISATION DE W_POS
-	w_pos++;
+	w_str = ai_gb.showInstr(w_pos);
+
+	std::cout << std::setfill('0') << std::setw(5) << std::hex << w_pos << "     " << w_str << std::endl;
+}
+
+// FONCTION D'EXECUTION DE L'INSTRUCTION
+// *************************************
+void		_exec_ins(Gameboy& ai_gb, std::uint16_t ai_start)
+{
+	std::uint16_t		w_pos = ai_start;
+	std::string			w_str = "";
+
+	if (ai_start == 0)
+	{
+		w_pos = ai_gb.getCpu()->getRegisterPC();
+	}
+
+	ai_gb.execInstr(w_pos);
 }

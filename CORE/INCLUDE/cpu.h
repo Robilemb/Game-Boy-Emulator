@@ -59,10 +59,6 @@ typedef struct
 class Cpu
 {
 
-private:
-    // Décodage d'un opcode
-    std::uint8_t decodeOpcode(std::uint8_t ai_opcode);
-
 public:
     explicit Cpu();
     ~Cpu();
@@ -127,8 +123,27 @@ public:
     // Accesseur structure registres
     te_registers getRegisters();
 
+    // Initialisation des registres
+    void initRegisters();
+
     // Exécution d'un opcode
-    void executeOpcode(std::uint8_t* ai_opcode);
+    void 				executeOpcode(std::uint8_t* ai_opcode);
+
+    std::string			showInstruction(std::uint8_t* ai_mem);
+
+private:
+    // Décodage d'un opcode
+    std::uint8_t 		decodeOpcode(std::uint8_t ai_opcode);
+
+    std::string			decodeInstr(std::uint8_t* ai_mem, bool ai_exec);
+
+    // LISTE DES INSTRUCTIONS GEREES
+    // *****************************
+    std::string			__decodeNop(std::uint8_t* ai_mem, bool ai_exec);
+    std::string			__decodeLoad(std::uint8_t* ai_mem, bool ai_exec);
+
+    // Initialisation des masques et identifiants des opcodes
+    void initOpcodesDesc();
 
 private:
     te_registers 	m_registers;				// Registres 8-16 bits

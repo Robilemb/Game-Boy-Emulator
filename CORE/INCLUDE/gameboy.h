@@ -43,7 +43,7 @@ public:
     // Affichage de la ROM BANK 0
     void printROMBank0();
 
-    // Exécution de l'émulatiion
+    // Exécution de l'émulation
     Status run();
 
 public:
@@ -51,10 +51,15 @@ public:
     std::uint8_t		getMemVal(std::uint32_t ai_offset);
     void				setMemVal(std::uint32_t ai_offset, std::uint8_t ai_val);
 
+    std::string			showInstr(std::uint16_t ai_pos);
+    void				execInstr(std::uint16_t ai_pos);
+
+    // Initialisation de la mémoire
+    void 				initMemory();
+
 private:
     Cpu*            	mp_cpu;                     // CPU
     std::uint8_t		m_memory[GB_MEMORY_SIZE];	// Mémoire
-
     std::uint32_t		m_romSize;
 };
 

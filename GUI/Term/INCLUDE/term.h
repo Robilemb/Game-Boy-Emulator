@@ -23,5 +23,6 @@ bool		_command_quit(std::vector<std::string>& ai_vInput);
 void		_display_rom(Gameboy& ai_gb, std::uint16_t ai_start = 0, std::uint16_t ai_stop = 65535);
 void		_display_reg(Gameboy& ai_gb);
 void		_display_ins(Gameboy& ai_gb, std::uint16_t ai_start = 0);
+void		_exec_ins(Gameboy& ai_gb, std::uint16_t ai_start = 0);
 
 #endif /* __GUI_TERM_H__ */
