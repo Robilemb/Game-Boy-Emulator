@@ -14,6 +14,10 @@ Gameboy::Gameboy()
     {
         m_memory[w_i] = 0;
     }
+
+
+
+    m_romSize = 0u;
 }
 
 // Destructeur
@@ -40,8 +44,8 @@ Cpu* Gameboy::getCpu()
 Status Gameboy::loadROM(std::string ai_ROMFileName)
 {
     // Variables locales
-    char w_caractere;
-    std::uint16_t w_i = 0;
+    char 				w_caractere;
+    std::uint32_t 		w_i = 0;
 
     // Ouverture du fichier en lecture
     std::ifstream w_ROMFile(ai_ROMFileName, std::ios::in);
@@ -49,11 +53,13 @@ Status Gameboy::loadROM(std::string ai_ROMFileName)
     if(w_ROMFile)
     {
         // Chargement du contenu de la ROM dans la mémoire
-        while((w_ROMFile.get(w_caractere)) || (w_i < GB_MEMORY_CARD_BANK_0_SIZE))
+        while((w_ROMFile.get(w_caractere)) && (w_i < GB_MEMORY_CARD_BANK_0_SIZE))
         {
             m_memory[GB_MEMORY_CARD_BANK_0_OFFSET + w_i] = static_cast<std::uint8_t>(w_caractere);
             w_i++;
         }
+
+        m_romSize = w_i;
 
         // Fermeture du fichier
         w_ROMFile.close();
@@ -79,6 +85,21 @@ void Gameboy::printROMBank0()
         std::cout << std::hex << std::uppercase << static_cast<std::uint16_t>(m_memory[GB_MEMORY_CARD_BANK_0_OFFSET + w_k]) << " ";
     }
     std::cout << std::endl;
+}
+
+std::uint32_t		Gameboy::getRomSize()
+{
+	return m_romSize;
+}
+
+std::uint8_t		Gameboy::getMemVal(std::uint32_t ai_offset)
+{
+	return m_memory[GB_MEMORY_CARD_BANK_0_OFFSET + ai_offset];
+}
+
+void				Gameboy::setMemVal(std::uint32_t ai_offset, std::uint8_t ai_val)
+{
+	m_memory[GB_MEMORY_CARD_BANK_0_OFFSET + ai_offset] = ai_val;
 }
 
 
