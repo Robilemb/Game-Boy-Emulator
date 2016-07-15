@@ -35,6 +35,10 @@ public:
     // Accesseur sur le CPU
     Cpu* getCpu();
 
+    // Accesseurs sur la mémoire
+    std::uint8_t getMemVal(std::uint16_t ai_offset);
+    void setMemVal(std::uint16_t ai_offset, std::uint8_t ai_val);
+
     // Chargement de la ROM en mémoire
     Status loadROM(std::string ai_ROMFileName);
 

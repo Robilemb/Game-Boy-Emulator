@@ -145,7 +145,10 @@
    <property name="title">
     <string>Mémoire</string>
    </property>
-   <widget class="QTableWidget" name="tableWidget">
+   <widget class="QTableWidget" name="tableMemoryWidget">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -169,8 +172,14 @@
     <attribute name="horizontalHeaderDefaultSectionSize">
      <number>100</number>
     </attribute>
+    <attribute name="verticalHeaderVisible">
+     <bool>true</bool>
+    </attribute>
     <attribute name="verticalHeaderDefaultSectionSize">
      <number>26</number>
+    </attribute>
+    <attribute name="verticalHeaderMinimumSectionSize">
+     <number>23</number>
     </attribute>
     <attribute name="verticalHeaderShowSortIndicator" stdset="0">
      <bool>false</bool>
@@ -271,6 +280,19 @@
     <string>Fermer</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="refreshButton">
+   <property name="geometry">
+    <rect>
+     <x>269</x>
+     <y>299</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Rafraîchir</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections>
@@ -290,5 +312,92 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>refreshButton</sender>
+   <signal>clicked()</signal>
+   <receiver>DebugMemoryWindow</receiver>
+   <slot>refreshDebugMemoryWindow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>320</x>
+     <y>306</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>320</x>
+     <y>326</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>upButton</sender>
+   <signal>clicked()</signal>
+   <receiver>DebugMemoryWindow</receiver>
+   <slot>refreshUpDebugMemoryWindow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>54</x>
+     <y>46</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>13</x>
+     <y>48</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>downButton</sender>
+   <signal>clicked()</signal>
+   <receiver>DebugMemoryWindow</receiver>
+   <slot>refreshDownDebugMemoryWindow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>55</x>
+     <y>74</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>11</x>
+     <y>80</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>displayButton</sender>
+   <signal>clicked()</signal>
+   <receiver>DebugMemoryWindow</receiver>
+   <slot>displayAtSelectedMemoryAddress()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>368</x>
+     <y>49</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>458</x>
+     <y>48</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>DebugMemoryWindow</receiver>
+   <slot>displayAtDefinedMemoryAddress()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>355</x>
+     <y>110</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>355</x>
+     <y>157</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <slot>refreshDebugMemoryWindow()</slot>
+  <slot>refreshUpDebugMemoryWindow()</slot>
+  <slot>refreshDownDebugMemoryWindow()</slot>
+  <slot>displayAtSelectedMemoryAddress()</slot>
+  <slot>displayAtDefinedMemoryAddress()</slot>
+ </slots>
 </ui>
