@@ -1,6 +1,8 @@
 #ifndef GAMEBOY_H
 #define GAMEBOY_H
 
+#include <cstdint>
+
 #include <fstream>
 
 #include "cpu.h"
@@ -44,13 +46,21 @@ public:
     // Exécution de l'émulation
     Status run();
 
-private:
+public:
+    std::uint32_t		getRomSize();
+    std::uint8_t		getMemVal(std::uint32_t ai_offset);
+    void				setMemVal(std::uint32_t ai_offset, std::uint8_t ai_val);
+
+    std::string			showInstr(std::uint16_t ai_pos);
+    void				execInstr(std::uint16_t ai_pos);
+
     // Initialisation de la mémoire
-    void initMemory();
+    void 				initMemory();
 
 private:
-    Cpu*            mp_cpu;                     // CPU
-    std::uint8_t	m_memory[GB_MEMORY_SIZE];	// Mémoire
+    Cpu*            	mp_cpu;                     // CPU
+    std::uint8_t		m_memory[GB_MEMORY_SIZE];	// Mémoire
+    std::uint32_t		m_romSize;
 };
 
 #endif // GAMEBOY_H

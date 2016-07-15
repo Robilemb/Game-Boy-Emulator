@@ -1,4 +1,6 @@
+#include <string>
 #include "CORE/INCLUDE/cpu.h"
+
 
 // ********************************************************
 // Constructeur / Destructeur
@@ -256,59 +258,134 @@ std::uint8_t Cpu::decodeOpcode(std::uint8_t ai_opcode)
 }
 
 
+std::string			Cpu::showInstruction(std::uint8_t* ai_mem)
+{
+	std::string		w_str = "";
+
+	w_str = decodeInstr(ai_mem, false);
+
+	return w_str;
+}
+
 // ********************************************************
 // EXECUTION D'UN OPCODE
 // ********************************************************
 
 void Cpu::executeOpcode(std::uint8_t* ai_opcode)
 {
-    // Variable locale
-    std::uint8_t w_data8bits     = 0;
-    std::uint8_t w_register8bits = 0;
+	decodeInstr(ai_opcode, true);
+}
+
+std::string			Cpu::decodeInstr(std::uint8_t* ai_mem, bool ai_exec)
+{
+	std::string		w_str = "";
 
     // On récupère l'ID de l'opcode à executer
-    std::uint8_t w_id = decodeOpcode(*ai_opcode);
+    std::uint8_t w_id = decodeOpcode(*ai_mem);
 
     // On exécute l'opcode correspondant
     switch(w_id)
     {
         case 0x00:  // NOP
-        {
-            // Mise à jour de PC
-            m_pc = m_pc + 1;
-
+        	w_str = __decodeNop(ai_mem, ai_exec);
             break;
-        }
 
         case 0x06:  // LD D,N
-        {
-            // Récupération du registre
-            w_register8bits = ( (*ai_opcode) & 0x38 ) >> 3;
-
-            // Récupération de la valeur à charger dans le registre
-            w_data8bits = *(ai_opcode + 1);
-
-            // Chargement de la valeur dans le registre
-            if (w_register8bits == 0) m_registers.s8bits.b = w_data8bits;
-            else if (w_register8bits == 1) m_registers.s8bits.c = w_data8bits;
-            else if (w_register8bits == 2) m_registers.s8bits.d = w_data8bits;
-            else if (w_register8bits == 3) m_registers.s8bits.e = w_data8bits;
-            else if (w_register8bits == 4) m_registers.s8bits.h = w_data8bits;
-            else if (w_register8bits == 5) m_registers.s8bits.l = w_data8bits;
-            else if (w_register8bits == 7) m_registers.s8bits.a = w_data8bits;
-
-            // Mise à jour de PC
-            m_pc = m_pc + 2;
-
-            break;
-        }
+        	w_str = __decodeLoad(ai_mem, ai_exec);
+        	break;
 
         default:
-        {
             // Mise à jour de PC
             m_pc = m_pc + 1;
-
             break;
-        }
     }
+
+    return w_str;
+}
+
+std::string			Cpu::__decodeNop(std::uint8_t* ai_mem, bool ai_exec)
+{
+	std::string		w_str = "";
+
+	w_str = "NOP";
+
+	if (ai_exec)
+	{
+		m_pc = m_pc + 1;
+	}
+
+	return w_str;
+}
+
+std::string			Cpu::__decodeLoad(std::uint8_t* ai_mem, bool ai_exec)
+{
+	std::string		w_str;
+	std::string		w_sReg;
+
+    // Variable locale
+    std::uint8_t 	w_data8bits     = 0;
+    std::uint8_t 	w_register8bits = 0;
+    std::uint8_t*	wp_register 	= NULL;
+
+    w_str = "LOAD ";
+
+    // Récupération du registre
+    w_register8bits = ( (*ai_mem) & 0x38 ) >> 3;
+
+    // Récupération de la valeur à charger dans le registre
+    w_data8bits = *(ai_mem + 1);
+
+    // Chargement de la valeur dans le registre
+
+    if (w_register8bits == 0)
+    {
+    	wp_register = &m_registers.s8bits.b;
+    	w_sReg = "B";
+    }
+    else if (w_register8bits == 1)
+    {
+    	wp_register = &m_registers.s8bits.c;
+    	w_sReg = "C";
+    }
+    else if (w_register8bits == 2)
+	{
+    	wp_register = &m_registers.s8bits.d;
+    	w_sReg = "D";
+	}
+    else if (w_register8bits == 3)
+    {
+    	wp_register = &m_registers.s8bits.e;
+    	w_sReg = "E";
+    }
+    else if (w_register8bits == 4)
+    {
+    	wp_register = &m_registers.s8bits.h;
+    	w_sReg = "H";
+    }
+    else if (w_register8bits == 5)
+    {
+    	wp_register = &m_registers.s8bits.l;
+    	w_sReg = "L";
+    }
+    else if (w_register8bits == 7)
+    {
+    	wp_register = &m_registers.s8bits.a;
+    	w_sReg = "A";
+    }
+
+    w_str = "LOAD " + w_sReg + "," + std::to_string(w_data8bits);
+
+    // EXECUTION DE L'INSTRUCTION
+    // **************************
+    if (ai_exec && wp_register != NULL)
+    {
+    	// ON MET A JOUR LE REGISTRE
+    	// *************************
+    	*wp_register = w_data8bits;
+
+    	// Mise à jour de PC
+    	m_pc = m_pc + 2;
+    }
+
+    return w_str;
 }

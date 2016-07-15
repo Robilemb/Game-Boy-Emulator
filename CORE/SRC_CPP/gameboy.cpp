@@ -11,6 +11,8 @@ Gameboy::Gameboy()
 
     // Initialisation de la mémoire
     initMemory();
+
+    m_romSize = 0u;
 }
 
 // Destructeur
@@ -51,8 +53,8 @@ void Gameboy::initMemory()
 Status Gameboy::loadROM(std::string ai_ROMFileName)
 {
     // Variables locales
-    char w_caractere;
-    std::uint16_t w_i = 0;
+    char 				w_caractere;
+    std::uint32_t 		w_i = 0;
 
     // Réinitialisation de l'émulation
     initMemory();
@@ -71,6 +73,8 @@ Status Gameboy::loadROM(std::string ai_ROMFileName)
             m_memory[GB_MEMORY_CARD_BANK_0_OFFSET + w_i] = static_cast<std::uint8_t>(w_caractere);
             w_i++;
         }
+
+        m_romSize = w_i;
 
         // Fermeture du fichier
         w_ROMFile.close();
@@ -98,6 +102,30 @@ void Gameboy::printROMBank0()
     std::cout << std::endl;
 }
 
+std::uint32_t		Gameboy::getRomSize()
+{
+	return m_romSize;
+}
+
+std::uint8_t		Gameboy::getMemVal(std::uint32_t ai_offset)
+{
+	return m_memory[GB_MEMORY_CARD_BANK_0_OFFSET + ai_offset];
+}
+
+void				Gameboy::setMemVal(std::uint32_t ai_offset, std::uint8_t ai_val)
+{
+	m_memory[GB_MEMORY_CARD_BANK_0_OFFSET + ai_offset] = ai_val;
+}
+
+std::string			Gameboy::showInstr(std::uint16_t ai_pos)
+{
+	return mp_cpu->showInstruction(&m_memory[ai_pos]);
+}
+
+void				Gameboy::execInstr(std::uint16_t ai_pos)
+{
+	mp_cpu->executeOpcode(&m_memory[ai_pos]);
+}
 
 // ********************************************************
 // EXECUTION DE L'EMULATION
