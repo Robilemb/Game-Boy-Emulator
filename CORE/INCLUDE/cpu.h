@@ -49,10 +49,12 @@ typedef union
 // Structure des masques et identifiants des opcodes
 typedef struct
 {
-    std::uint8_t masque8bits[CPU_NB_OPCODES_8_BITS];
-    std::uint8_t id8bits[CPU_NB_OPCODES_8_BITS];
-    std::uint8_t masque16bitsLSW[CPU_NB_OPCODES_16_BITS];
-    std::uint8_t id16bitsLSW[CPU_NB_OPCODES_16_BITS];
+    std::uint8_t 	masque8bits[CPU_NB_OPCODES_8_BITS];
+    std::uint8_t 	id8bits[CPU_NB_OPCODES_8_BITS];
+    std::string		instr8bits[CPU_NB_OPCODES_8_BITS];
+    std::uint8_t 	masque16bitsLSW[CPU_NB_OPCODES_16_BITS];
+    std::uint8_t 	id16bitsLSW[CPU_NB_OPCODES_16_BITS];
+    std::string		instr16bits[CPU_NB_OPCODES_16_BITS];
 } sOpcodesDesc;
 
 
@@ -131,6 +133,9 @@ public:
 
     std::string			showInstruction(std::uint8_t* ai_mem);
 
+    std::uint8_t		showInstructionId(std::uint8_t* ai_mem);
+    std::string			showInstructionIdStr(std::uint8_t* ai_mem);
+
 private:
     // Décodage d'un opcode
     std::uint8_t 		decodeOpcode(std::uint8_t ai_opcode);
@@ -139,8 +144,9 @@ private:
 
     // LISTE DES INSTRUCTIONS GEREES
     // *****************************
-    std::string			__decodeNop(std::uint8_t* ai_mem, bool ai_exec);
-    std::string			__decodeLoad(std::uint8_t* ai_mem, bool ai_exec);
+    std::string			__decodeNop(std::uint8_t ai_id, std::uint8_t* ai_mem, bool ai_exec);
+    std::string			__decodeLoad(std::uint8_t ai_id, std::uint8_t* ai_mem, bool ai_exec);
+    std::string			__decodeJump(std::uint8_t ai_id, std::uint8_t* ai_mem, bool ai_exec);
 
     // Initialisation des masques et identifiants des opcodes
     void initOpcodesDesc();
