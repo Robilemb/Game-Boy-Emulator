@@ -144,7 +144,7 @@ void				Gameboy::execInstr(std::uint16_t ai_pos)
 Status Gameboy::run()
 {
     // Exécution de l'opcode à l'adresse de PC
-    mp_cpu->executeOpcode(&m_memory[mp_cpu->getRegisterPC()]);
+    execInstr(mp_cpu->getRegisterPC());
 
     return E_OK;
 }

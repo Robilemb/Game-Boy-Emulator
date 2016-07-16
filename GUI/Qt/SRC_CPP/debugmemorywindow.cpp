@@ -146,12 +146,13 @@ void DebugMemoryWindow::refresh(std::uint16_t ai_idx)
     // Variables loacales
     std::uint8_t        w_nbItems       = ui->tableMemoryWidget->rowCount();
     std::uint8_t        w_memValue      = 0;
+    std::uint16_t       w_idxMemValue   = 0;
     std::uint32_t       w_idxAddress    = 0;
     QTableWidgetItem*   w_curItem;
     QStringList         w_addressList;
 
     // Mise à jour des items
-    for (std::uint8_t w_i = 0; w_i < w_nbItems; w_i++)
+    for (std::uint16_t w_i = 0; w_i < w_nbItems; w_i++)
     {
         // Adresse à afficher
         w_idxAddress = ai_idx + w_i;
@@ -163,7 +164,8 @@ void DebugMemoryWindow::refresh(std::uint16_t ai_idx)
         w_addressList << "0x" + QString::number(w_idxAddress, 16).toUpper();
 
         // Valeur en mémoire à afficher
-        w_memValue = static_cast<MainWindow*>(parent())->getGameBoy()->getMemVal(ai_idx + w_i);
+        w_idxMemValue = ai_idx + w_i;
+        w_memValue = static_cast<MainWindow*>(parent())->getGameBoy()->getMemVal(w_idxMemValue);
 
         // Mise à jour de l'item
         w_curItem = new QTableWidgetItem();

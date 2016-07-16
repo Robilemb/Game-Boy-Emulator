@@ -159,8 +159,7 @@ void Cpu::initRegisters()
     m_registers.s16bits.de  = 0x00D8;
     m_registers.s16bits.hl  = 0x014D;
     m_sp                    = 0xFFFE;
-    //m_pc                    = 0x100;
-    m_pc                    = 0x150;
+    m_pc                    = 0x100;
 }
 
 
@@ -343,7 +342,7 @@ std::string			Cpu::__decodeNop(std::uint8_t ai_id, std::uint8_t* ai_mem, bool ai
 	if (ai_exec)
 	{
 		m_pc = m_pc + 1;
-	}
+    }
 
 	return w_str;
 }
@@ -441,7 +440,7 @@ std::string			Cpu::__decodeJump(std::uint8_t ai_id, std::uint8_t* ai_mem, bool a
 		w_size = 1;
 		break;
 	case 0xC2:
-		w_pos = (ai_mem[1]) * 0x100 + (ai_mem[2]);
+        w_pos = (ai_mem[2]) * 0x100 + (ai_mem[1]);
 		switch (w_mnemo)
 		{
 		case 0:
@@ -465,7 +464,7 @@ std::string			Cpu::__decodeJump(std::uint8_t ai_id, std::uint8_t* ai_mem, bool a
 		w_size = 3;
 		break;
 	case 0xC3:
-		w_pos = (ai_mem[1]) * 0x100 + (ai_mem[2]);
+        w_pos = (ai_mem[2]) * 0x100 + (ai_mem[1]);
 		w_str += std::to_string(w_pos);
 		w_size = 3;
 		break;
@@ -483,7 +482,7 @@ std::string			Cpu::__decodeJump(std::uint8_t ai_id, std::uint8_t* ai_mem, bool a
 		{
 			m_pc += w_size;
 		}
-	}
+    }
 
 	return w_str;
 }
