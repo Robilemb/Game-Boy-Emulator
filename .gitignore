@@ -17,3 +17,8 @@ Thumbs.db
 # Fichiers build QtCreator #
 ############################
 *build-Emulateur*
+
+# Fichiers build Linux #
+############################
+*OBJ*
+*gbterm*
