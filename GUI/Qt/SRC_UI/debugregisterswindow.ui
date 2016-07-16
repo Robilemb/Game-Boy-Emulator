@@ -292,11 +292,11 @@
     </property>
    </widget>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="refreshButton">
    <property name="geometry">
     <rect>
-     <x>160</x>
-     <y>440</y>
+     <x>70</x>
+     <y>439</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -305,11 +305,24 @@
     <string>Rafraîchir</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="closeButton">
+   <property name="geometry">
+    <rect>
+     <x>159</x>
+     <y>439</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Fermer</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton</sender>
+   <sender>refreshButton</sender>
    <signal>clicked()</signal>
    <receiver>DebugRegistersWindow</receiver>
    <slot>refreshDebugRegistersWindow()</slot>
@@ -321,6 +334,22 @@
     <hint type="destinationlabel">
      <x>128</x>
      <y>452</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>closeButton</sender>
+   <signal>clicked()</signal>
+   <receiver>DebugRegistersWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>201</x>
+     <y>442</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>212</x>
+     <y>463</y>
     </hint>
    </hints>
   </connection>

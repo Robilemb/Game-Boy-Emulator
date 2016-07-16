@@ -31,6 +31,16 @@ Cpu* Gameboy::getCpu()
     return mp_cpu;
 }
 
+std::uint8_t		Gameboy::getMemVal(std::uint16_t ai_offset)
+{
+    return m_memory[GB_MEMORY_CARD_BANK_0_OFFSET + ai_offset];
+}
+
+void				Gameboy::setMemVal(std::uint16_t ai_offset, std::uint8_t ai_val)
+{
+    m_memory[GB_MEMORY_CARD_BANK_0_OFFSET + ai_offset] = ai_val;
+}
+
 
 // ********************************************************
 // INITIALISATION DE LA MEMOIRE

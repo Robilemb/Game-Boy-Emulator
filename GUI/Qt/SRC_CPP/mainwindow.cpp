@@ -45,6 +45,7 @@ void MainWindow::openDebugRegistersWindow()
 
 void MainWindow::openDebugMemoryWindow()
 {
+    mp_debugMemoryWindow->refresh(0);
     mp_debugMemoryWindow->show();
     ui->actionMemory->setEnabled(false);
 }
