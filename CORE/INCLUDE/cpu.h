@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cstdint>
 
+#include "mpu.h"
+
 #define CPU_NB_OPCODES_8_BITS   51
 #define CPU_NB_OPCODES_16_BITS  8
 
@@ -62,7 +64,7 @@ class Cpu
 {
 
 public:
-    explicit Cpu();
+    explicit Cpu(Mpu* ai_mpu);
     ~Cpu();
 
     // Accesseur registre A
@@ -129,24 +131,24 @@ public:
     void initRegisters();
 
     // Exécution d'un opcode
-    void 				executeOpcode(std::uint8_t* ai_opcode);
+    void 				executeOpcode(std::uint16_t ai_opcodeIdx);
 
-    std::string			showInstruction(std::uint8_t* ai_mem);
+    std::string			showInstruction(std::uint16_t ai_idx);
 
-    std::uint8_t		showInstructionId(std::uint8_t* ai_mem);
-    std::string			showInstructionIdStr(std::uint8_t* ai_mem);
+    std::uint8_t		showInstructionId(std::uint16_t ai_idx);
+    std::string			showInstructionIdStr(std::uint16_t ai_idx);
 
 private:
     // Décodage d'un opcode
     std::uint8_t 		decodeOpcode(std::uint8_t ai_opcode);
 
-    std::string			decodeInstr(std::uint8_t* ai_mem, bool ai_exec);
+    std::string			decodeInstr(std::uint16_t ai_idx, bool ai_exec);
 
     // LISTE DES INSTRUCTIONS GEREES
     // *****************************
-    std::string			__decodeNop(std::uint8_t ai_id, std::uint8_t* ai_mem, bool ai_exec);
-    std::string			__decodeLoad(std::uint8_t ai_id, std::uint8_t* ai_mem, bool ai_exec);
-    std::string			__decodeJump(std::uint8_t ai_id, std::uint8_t* ai_mem, bool ai_exec);
+    std::string			__decodeNop(bool ai_exec);
+    std::string			__decodeLoad(std::uint16_t ai_idx, bool ai_exec);
+    std::string			__decodeJump(std::uint8_t ai_id, std::uint16_t ai_idx, bool ai_exec);
 
     // Initialisation des masques et identifiants des opcodes
     void initOpcodesDesc();
@@ -157,6 +159,8 @@ private:
     std::uint16_t	m_sp;						// Stack Pointer
 
     sOpcodesDesc    m_opcodesDesc;              // Masque et identifiant des opcodes
+
+    Mpu*            mp_mpu;                     // Pointeur vers la mémoire
 
 };
 
