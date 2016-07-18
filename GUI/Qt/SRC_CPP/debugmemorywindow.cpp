@@ -42,7 +42,7 @@ void DebugMemoryWindow::refreshUpDebugMemoryWindow()
     // Gestion des bords
     if (w_idxAddress - 1 < 0)
     {
-        w_idxAddress = GB_MEMORY_SIZE;
+        w_idxAddress = MPU_MEMORY_SIZE;
     }
     else
     {
@@ -59,7 +59,7 @@ void DebugMemoryWindow::refreshDownDebugMemoryWindow()
     std::int32_t w_idxAddress = getIdxInFirstRow();
 
     // Gestion des bords
-    if (w_idxAddress + 1 > GB_MEMORY_SIZE)
+    if (w_idxAddress + 1 > MPU_MEMORY_SIZE)
     {
         w_idxAddress = 0;
     }
@@ -156,16 +156,16 @@ void DebugMemoryWindow::refresh(std::uint16_t ai_idx)
     {
         // Adresse à afficher
         w_idxAddress = ai_idx + w_i;
-        if (w_idxAddress > GB_MEMORY_SIZE)
+        if (w_idxAddress > MPU_MEMORY_SIZE)
         {
-            w_idxAddress -= (GB_MEMORY_SIZE + 1);
+            w_idxAddress -= (MPU_MEMORY_SIZE + 1);
         }
 
         w_addressList << "0x" + QString::number(w_idxAddress, 16).toUpper();
 
         // Valeur en mémoire à afficher
         w_idxMemValue = ai_idx + w_i;
-        w_memValue = static_cast<MainWindow*>(parent())->getGameBoy()->getMemVal(w_idxMemValue);
+        w_memValue = static_cast<MainWindow*>(parent())->getGameBoy()->getMpu()->getMemVal(w_idxMemValue);
 
         // Mise à jour de l'item
         w_curItem = new QTableWidgetItem();
