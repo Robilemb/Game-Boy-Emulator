@@ -148,7 +148,7 @@ private:
     // *****************************
     std::string			__decodeNop(bool ai_exec);
     std::string			__decodeLoad8bits(std::uint16_t ai_idx, bool ai_exec);
-    std::string			__decodeLoad16bits(std::uint16_t ai_idx, bool ai_exec);
+    std::string			__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, bool ai_exec);
     std::string			__decodeJump(std::uint8_t ai_id, std::uint16_t ai_idx, bool ai_exec);
 
     // Initialisation des masques et identifiants des opcodes

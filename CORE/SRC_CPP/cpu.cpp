@@ -322,7 +322,8 @@ std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
         	break;
 
         case 0x08:  // LD (N),SP
-            w_str = __decodeLoad16bits(ai_idx, ai_exec);
+        case 0x01:  // LD R,N
+            w_str = __decodeLoad16bits(w_id, ai_idx, ai_exec);
             break;
 
         case 0xC2:  // JP F,N
@@ -438,31 +439,69 @@ std::string			Cpu::__decodeLoad8bits(std::uint16_t ai_idx, bool ai_exec)
     return w_str;
 }
 
-std::string			Cpu::__decodeLoad16bits(std::uint16_t ai_idx, bool ai_exec)
+std::string			Cpu::__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, bool ai_exec)
 {
     // Variable locale
     std::string		w_str;
-    std::string		w_sReg;
     std::uint16_t 	w_data16bits        = 0;
     std::uint16_t*	wp_register16bits   = NULL;
-
-    w_sReg  = "SP";
-    wp_register16bits = &m_sp;
+    std::uint8_t    w_register          = 0;
 
     // Récupération de la valeur à charger dans le registre
     w_data16bits = (mp_mpu->getMemVal(ai_idx + 2) * 0x100) + mp_mpu->getMemVal(ai_idx + 1);
 
-    w_str = "LOAD (" + std::to_string(w_data16bits) + ")," + w_sReg;
+    w_str = "LOAD ";
+
+    // Récupération du registre à charger
+    if (ai_id == 0x08)
+    {
+        wp_register16bits = &m_sp;
+        w_str += "(" + std::to_string(w_data16bits) + "),SP";
+    }
+    else
+    {
+        // On récupère l'indice du registre à utiliser
+        w_register = ( mp_mpu->getMemVal(ai_idx) & 0x30 ) >> 4;
+
+        if (w_register == 0)
+        {
+            wp_register16bits = &m_registers.s16bits.bc;
+            w_str += "BC," + std::to_string(w_data16bits);
+        }
+        else if (w_register == 1)
+        {
+            wp_register16bits = &m_registers.s16bits.de;
+            w_str += "DE," + std::to_string(w_data16bits);
+        }
+        else if (w_register == 2)
+        {
+            wp_register16bits = &m_registers.s16bits.hl;
+            w_str += "HL," + std::to_string(w_data16bits);
+        }
+        else if (w_register == 3)
+        {
+            wp_register16bits = &m_sp;
+            w_str += "SP," + std::to_string(w_data16bits);
+        }
+    }
 
     // EXECUTION DE L'INSTRUCTION
     // **************************
     if (ai_exec && (wp_register16bits != NULL))
     {
-        // On stocke le LSW de la valeur du registre à l'adresse fournie en donnée
-        mp_mpu->setMemVal(w_data16bits, ((*wp_register16bits)&0x00FF));
+        if (ai_id == 0x08)
+        {
+            // On stocke le LSW de la valeur du registre à l'adresse fournie en donnée
+            mp_mpu->setMemVal(w_data16bits, ((*wp_register16bits)&0x00FF));
 
-        // On stocke le MSW de la valeur du registre à l'adresse fournie en donnée + 1
-        mp_mpu->setMemVal(w_data16bits+1, (((*wp_register16bits)>>2)&0x00FF));
+            // On stocke le MSW de la valeur du registre à l'adresse fournie en donnée + 1
+            mp_mpu->setMemVal(w_data16bits+1, (((*wp_register16bits)>>8)&0x00FF));
+        }
+        else
+        {
+            // On stocke la valeur dans le registre
+            *wp_register16bits = w_data16bits;
+        }
 
         // Mise à jour de PC
         m_pc += 3;
