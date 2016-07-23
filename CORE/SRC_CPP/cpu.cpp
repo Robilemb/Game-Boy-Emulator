@@ -318,7 +318,8 @@ std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
             break;
 
         case 0x06:  // LD D,N
-            w_str = __decodeLoad8bits(ai_idx, ai_exec);
+        case 0x02:  // LD (R),A
+            w_str = __decodeLoad8bits(w_id, ai_idx, ai_exec);
         	break;
 
         case 0x08:  // LD (N),SP
@@ -355,7 +356,7 @@ std::string			Cpu::__decodeNop(bool ai_exec)
 	return w_str;
 }
 
-std::string			Cpu::__decodeLoad8bits(std::uint16_t ai_idx, bool ai_exec)
+std::string			Cpu::__decodeLoad8bits(std::uint8_t w_id, std::uint16_t ai_idx, bool ai_exec)
 {
     // Variable locale
     std::string		w_str;
@@ -367,73 +368,105 @@ std::string			Cpu::__decodeLoad8bits(std::uint16_t ai_idx, bool ai_exec)
 
     w_str = "LOAD ";
 
-    // Récupération du registre
-    w_register = ( mp_mpu->getMemVal(ai_idx) & 0x38 ) >> 3;
+    if (w_id == 0x06)    // LD D,N
+    {
+        // Récupération du registre
+        w_register = ( mp_mpu->getMemVal(ai_idx) & 0x38 ) >> 3;
 
-    // Récupération de la valeur à charger dans le registre
-    w_data8bits = mp_mpu->getMemVal(ai_idx + 1);
+        // Récupération de la valeur à charger dans le registre
+        w_data8bits = mp_mpu->getMemVal(ai_idx + 1);
 
-    // Chargement de la valeur dans le registre
-    if (w_register == 0)
-    {
-        wp_register8bits = &m_registers.s8bits.b;
-    	w_sReg = "B";
-    }
-    else if (w_register == 1)
-    {
-        wp_register8bits = &m_registers.s8bits.c;
-    	w_sReg = "C";
-    }
-    else if (w_register == 2)
-	{
-        wp_register8bits = &m_registers.s8bits.d;
-    	w_sReg = "D";
-	}
-    else if (w_register == 3)
-    {
-        wp_register8bits = &m_registers.s8bits.e;
-    	w_sReg = "E";
-    }
-    else if (w_register == 4)
-    {
-        wp_register8bits = &m_registers.s8bits.h;
-    	w_sReg = "H";
-    }
-    else if (w_register == 5)
-    {
-        wp_register8bits = &m_registers.s8bits.l;
-    	w_sReg = "L";
-    }
-    else if (w_register == 6)
-    {
-        wp_register16bits = &m_registers.s16bits.hl;
-        w_sReg = "(HL)";
-    }
-    else if (w_register == 7)
-    {
-        wp_register8bits = &m_registers.s8bits.a;
-    	w_sReg = "A";
-    }
+        // Chargement de la valeur dans le registre
+        if (w_register == 0)
+        {
+            wp_register8bits = &m_registers.s8bits.b;
+            w_sReg = "B";
+        }
+        else if (w_register == 1)
+        {
+            wp_register8bits = &m_registers.s8bits.c;
+            w_sReg = "C";
+        }
+        else if (w_register == 2)
+        {
+            wp_register8bits = &m_registers.s8bits.d;
+            w_sReg = "D";
+        }
+        else if (w_register == 3)
+        {
+            wp_register8bits = &m_registers.s8bits.e;
+            w_sReg = "E";
+        }
+        else if (w_register == 4)
+        {
+            wp_register8bits = &m_registers.s8bits.h;
+            w_sReg = "H";
+        }
+        else if (w_register == 5)
+        {
+            wp_register8bits = &m_registers.s8bits.l;
+            w_sReg = "L";
+        }
+        else if (w_register == 6)
+        {
+            wp_register16bits = &m_registers.s16bits.hl;
+            w_sReg = "(HL)";
+        }
+        else if (w_register == 7)
+        {
+            wp_register8bits = &m_registers.s8bits.a;
+            w_sReg = "A";
+        }
 
-    w_str = "LOAD " + w_sReg + "," + std::to_string(w_data8bits);
+        w_str = "LOAD " + w_sReg + "," + std::to_string(w_data8bits);
+    }
+    else if (w_id == 0x02)   // LD (R),A
+    {
+        // Récupération du registre
+        w_register = mp_mpu->getMemVal(ai_idx) >> 4;
+
+        if (w_register == 0)
+        {
+            wp_register16bits = &m_registers.s16bits.bc;
+            w_sReg = "(BC)";
+        }
+        else if (w_register == 1)
+        {
+            wp_register16bits = &m_registers.s16bits.de;
+            w_sReg = "(DE)";
+        }
+
+        w_str = "LOAD " + w_sReg + ",A";
+    }
 
     // EXECUTION DE L'INSTRUCTION
     // **************************
     if (ai_exec && (wp_register8bits != NULL || wp_register16bits != NULL))
     {
-        if (w_register == 6)
+        if (w_id == 0x06)    // LD D,N
         {
-            // On stocke la valeur en mémoire à l'adresse contenue par HL
-            mp_mpu->setMemVal(*wp_register16bits, w_data8bits);
-        }
-        else
-        {
-            // Mise à jour de la valeur du registre
-            *wp_register8bits = w_data8bits;
-        }
+            if (w_register == 6)
+            {
+                // On stocke la valeur en mémoire à l'adresse contenue par HL
+                mp_mpu->setMemVal(*wp_register16bits, w_data8bits);
+            }
+            else
+            {
+                // Mise à jour de la valeur du registre
+                *wp_register8bits = w_data8bits;
+            }
 
-    	// Mise à jour de PC
-        m_pc += 2;
+            // Mise à jour de PC
+            m_pc += 2;
+        }
+        else if (w_id == 0x02)  // LD (R),A
+        {
+            // On stocke le contenu du registre A en mémoire à l'adresse contenue par wp_register16bits
+            mp_mpu->setMemVal(*wp_register16bits, m_registers.s8bits.a);
+
+            // Mise à jour de PC
+            m_pc += 1;
+        }
     }
 
     return w_str;
