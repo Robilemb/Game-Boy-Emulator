@@ -320,6 +320,10 @@ std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
         case 0x06:  // LD D,N
         case 0x02:  // LD (R),A
         case 0x0A:  // LD A,(R)
+        case 0x22:  // LDI (HL),A
+        case 0x2A:  // LDI A,(HL)
+        case 0x32:  // LDD (HL),A
+        case 0x3A:  // LDD A,(HL)
             w_str = __decodeLoad8bits(w_id, ai_idx, ai_exec);
         	break;
 
@@ -457,6 +461,31 @@ std::string			Cpu::__decodeLoad8bits(std::uint8_t w_id, std::uint16_t ai_idx, bo
 
         w_str = "LOAD A," + w_sReg;
     }
+    else if (w_id == 0x22)  // LDI (HL),A
+    {
+        wp_register16bits = &m_registers.s16bits.hl;
+        w_sReg = "(HL)";
+        w_str = "LOADI " + w_sReg + ",A";
+    }
+    else if (w_id == 0x2A)  // LDI A,(HL)
+    {
+        wp_register16bits = &m_registers.s16bits.hl;
+        w_sReg = "(HL)";
+        w_str = "LOADI A," + w_sReg;
+    }
+    else if (w_id == 0x32)  // LDD (HL),A
+    {
+        wp_register16bits = &m_registers.s16bits.hl;
+        w_sReg = "(HL)";
+        w_str = "LOADD " + w_sReg + ",A";
+    }
+    else if (w_id == 0x3A)  // LDD A,(HL)
+    {
+        wp_register16bits = &m_registers.s16bits.hl;
+        w_sReg = "(HL)";
+        w_str = "LOADD A," + w_sReg;
+    }
+
 
     // EXECUTION DE L'INSTRUCTION
     // **************************
@@ -490,6 +519,50 @@ std::string			Cpu::__decodeLoad8bits(std::uint8_t w_id, std::uint16_t ai_idx, bo
         {
             // On stocke le contenu de la mémoire à l'adresse contenue par wp_register16bits dans A
             m_registers.s8bits.a = mp_mpu->getMemVal(*wp_register16bits);
+
+            // Mise à jour de PC
+            m_pc += 1;
+        }
+        else if (w_id == 0x22)  // LDI (HL),A
+        {
+            // On stocke le contenu du registre A en mémoire à l'adresse contenue par HL
+            mp_mpu->setMemVal(*wp_register16bits, m_registers.s8bits.a);
+
+            // On incrémente HL
+            *wp_register16bits += 1;
+
+            // Mise à jour de PC
+            m_pc += 1;
+        }
+        else if (w_id == 0x2A)  // LDI A,(HL)
+        {
+            // On stocke le contenu de la mémoire à l'adresse contenue par wp_register16bits dans A
+            m_registers.s8bits.a = mp_mpu->getMemVal(*wp_register16bits);
+
+            // On incrémente HL
+            *wp_register16bits += 1;
+
+            // Mise à jour de PC
+            m_pc += 1;
+        }
+        else if (w_id == 0x32)  // LDD (HL),A
+        {
+            // On stocke le contenu du registre A en mémoire à l'adresse contenue par HL
+            mp_mpu->setMemVal(*wp_register16bits, m_registers.s8bits.a);
+
+            // On décrémente HL
+            *wp_register16bits -= 1;
+
+            // Mise à jour de PC
+            m_pc += 1;
+        }
+        else if (w_id == 0x3A)  // LDD A,(HL)
+        {
+            // On stocke le contenu de la mémoire à l'adresse contenue par wp_register16bits dans A
+            m_registers.s8bits.a = mp_mpu->getMemVal(*wp_register16bits);
+
+            // On décrémente HL
+            *wp_register16bits -= 1;
 
             // Mise à jour de PC
             m_pc += 1;
