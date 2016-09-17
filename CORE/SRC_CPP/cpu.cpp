@@ -327,6 +327,8 @@ std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
         case 0x40:  // LD D,D
         case 0xE0:  // LD (FF00+N),A
         case 0xF0:  // LD A,(FF00+N)
+        case 0xE2:  // LD (C),A
+        case 0xF2:  // LD A,(C)
             w_str = __decodeLoad8bits(w_id, ai_idx, ai_exec);
             break;
 
@@ -365,7 +367,7 @@ std::string			Cpu::__decodeNop(bool ai_exec)
     return w_str;
 }
 
-std::string			Cpu::__decodeLoad8bits(std::uint8_t w_id, std::uint16_t ai_idx, bool ai_exec)
+std::string			Cpu::__decodeLoad8bits(std::uint8_t ai_id, std::uint16_t ai_idx, bool ai_exec)
 {
     // Variable locale
     std::string		w_str;
@@ -377,6 +379,26 @@ std::string			Cpu::__decodeLoad8bits(std::uint8_t w_id, std::uint16_t ai_idx, bo
     std::uint8_t*	wp_register8bits2   = NULL;
     std::uint16_t*	wp_register16bits   = NULL;
     std::uint16_t*	wp_register16bits2  = NULL;
+    std::uint8_t    w_id                = 0;
+
+
+    // Récupération de l'id de l'opcode
+    w_id = ai_id;
+
+
+    // Gestion de l'opcodes 0XE2 (LD (C),A)
+    if (w_id == 0xE2)
+    {
+        // Réalise la même opération que 0xE0 (LD (FF00+N),A)
+        w_id = 0xE0;
+    }
+
+    // Gestion de l'opcode 0xF2 (LD A,(C))
+    if (w_id == 0xF2)
+    {
+        // Réalise la même opération que 0xF0 (LD A,(FF00+N))
+        w_id = 0xF0;
+    }
 
 
     if (w_id == 0x06)    // LD D,N
