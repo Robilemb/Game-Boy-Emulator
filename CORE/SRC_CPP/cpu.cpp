@@ -329,6 +329,7 @@ std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
         case 0xF0:  // LD A,(FF00+N)
         case 0xE2:  // LD (C),A
         case 0xF2:  // LD A,(C)
+        case 0xEA:  // LD (N),A
             w_str = __decodeLoad8bits(w_id, ai_idx, ai_exec);
             break;
 
@@ -374,6 +375,7 @@ std::string			Cpu::__decodeLoad8bits(std::uint8_t ai_id, std::uint16_t ai_idx, b
     std::string		w_sReg;
     std::string		w_sReg2;
     std::uint8_t 	w_data8bits         = 0;
+    std::uint16_t   w_data16bits        = 0;
     std::uint8_t 	w_register          = 0;
     std::uint8_t*	wp_register8bits    = NULL;
     std::uint8_t*	wp_register8bits2   = NULL;
@@ -625,6 +627,16 @@ std::string			Cpu::__decodeLoad8bits(std::uint8_t ai_id, std::uint16_t ai_idx, b
 
         w_str = "LOAD A,($FF00+" + std::to_string(w_data8bits) + ")";
     }
+    else if (w_id == 0xEA)  // LD (N),A
+    {
+        // Récupération de l'adresse d'écriture
+        w_data16bits = (mp_mpu->getMemVal(ai_idx + 2) * 0x100) + mp_mpu->getMemVal(ai_idx + 1);
+
+        // Registre 8 bits à utiliser
+        wp_register8bits = &m_registers.s8bits.a;
+
+        w_str = "LOAD (" + std::to_string(w_data16bits) + "),A";
+    }
 
 
     // EXECUTION DE L'INSTRUCTION
@@ -743,6 +755,14 @@ std::string			Cpu::__decodeLoad8bits(std::uint8_t ai_id, std::uint16_t ai_idx, b
 
             // Mise à jour de PC
             m_pc += 2;
+        }
+        else if (w_id == 0xEA)  // LD (N),A
+        {
+            // On stocke le contenu de A à l'adresse mémoire (N)
+            mp_mpu->setMemVal(w_data16bits, *wp_register8bits);
+
+            // Mise à jour de PC
+            m_pc += 3;
         }
     }
 
