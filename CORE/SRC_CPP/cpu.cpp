@@ -262,36 +262,36 @@ std::uint8_t Cpu::decodeOpcode(std::uint8_t ai_opcode)
 
 std::string			Cpu::showInstruction(std::uint16_t ai_idx)
 {
-	std::string		w_str = "";
+    std::string		w_str = "";
 
     w_str = decodeInstr(mp_mpu->getMemVal(ai_idx), false);
 
-	return w_str;
+    return w_str;
 }
 
 std::uint8_t		Cpu::showInstructionId(std::uint16_t ai_idx)
 {
     std::uint8_t 	w_id = decodeOpcode(mp_mpu->getMemVal(ai_idx));
 
-	return w_id;
+    return w_id;
 }
 
 std::string			Cpu::showInstructionIdStr(std::uint16_t ai_idx)
 {
-	std::string		w_str = "";
+    std::string		w_str = "";
 
     std::uint8_t 	w_id = decodeOpcode(mp_mpu->getMemVal(ai_idx));
 
-	for(std::uint16_t w_i = 0; w_i < CPU_NB_OPCODES_8_BITS; w_i++)
-	{
-		if (w_id == m_opcodesDesc.id8bits[w_i])
-		{
-			w_str = m_opcodesDesc.instr8bits[w_i];
-			break;
-		}
-	}
+    for(std::uint16_t w_i = 0; w_i < CPU_NB_OPCODES_8_BITS; w_i++)
+    {
+        if (w_id == m_opcodesDesc.id8bits[w_i])
+        {
+            w_str = m_opcodesDesc.instr8bits[w_i];
+            break;
+        }
+    }
 
-	return w_str;
+    return w_str;
 }
 
 // ********************************************************
@@ -305,7 +305,7 @@ void Cpu::executeOpcode(std::uint16_t ai_opcodeIdx)
 
 std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
 {
-	std::string		w_str = "";
+    std::string		w_str = "";
 
     // On récupère l'ID de l'opcode à executer
     std::uint8_t 	w_id = decodeOpcode(mp_mpu->getMemVal(ai_idx));
@@ -325,8 +325,9 @@ std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
         case 0x32:  // LDD (HL),A
         case 0x3A:  // LDD A,(HL)
         case 0x40:  // LD D,D
+        case 0xE0:  // LD (FF00+N),A
             w_str = __decodeLoad8bits(w_id, ai_idx, ai_exec);
-        	break;
+            break;
 
         case 0x08:  // LD (N),SP
         case 0x01:  // LD R,N
@@ -338,7 +339,7 @@ std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
         case 0xC3:  // JP N
         case 0xE9:  // JP HL
             w_str = __decodeJump(w_id, ai_idx, ai_exec);
-        	break;
+            break;
 
         default:
             // Mise à jour de PC
@@ -351,16 +352,16 @@ std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
 
 std::string			Cpu::__decodeNop(bool ai_exec)
 {
-	std::string		w_str = "";
+    std::string		w_str = "";
 
-	w_str = "NOP";
+    w_str = "NOP";
 
-	if (ai_exec)
-	{
-		m_pc = m_pc + 1;
+    if (ai_exec)
+    {
+        m_pc = m_pc + 1;
     }
 
-	return w_str;
+    return w_str;
 }
 
 std::string			Cpu::__decodeLoad8bits(std::uint8_t w_id, std::uint16_t ai_idx, bool ai_exec)
@@ -582,6 +583,16 @@ std::string			Cpu::__decodeLoad8bits(std::uint8_t w_id, std::uint16_t ai_idx, bo
 
         w_str = "LOAD " + w_sReg +"," + w_sReg2;
     }
+    else if (w_id == 0xE0)   // LD (FF00+N),A
+    {
+        // Récupération de l'offset N
+        w_data8bits = mp_mpu->getMemVal(ai_idx + 1);
+
+        // Registre 8 bits à utiliser
+        wp_register8bits = &m_registers.s8bits.a;
+
+        w_str = "LOAD ($FF00+" + std::to_string(w_data8bits) + "),A";
+    }
 
 
 
@@ -685,6 +696,14 @@ std::string			Cpu::__decodeLoad8bits(std::uint8_t w_id, std::uint16_t ai_idx, bo
 
             // Mise à jour de PC
             m_pc += 1;
+        }
+        else if (w_id == 0xE0)   // LD (FF00+N),A
+        {
+            // On stocke le contenu du registre A dans la mémoire à l'adresse $FF00+N
+            mp_mpu->setMemVal((0xFF00 + w_data8bits), *wp_register8bits);
+
+            // Mise à jour de PC
+            m_pc += 2;
         }
 
     }
@@ -811,67 +830,67 @@ std::string			Cpu::__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, 
 
 std::string			Cpu::__decodeJump(std::uint8_t ai_id, std::uint16_t ai_idx, bool ai_exec)
 {
-	std::string		w_str = "JP ";
-	std::uint16_t	w_pos = 0;
-	std::uint8_t	w_mnemo = 0;
-	bool			w_test = true;
-	std::uint8_t	w_size = 1;
+    std::string		w_str = "JP ";
+    std::uint16_t	w_pos = 0;
+    std::uint8_t	w_mnemo = 0;
+    bool			w_test = true;
+    std::uint8_t	w_size = 1;
 
-	// DECODAGE DE LA COMMANDE JUMP
-	// ****************************
+    // DECODAGE DE LA COMMANDE JUMP
+    // ****************************
     w_mnemo = (mp_mpu->getMemVal(ai_idx) & 0x18) >> 3;
 
-	switch(ai_id)
-	{
+    switch(ai_id)
+    {
     case 0xE9:  // JP HL
-		w_pos = getRegisterHL();
-		w_str += "HL";
-		w_size = 1;
-		break;
+        w_pos = getRegisterHL();
+        w_str += "HL";
+        w_size = 1;
+        break;
     case 0xC2:  // JP F,N
         w_pos = (mp_mpu->getMemVal(ai_idx + 2) * 0x100) + mp_mpu->getMemVal(ai_idx + 1);
-		switch (w_mnemo)
-		{
-		case 0:
-			w_str += "NZ,";
-			w_test = (getFlagZ() == 0);
-			break;
-		case 1:
-			w_str += "Z,";
-			w_test = (getFlagZ() == 1);
-			break;
-		case 2:
-			w_str += "NC,";
-			w_test = (getFlagC() == 0);
-			break;
-		case 3:
-			w_str += "C,";
-			w_test = (getFlagC() == 1);
-			break;
-		}
-		w_str += std::to_string(w_pos);
-		w_size = 3;
-		break;
+        switch (w_mnemo)
+        {
+        case 0:
+            w_str += "NZ,";
+            w_test = (getFlagZ() == 0);
+            break;
+        case 1:
+            w_str += "Z,";
+            w_test = (getFlagZ() == 1);
+            break;
+        case 2:
+            w_str += "NC,";
+            w_test = (getFlagC() == 0);
+            break;
+        case 3:
+            w_str += "C,";
+            w_test = (getFlagC() == 1);
+            break;
+        }
+        w_str += std::to_string(w_pos);
+        w_size = 3;
+        break;
     case 0xC3:  // JP N
         w_pos = (mp_mpu->getMemVal(ai_idx + 2) * 0x100) + mp_mpu->getMemVal(ai_idx + 1);
-		w_str += std::to_string(w_pos);
-		w_size = 3;
-		break;
-	}
-
-	// EXECUTION DE LA COMMANDE
-	// ************************
-	if (ai_exec)
-	{
-		if (w_test)
-		{
-			m_pc = w_pos;
-		}
-		else
-		{
-			m_pc += w_size;
-		}
+        w_str += std::to_string(w_pos);
+        w_size = 3;
+        break;
     }
 
-	return w_str;
+    // EXECUTION DE LA COMMANDE
+    // ************************
+    if (ai_exec)
+    {
+        if (w_test)
+        {
+            m_pc = w_pos;
+        }
+        else
+        {
+            m_pc += w_size;
+        }
+    }
+
+    return w_str;
 }
