@@ -336,7 +336,8 @@ std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
 
         case 0x08:  // LD (N),SP
         case 0x01:  // LD R,N
-        case 0xF8 : // LD HL,SP+N
+        case 0xF8:  // LD HL,SP+N
+        case 0xF9:  // LD SP,HL
             w_str = __decodeLoad16bits(w_id, ai_idx, ai_exec);
             break;
 
@@ -796,11 +797,15 @@ std::string			Cpu::__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, 
     std::uint16_t 	w_data16bits        = 0;
     std::uint16_t*	wp_register16bits   = NULL;
     std::uint8_t    w_register          = 0;
+    std::uint8_t    w_id                = 0;
+
+    // Récupération de l'id de l'opcode
+    w_id = ai_id;
 
     w_str = "LOAD ";
 
     // Récupération du registre à charger
-    if (ai_id == 0x08)
+    if (w_id == 0x08)
     {
         // Récupération de la valeur à charger dans le registre
         w_data16bits = (mp_mpu->getMemVal(ai_idx + 2) * 0x100) + mp_mpu->getMemVal(ai_idx + 1);
@@ -808,12 +813,16 @@ std::string			Cpu::__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, 
         wp_register16bits = &m_sp;
         w_str += "(" + std::to_string(w_data16bits) + "),SP";
     }
-    else if (ai_id == 0xF8)
+    else if (w_id == 0xF8)
     {
         // Récupération de la valeur 8 bits signés
         w_data8bits = (mp_mpu->getMemVal(ai_idx + 1));
 
         w_str += "HL,SP+" + std::to_string(w_data8bits);
+    }
+    else if (w_id == 0xF9)
+    {
+        w_str += "SP,HL";
     }
     else
     {
@@ -849,7 +858,7 @@ std::string			Cpu::__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, 
     // **************************
     if (ai_exec) // && (wp_register16bits != NULL)
     {
-        if (ai_id == 0x08)
+        if (w_id == 0x08)
         {
             // On stocke le LSW de la valeur du registre à l'adresse fournie en donnée
             mp_mpu->setMemVal(w_data16bits, ((*wp_register16bits)&0x00FF));
@@ -860,7 +869,7 @@ std::string			Cpu::__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, 
             // Mise à jour de PC
             m_pc += 3;
         }
-        else if (ai_id == 0xF8)
+        else if (w_id == 0xF8)
         {
             // On stocke dans HL le résultat de l'addition de SP par la valeur 8 bits fournie
             m_registers.s16bits.hl = m_sp + w_data8bits;
@@ -891,6 +900,14 @@ std::string			Cpu::__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, 
 
             // Mise à jour de PC
             m_pc += 2;
+        }
+        else if (w_id == 0xF9)
+        {
+            // On stocke le contenu de HL dans SP
+            m_sp = m_registers.s16bits.hl;
+
+            // Mise à jour de PC
+            m_pc += 1;
         }
         else
         {
