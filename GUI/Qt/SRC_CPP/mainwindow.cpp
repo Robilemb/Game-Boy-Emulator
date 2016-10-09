@@ -58,7 +58,7 @@ void MainWindow::closeEvent(QCloseEvent*)
 void MainWindow::selectROMFileName()
 {
     // Variable locale
-    Status w_status = E_UNDEFINED;
+    te_status w_status = E_UNDEFINED;
 
     // Selection de la ROM
     QString w_ROMFileName = QFileDialog::getOpenFileName(this,
@@ -82,8 +82,8 @@ void MainWindow::selectROMFileName()
         // Exécution de la ROM
         if (w_status == E_OK)
         {
-            // Exécution de la ROM à partir de 0x150 jusqu'à 0x17A
-            while(mp_gameboy->getCpu()->getRegisterPC() < 0x17A)
+            // Exécution de la ROM à partir de 0x150 jusqu'à 0x1000
+            while(mp_gameboy->getCpu()->getRegisterPC() < 0x1000)
             {
                 mp_gameboy->run();
             }

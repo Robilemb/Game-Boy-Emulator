@@ -178,7 +178,7 @@ void DebugMemoryWindow::refresh(std::uint16_t ai_idx)
     ui->tableMemoryWidget->setVerticalHeaderLabels(w_addressList);
 }
 
-std::uint16_t DebugMemoryWindow::getIdxInFirstRow()
+std::uint16_t DebugMemoryWindow::getIdxInFirstRow() const
 {
     // Variables locales
     QString             w_strIdxAddress;

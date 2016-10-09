@@ -28,7 +28,7 @@ private slots:
 
 private:
     void reject();
-    std::uint16_t getIdxInFirstRow();
+    std::uint16_t getIdxInFirstRow() const;
 
 private:
     Ui::DebugMemoryWindow *ui;

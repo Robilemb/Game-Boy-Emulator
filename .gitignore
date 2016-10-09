@@ -1,4 +1,4 @@
-# Fichiers générés par l'OS #
+﻿# Fichiers générés par l'OS #
 #############################
 .DS_Store
 .DS_Store?
@@ -22,3 +22,9 @@ Thumbs.db
 ############################
 *OBJ*
 *gbterm*
+
+# Fichiers projet Code Blocks #
+###############################
+
+*.cbp
+*.layout

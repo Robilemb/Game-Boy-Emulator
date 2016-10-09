@@ -19,7 +19,7 @@ Mpu::~Mpu()
 // ACCESSEURS
 // ********************************************************
 
-std::uint8_t Mpu::getMemVal(std::uint16_t ai_offset)
+std::uint8_t Mpu::getMemVal(std::uint16_t ai_offset) const
 {
     return m_memory[ai_offset];
 }

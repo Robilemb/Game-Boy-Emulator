@@ -25,12 +25,12 @@ Gameboy::~Gameboy()
 // ACCESSEURS
 // ********************************************************
 
-Cpu* Gameboy::getCpu()
+const Cpu *Gameboy::getCpu() const
 {
     return mp_cpu;
 }
 
-Mpu* Gameboy::getMpu()
+const Mpu *Gameboy::getMpu() const
 {
     return mp_mpu;
 }
@@ -40,7 +40,7 @@ Mpu* Gameboy::getMpu()
 // CHARGEMENT DE LA ROM EN MEMOIRE
 // ********************************************************
 
-Status Gameboy::loadROM(std::string ai_ROMFileName)
+te_status Gameboy::loadROM(std::string ai_ROMFileName)
 {
     // Variables locales
     char 				w_caractere;
@@ -82,7 +82,7 @@ Status Gameboy::loadROM(std::string ai_ROMFileName)
 // AFFICHAGE DE LA ROM
 // ********************************************************
 
-void Gameboy::printROMBank0()
+void Gameboy::printROMBank0() const
 {
     // Affichage de la ROM BANK 0
     for (std::uint16_t w_k = 0; w_k < MPU_MEMORY_CARD_MBC_0_SIZE; w_k++)
@@ -92,12 +92,12 @@ void Gameboy::printROMBank0()
     std::cout << std::endl;
 }
 
-std::uint32_t		Gameboy::getRomSize()
+std::uint32_t		Gameboy::getRomSize() const
 {
 	return m_romSize;
 }
 
-std::string			Gameboy::showInstr(std::uint16_t ai_pos)
+std::string			Gameboy::showInstr(std::uint16_t ai_pos) const
 {
     return mp_cpu->showInstruction(ai_pos);
 }
@@ -112,7 +112,7 @@ void    Gameboy::execInstr(std::uint16_t ai_pos)
     mp_cpu->executeOpcode(ai_pos);
 }
 
-Status Gameboy::run()
+te_status Gameboy::run()
 {
     // Exécution de l'opcode à l'adresse de PC
     execInstr(mp_cpu->getRegisterPC());
