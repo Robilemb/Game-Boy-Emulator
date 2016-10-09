@@ -262,7 +262,7 @@ std::uint8_t Cpu::decodeOpcode(std::uint8_t ai_opcode) const
 
 std::string			Cpu::showInstruction(std::uint16_t ai_idx) const
 {
-    return decodeInstr(ai_idx, true);
+    return decodeInstr(ai_idx);
 }
 
 std::uint8_t		Cpu::showInstructionId(std::uint16_t ai_idx) const
@@ -307,7 +307,7 @@ std::string         Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec) const {
     // Appel à la fonction non const decodeInstr qui avec le second paramètre false
     // ne modifie aucune donnée interne à la classe, ce qui permet de rester en dehors
     // des cas à comportement indéterminé.
-    return const_cast<Cpu*>(this)->decodeInstr(mp_mpu->getMemVal(ai_idx), false);
+    return const_cast<Cpu*>(this)->decodeInstr(ai_idx, false);
 }
 
 std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
