@@ -143,7 +143,7 @@ std::uint16_t Cpu::getRegisterSP() const
 }
 
 // Accesseur structure registres
-te_registers Cpu::getRegisters() const
+tu_registers Cpu::getRegisters() const
 {
     return m_registers;
 }

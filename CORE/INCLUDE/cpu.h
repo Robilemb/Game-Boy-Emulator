@@ -12,7 +12,7 @@
 /*! \brief	Union codant les différents registres de la gameboy
  *
  */
-union te_registers
+union tu_registers
 {
     // Modélisation du registre F (flags)
     struct ts_Flags
@@ -125,7 +125,7 @@ public:
     std::uint16_t getRegisterSP() const;
 
     // Accesseur structure registres
-    te_registers getRegisters() const;
+    tu_registers getRegisters() const;
 
     // Initialisation des registres
     void initRegisters();
@@ -160,7 +160,7 @@ private:
     void initOpcodesDesc();
 
 private:
-    te_registers 	m_registers;				// Registres 8-16 bits
+    tu_registers 	m_registers;				// Registres 8-16 bits
     std::uint16_t	m_pc;						// Program Counter
     std::uint16_t	m_sp;						// Stack Pointer
 
