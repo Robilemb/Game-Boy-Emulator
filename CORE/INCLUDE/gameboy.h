@@ -9,7 +9,7 @@
 #include "mpu.h"
 
 // Enum des status de fonction
-enum Status
+enum te_status
 {
     E_UNDEFINED = 0,
     E_OK,
@@ -23,24 +23,24 @@ public:
     ~Gameboy();
 
     // Accesseur sur le CPU
-    Cpu* getCpu();
+    Cpu const * getCpu() const;
 
     // Accesseur sur la MPU
-    Mpu* getMpu();
+    Mpu const * getMpu() const;
 
     // Chargement de la ROM en mémoire
-    Status loadROM(std::string ai_ROMFileName);
+    te_status loadROM(std::string ai_ROMFileName);
 
     // Affichage de la ROM BANK 0
-    void printROMBank0();
+    void printROMBank0() const;
 
     // Exécution de l'émulation
-    Status run();
+    te_status run();
 
 public:
-    std::uint32_t		getRomSize();
+    std::uint32_t		getRomSize() const;
 
-    std::string			showInstr(std::uint16_t ai_pos);
+    std::string			showInstr(std::uint16_t ai_pos) const;
     void				execInstr(std::uint16_t ai_pos);
 
 private:

@@ -116,7 +116,7 @@ bool		_command_help(std::vector<std::string>& ai_vInput)
 // ********************************
 bool		_command_load(std::vector<std::string>& ai_vInput, Gameboy& ai_gb)
 {
-	Status				w_status = E_ERROR;
+	te_status			w_status = E_ERROR;
 	std::string			w_sRomName = "";
 
 	if (ai_vInput.size() > 1)
@@ -140,7 +140,7 @@ bool		_command_load(std::vector<std::string>& ai_vInput, Gameboy& ai_gb)
 
 // COMMANDE D'AFFICHAGE D'INFORMATION (ROM / REGISTRES / INSTRUCTIONS / ...)
 // *************************************************************************
-bool		_command_disp(std::vector<std::string>& ai_vInput, Gameboy& ai_gb)
+bool		_command_disp(std::vector<std::string>& ai_vInput, Gameboy const& ai_gb)
 {
 	std::uint8_t		w_disp = 0;
 	std::uint16_t		w_start = 0;
@@ -236,7 +236,7 @@ bool		_command_quit(std::vector<std::string>& ai_vInput)
 
 // FONCTION D'AFFICHAGE DE LA ROM
 // ******************************
-void		_display_rom(Gameboy& ai_gb, std::uint16_t ai_start, std::uint16_t ai_stop)
+void		_display_rom(Gameboy const & ai_gb, std::uint16_t ai_start, std::uint16_t ai_stop)
 {
 	std::uint32_t		w_start = 0;
 	std::uint32_t		w_stop = 0;
@@ -286,7 +286,7 @@ void		_display_rom(Gameboy& ai_gb, std::uint16_t ai_start, std::uint16_t ai_stop
 
 		// ON AFFICHE LA DATA ROM DE L'EMPLACEMENT MEMOIRE VOULU
 		// *****************************************************
-		std::cout << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned short>(ai_gb.getMemVal(w_i)) << " ";
+		std::cout << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned short>(ai_gb.getMpu()->getMemVal(w_i)) << " ";
 
 		if (w_i >= ai_start && w_i <= ai_stop)
 		{
@@ -306,7 +306,7 @@ void		_display_rom(Gameboy& ai_gb, std::uint16_t ai_start, std::uint16_t ai_stop
 
 // FONCTION D'AFFICHAGE DES REGISTRES
 // **********************************
-void		_display_reg(Gameboy& ai_gb)
+void		_display_reg(Gameboy const& ai_gb)
 {
 	std::cout << std::setfill(' ');
 	std::cout << "+--------------------------------------------------+" << std::endl;
@@ -347,7 +347,7 @@ void		_display_reg(Gameboy& ai_gb)
 
 // FONCTION D'AFFICHAGE DES INSTRUCTIONS
 // *************************************
-void		_display_ins(Gameboy& ai_gb, std::uint16_t ai_start)
+void		_display_ins(Gameboy const& ai_gb, std::uint16_t ai_start)
 {
 	std::uint16_t		w_pos = ai_start;
 	std::string			w_str = "";

@@ -19,7 +19,7 @@ public:
     ~Mpu();
 
     // Accesseurs sur la mémoire
-    std::uint8_t getMemVal(std::uint16_t ai_offset);
+    std::uint8_t getMemVal(std::uint16_t ai_offset) const;
     void setMemVal(std::uint16_t ai_offset, std::uint8_t ai_val);
 
     // Initialisation de la mémoire

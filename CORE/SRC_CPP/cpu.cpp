@@ -29,121 +29,121 @@ Cpu::~Cpu()
 // ********************************************************
 
 // Accesseur registre A
-std::uint8_t Cpu::getRegisterA()
+std::uint8_t Cpu::getRegisterA() const
 {
     return m_registers.s8bits.a;
 }
 
 // Accesseur registre B
-std::uint8_t Cpu::getRegisterB()
+std::uint8_t Cpu::getRegisterB() const
 {
     return m_registers.s8bits.b;
 }
 
 // Accesseur registre C
-std::uint8_t Cpu::getRegisterC()
+std::uint8_t Cpu::getRegisterC() const
 {
     return m_registers.s8bits.c;
 }
 
 // Accesseur registre D
-std::uint8_t Cpu::getRegisterD()
+std::uint8_t Cpu::getRegisterD() const
 {
     return m_registers.s8bits.d;
 }
 
 // Accesseur registre E
-std::uint8_t Cpu::getRegisterE()
+std::uint8_t Cpu::getRegisterE() const
 {
     return m_registers.s8bits.e;
 }
 
 // Accesseur registre F
-std::uint8_t Cpu::getRegisterF()
+std::uint8_t Cpu::getRegisterF() const
 {
     return m_registers.s8bits.f;
 }
 
 // Accesseur registre H
-std::uint8_t Cpu::getRegisterH()
+std::uint8_t Cpu::getRegisterH() const
 {
     return m_registers.s8bits.h;
 }
 
 // Accesseur registre L
-std::uint8_t Cpu::getRegisterL()
+std::uint8_t Cpu::getRegisterL() const
 {
     return m_registers.s8bits.l;
 }
 
 // Accesseur registre AF
-std::uint16_t Cpu::getRegisterAF()
+std::uint16_t Cpu::getRegisterAF() const
 {
     return m_registers.s16bits.af;
 }
 
 // Accesseur registre BC
-std::uint16_t Cpu::getRegisterBC()
+std::uint16_t Cpu::getRegisterBC() const
 {
     return m_registers.s16bits.bc;
 }
 
 // Accesseur registre DE
-std::uint16_t Cpu::getRegisterDE()
+std::uint16_t Cpu::getRegisterDE() const
 {
     return m_registers.s16bits.de;
 }
 
 // Accesseur registre HL
-std::uint16_t Cpu::getRegisterHL()
+std::uint16_t Cpu::getRegisterHL() const
 {
     return m_registers.s16bits.hl;
 }
 
 // Accesseur flag Z
-std::uint8_t Cpu::getFlagZ()
+std::uint8_t Cpu::getFlagZ() const
 {
     return m_registers.sFlags.z;
 }
 
 // Accesseur flag N
-std::uint8_t Cpu::getFlagN()
+std::uint8_t Cpu::getFlagN() const
 {
     return m_registers.sFlags.n;
 }
 
 // Accesseur flag H
-std::uint8_t Cpu::getFlagH()
+std::uint8_t Cpu::getFlagH() const
 {
     return m_registers.sFlags.h;
 }
 
 // Accesseur flag C
-std::uint8_t Cpu::getFlagC()
+std::uint8_t Cpu::getFlagC() const
 {
     return m_registers.sFlags.c;
 }
 
 // Accesseur flag RES
-std::uint8_t Cpu::getFlagRES()
+std::uint8_t Cpu::getFlagRES() const
 {
     return m_registers.sFlags.res;
 }
 
 // Accesseur registre PC
-std::uint16_t Cpu::getRegisterPC()
+std::uint16_t Cpu::getRegisterPC() const
 {
     return m_pc;
 }
 
 // Accesseur registre SP
-std::uint16_t Cpu::getRegisterSP()
+std::uint16_t Cpu::getRegisterSP() const
 {
     return m_sp;
 }
 
 // Accesseur structure registres
-te_registers Cpu::getRegisters()
+tu_registers Cpu::getRegisters() const
 {
     return m_registers;
 }
@@ -241,7 +241,7 @@ void Cpu::initOpcodesDesc()
 // DECODAGE D'UN OPCODE
 // ********************************************************
 
-std::uint8_t Cpu::decodeOpcode(std::uint8_t ai_opcode)
+std::uint8_t Cpu::decodeOpcode(std::uint8_t ai_opcode) const
 {
     std::uint16_t w_id;
 
@@ -260,23 +260,19 @@ std::uint8_t Cpu::decodeOpcode(std::uint8_t ai_opcode)
 }
 
 
-std::string			Cpu::showInstruction(std::uint16_t ai_idx)
+std::string			Cpu::showInstruction(std::uint16_t ai_idx) const
 {
-    std::string		w_str = "";
-
-    w_str = decodeInstr(mp_mpu->getMemVal(ai_idx), false);
-
-    return w_str;
+    return decodeInstr(ai_idx);
 }
 
-std::uint8_t		Cpu::showInstructionId(std::uint16_t ai_idx)
+std::uint8_t		Cpu::showInstructionId(std::uint16_t ai_idx) const
 {
     std::uint8_t 	w_id = decodeOpcode(mp_mpu->getMemVal(ai_idx));
 
     return w_id;
 }
 
-std::string			Cpu::showInstructionIdStr(std::uint16_t ai_idx)
+std::string			Cpu::showInstructionIdStr(std::uint16_t ai_idx) const
 {
     std::string		w_str = "";
 
@@ -301,6 +297,17 @@ std::string			Cpu::showInstructionIdStr(std::uint16_t ai_idx)
 void Cpu::executeOpcode(std::uint16_t ai_opcodeIdx)
 {
     decodeInstr(ai_opcodeIdx, true);
+}
+
+std::string         Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec) const {
+    if (ai_exec == true) {
+        throw std::logic_error("const version of decodeInstr must have ai_exec argument to false");
+    }
+
+    // Appel à la fonction non const decodeInstr qui avec le second paramètre false
+    // ne modifie aucune donnée interne à la classe, ce qui permet de rester en dehors
+    // des cas à comportement indéterminé.
+    return const_cast<Cpu*>(this)->decodeInstr(ai_idx, false);
 }
 
 std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
@@ -359,7 +366,9 @@ std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
 
         default:
             // Mise à jour de PC
-            m_pc = m_pc + 1;
+            if (ai_exec) {
+                m_pc = m_pc + 1;
+            }
             break;
     }
 
