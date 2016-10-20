@@ -481,16 +481,7 @@ std::string			Cpu::__decodeLoad8bits(std::uint8_t ai_id, std::uint16_t ai_idx, b
         // Récupération du registre
         w_register = mp_mpu->getMemVal(ai_idx) >> 4;
 
-        if (w_register == 0)
-        {
-            wp_register16bits = &m_registers.s16bits.bc;
-            w_sReg = "(BC)";
-        }
-        else if (w_register == 1)
-        {
-            wp_register16bits = &m_registers.s16bits.de;
-            w_sReg = "(DE)";
-        }
+        wp_register16bits = _decodeRegister16Bits(w_register, w_id, w_sReg);
 
         w_str = "LOAD " + w_sReg + ",A";
     }
@@ -499,16 +490,7 @@ std::string			Cpu::__decodeLoad8bits(std::uint8_t ai_id, std::uint16_t ai_idx, b
         // Récupération du registre
         w_register = mp_mpu->getMemVal(ai_idx) >> 4;
 
-        if (w_register == 0)
-        {
-            wp_register16bits = &m_registers.s16bits.bc;
-            w_sReg = "(BC)";
-        }
-        else if (w_register == 1)
-        {
-            wp_register16bits = &m_registers.s16bits.de;
-            w_sReg = "(DE)";
-        }
+        wp_register16bits = _decodeRegister16Bits(w_register, w_id, w_sReg);
 
         w_str = "LOAD A," + w_sReg;
     }
@@ -851,26 +833,7 @@ std::string			Cpu::__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, 
         // On récupère l'indice du registre à utiliser
         w_register = ( mp_mpu->getMemVal(ai_idx) & 0x30 ) >> 4;
 
-        if (w_register == 0)
-        {
-            wp_register16bits = &m_registers.s16bits.bc;
-            w_str += "BC," + std::to_string(w_data16bits);
-        }
-        else if (w_register == 1)
-        {
-            wp_register16bits = &m_registers.s16bits.de;
-            w_str += "DE," + std::to_string(w_data16bits);
-        }
-        else if (w_register == 2)
-        {
-            wp_register16bits = &m_registers.s16bits.hl;
-            w_str += "HL," + std::to_string(w_data16bits);
-        }
-        else if (w_register == 3)
-        {
-            wp_register16bits = &m_sp;
-            w_str += "SP," + std::to_string(w_data16bits);
-        }
+        wp_register16bits = _decodeRegister16Bits(w_register, w_id, w_str);
     }
 
     // EXECUTION DE L'INSTRUCTION
@@ -1009,37 +972,17 @@ std::string			Cpu::__decodeJump(std::uint8_t ai_id, std::uint16_t ai_idx, bool a
 }
 
 std::string Cpu::__decodeInc(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
-    std::string w_str           = "INC ";
-    uint8_t w_register          = 0u;
-    uint16_t * wp_register16bit = NULL;
-    uint8_t * wp_register8bit   = NULL;
-    uint16_t w_pos              = 0u;
+    std::string w_str            = "INC ";
+    uint8_t w_register           = 0u;
+    uint16_t * wp_register16bits = NULL;
+    uint8_t * wp_register8bits   = NULL;
+    uint16_t w_pos               = 0u;
 
     switch (ai_id) {
         case 0x03: // INC R sur registre 16b
             // Récupération du registre
             w_register = (mp_mpu->getMemVal(ai_idx) >> 4);
-            switch (w_register) {
-            case 0:
-                w_str += "BC";
-                wp_register16bit = &m_registers.s16bits.bc;
-                break;
-
-            case 1:
-                w_str += "DE";
-                wp_register16bit = &m_registers.s16bits.de;
-                break;
-
-            case 2:
-                w_str += "HL";
-                wp_register16bit = &m_registers.s16bits.hl;
-                break;
-
-            case 3:
-                w_str += "SP";
-                wp_register16bit = &m_sp;
-            }
-            break;
+            wp_register16bits = _decodeRegister16Bits(w_register, ai_id, w_str);
 
         case 0x4: // INC D
             // Récupération du registre
@@ -1047,32 +990,32 @@ std::string Cpu::__decodeInc(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
             switch (w_register) {
             case 0:
                 w_str += "B";
-                wp_register8bit = &m_registers.s8bits.b;
+                wp_register8bits = &m_registers.s8bits.b;
                 break;
 
             case 1:
                 w_str += "C";
-                wp_register8bit = &m_registers.s8bits.c;
+                wp_register8bits = &m_registers.s8bits.c;
                 break;
 
             case 2:
                 w_str += "D";
-                wp_register8bit = &m_registers.s8bits.d;
+                wp_register8bits = &m_registers.s8bits.d;
                 break;
 
             case 3:
                 w_str += "E";
-                wp_register8bit = &m_registers.s8bits.e;
+                wp_register8bits = &m_registers.s8bits.e;
                 break;
 
             case 4:
                 w_str += "H";
-                wp_register8bit = &m_registers.s8bits.h;
+                wp_register8bits = &m_registers.s8bits.h;
                 break;
 
             case 5:
                 w_str += "L";
-                wp_register8bit = &m_registers.s8bits.l;
+                wp_register8bits = &m_registers.s8bits.l;
                 break;
 
             case 6:
@@ -1082,7 +1025,7 @@ std::string Cpu::__decodeInc(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
 
             case 7:
                 w_str += "A";
-                wp_register8bit = &m_registers.s8bits.a;
+                wp_register8bits = &m_registers.s8bits.a;
                 break;
             }
             break;
@@ -1091,7 +1034,7 @@ std::string Cpu::__decodeInc(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
         switch (ai_id) {
         case 0x03:
             //Registre 16 bits, pas de modifications des flags
-            ++(*wp_register16bit);
+            ++(*wp_register16bits);
             break;
 
         case 0x04:
@@ -1105,15 +1048,15 @@ std::string Cpu::__decodeInc(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
             case 5:
             case 7:
                 // Gestion du Half-Carry
-                if (((*wp_register8bit) & 0x0F) == 0x0F) {
+                if (((*wp_register8bits) & 0x0F) == 0x0F) {
                     m_registers.sFlags.h = 1;
                 } else {
                     m_registers.sFlags.h = 0;
                 }
                 // Incrémentation
-                ++(*wp_register8bit);
+                ++(*wp_register8bits);
                 // Gestion du zéro
-                if ((*wp_register8bit) == 0) {
+                if ((*wp_register8bits) == 0) {
                     m_registers.sFlags.z = 1;
                 } else {
                     m_registers.sFlags.z = 0;
@@ -1150,37 +1093,17 @@ std::string Cpu::__decodeInc(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
 }
 
 std::string Cpu::__decodeDec(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
-    std::string w_str           = "DEC ";
-    uint8_t w_register          = 0u;
-    uint16_t * wp_register16bit = NULL;
-    uint8_t * wp_register8bit   = NULL;
-    uint16_t w_pos              = 0u;
+    std::string w_str            = "DEC ";
+    uint8_t w_register           = 0u;
+    uint16_t * wp_register16bits = NULL;
+    uint8_t * wp_register8bits   = NULL;
+    uint16_t w_pos               = 0u;
 
     switch (ai_id) {
         case 0x0B: // DEC R sur registre 16b
             // Récupération du registre
             w_register = (mp_mpu->getMemVal(ai_idx) >> 4);
-            switch (w_register) {
-            case 0:
-                w_str += "BC";
-                wp_register16bit = &m_registers.s16bits.bc;
-                break;
-
-            case 1:
-                w_str += "DE";
-                wp_register16bit = &m_registers.s16bits.de;
-                break;
-
-            case 2:
-                w_str += "HL";
-                wp_register16bit = &m_registers.s16bits.hl;
-                break;
-
-            case 3:
-                w_str += "SP";
-                wp_register16bit = &m_sp;
-            }
-            break;
+            wp_register16bits = _decodeRegister16Bits(w_register, ai_id, w_str);
 
         case 0x5: // DEC D
             // Récupération du registre
@@ -1188,32 +1111,32 @@ std::string Cpu::__decodeDec(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
             switch (w_register) {
             case 0:
                 w_str += "B";
-                wp_register8bit = &m_registers.s8bits.b;
+                wp_register8bits = &m_registers.s8bits.b;
                 break;
 
             case 1:
                 w_str += "C";
-                wp_register8bit = &m_registers.s8bits.c;
+                wp_register8bits = &m_registers.s8bits.c;
                 break;
 
             case 2:
                 w_str += "D";
-                wp_register8bit = &m_registers.s8bits.d;
+                wp_register8bits = &m_registers.s8bits.d;
                 break;
 
             case 3:
                 w_str += "E";
-                wp_register8bit = &m_registers.s8bits.e;
+                wp_register8bits = &m_registers.s8bits.e;
                 break;
 
             case 4:
                 w_str += "H";
-                wp_register8bit = &m_registers.s8bits.h;
+                wp_register8bits = &m_registers.s8bits.h;
                 break;
 
             case 5:
                 w_str += "L";
-                wp_register8bit = &m_registers.s8bits.l;
+                wp_register8bits = &m_registers.s8bits.l;
                 break;
 
             case 6:
@@ -1223,7 +1146,7 @@ std::string Cpu::__decodeDec(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
 
             case 7:
                 w_str += "A";
-                wp_register8bit = &m_registers.s8bits.a;
+                wp_register8bits = &m_registers.s8bits.a;
                 break;
             }
             break;
@@ -1232,7 +1155,7 @@ std::string Cpu::__decodeDec(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
         switch (ai_id) {
         case 0x0B:
             //Registre 16 bits, pas de modifications des flags
-            --(*wp_register16bit);
+            --(*wp_register16bits);
             break;
 
         case 0x05:
@@ -1246,15 +1169,15 @@ std::string Cpu::__decodeDec(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
             case 5:
             case 7:
                 // Gestion du Half-Carry
-                if (((*wp_register8bit) & 0x0F) == 0x00) {
+                if (((*wp_register8bits) & 0x0F) == 0x00) {
                     m_registers.sFlags.h = 1;
                 } else {
                     m_registers.sFlags.h = 0;
                 }
                 // Décrémentation
-                --(*wp_register8bit);
+                --(*wp_register8bits);
                 // Gestion du zéro
-                if ((*wp_register8bit) == 0) {
+                if ((*wp_register8bits) == 0) {
                     m_registers.sFlags.z = 1;
                 } else {
                     m_registers.sFlags.z = 0;
@@ -1288,4 +1211,95 @@ std::string Cpu::__decodeDec(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
         ++m_pc;
     }
     return w_str;
+}
+
+
+std::uint8_t* Cpu::_decodeRegister8Bits(std::uint8_t ai_registerMask, std::string &ai_sReg)
+{
+    std::uint8_t* wp_register8bits      = NULL;
+    std::uint16_t* wp_register16bits    = NULL;
+
+    switch (ai_registerMask)
+    {
+        case 0:
+            wp_register8bits = &m_registers.s8bits.b;
+            ai_sReg = "B";
+            break;
+
+        case 1:
+            wp_register8bits = &m_registers.s8bits.c;
+            ai_sReg = "C";
+            break;
+
+        case 2:
+            wp_register8bits = &m_registers.s8bits.d;
+            ai_sReg = "D";
+            break;
+
+        case 3:
+            wp_register8bits = &m_registers.s8bits.e;
+            ai_sReg = "E";
+            break;
+
+        case 4:
+            wp_register8bits = &m_registers.s8bits.h;
+            ai_sReg = "H";
+            break;
+
+        case 5:
+            wp_register8bits = &m_registers.s8bits.l;
+            ai_sReg = "L";
+            break;
+
+        case 6:
+            wp_register16bits = &m_registers.s16bits.hl;
+            ai_sReg = "(HL)";
+            break;
+
+        case 7:
+            wp_register8bits = &m_registers.s8bits.a;
+            ai_sReg = "A";
+            break;
+    }
+
+    return wp_register8bits;
+}
+
+
+std::uint16_t* Cpu::_decodeRegister16Bits(std::uint8_t ai_registerMask, std::uint8_t ai_opcodeId, std::string &ai_sReg)
+{
+    std::uint16_t* wp_registers16bit = NULL;
+
+    switch (ai_registerMask) {
+        case 0:
+            ai_sReg += "BC";
+            wp_registers16bit = &m_registers.s16bits.bc;
+            break;
+
+        case 1:
+            ai_sReg += "DE";
+            wp_registers16bit = &m_registers.s16bits.de;
+            break;
+
+        case 2:
+            ai_sReg += "HL";
+            wp_registers16bit = &m_registers.s16bits.hl;
+            break;
+
+        case 3:
+            // Renvoie AF uniquement dans le cas d'un POP ou d'un PUSH, SP sinon
+            if (ai_opcodeId == 0xC1 || ai_opcodeId == 0xC5)
+            {
+                ai_sReg += "AF";
+                wp_registers16bit = &m_registers.s16bits.af;
+            }
+            else
+            {
+                ai_sReg += "SP";
+                wp_registers16bit = &m_sp;
+            }
+        break;
+    }
+
+    return wp_registers16bit;
 }
