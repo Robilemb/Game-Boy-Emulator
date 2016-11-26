@@ -139,6 +139,9 @@ public:
     std::string			showInstructionIdStr(std::uint16_t ai_idx) const;
 
 private:
+    // Initialisation des masques et identifiants des opcodes
+    void initOpcodesDesc();
+
     // Décodage d'un opcode
     std::uint8_t 		decodeOpcode(std::uint8_t ai_opcode) const;
 
@@ -156,8 +159,16 @@ private:
     std::string         __decodeInc(std::uint8_t ai_id, std::uint16_t ai_idx, bool ai_exec);
     std::string         __decodeDec(std::uint8_t ai_id, std::uint16_t ai_idx, bool ai_exec);
 
-    // Initialisation des masques et identifiants des opcodes
-    void initOpcodesDesc();
+    // Récupération d'un registre 8/16 bits en fonction de son masque
+    // 0 1 2 3 4 5    6 7
+    // B C D E H L (HL) A
+    void                _decodeRegister8Bits(std::uint8_t ai_registerMask, std::string &ai_sReg, std::uint8_t* &aop_register8bits, std::uint16_t* &aop_register16bits);
+
+    // Récupération d'un registre 16 bits en fonction de son masque et l'opcode courant
+    //  0  1  2     3
+    // BC DE HL SP/AF
+    std::uint16_t*      _decodeRegister16Bits(std::uint8_t ai_registerMask, std::uint8_t ai_opcodeId, std::string &ai_sReg);
+
 
 private:
     tu_registers 	m_registers;				// Registres 8-16 bits
