@@ -159,10 +159,10 @@ private:
     std::string         __decodeInc(std::uint8_t ai_id, std::uint16_t ai_idx, bool ai_exec);
     std::string         __decodeDec(std::uint8_t ai_id, std::uint16_t ai_idx, bool ai_exec);
 
-    // Récupération d'un registre 8 bits en fonction de son masque
+    // Récupération d'un registre 8/16 bits en fonction de son masque
     // 0 1 2 3 4 5    6 7
     // B C D E H L (HL) A
-    std::uint8_t*       _decodeRegister8Bits(std::uint8_t ai_registerMask, std::string &ai_sReg);
+    void                _decodeRegister8Bits(std::uint8_t ai_registerMask, std::string &ai_sReg, std::uint8_t* &aop_register8bits, std::uint16_t* &aop_register16bits);
 
     // Récupération d'un registre 16 bits en fonction de son masque et l'opcode courant
     //  0  1  2     3
