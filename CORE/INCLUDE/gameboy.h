@@ -2,7 +2,6 @@
 #define GAMEBOY_H
 
 #include <cstdint>
-
 #include <fstream>
 
 #include "cpu.h"
@@ -23,13 +22,13 @@ public:
     ~Gameboy();
 
     // Accesseur sur le CPU
-    Cpu const * getCpu() const;
+    const Cpu* getCpu() const;
 
     // Accesseur sur la MPU
-    Mpu const * getMpu() const;
+    const Mpu* getMpu() const;
 
     // Chargement de la ROM en mémoire
-    te_status loadROM(std::string ai_ROMFileName);
+    te_status loadROM(const std::string& ai_ROMFileName);
 
     // Affichage de la ROM BANK 0
     void printROMBank0() const;

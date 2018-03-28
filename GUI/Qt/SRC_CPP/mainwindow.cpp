@@ -26,7 +26,7 @@ MainWindow::~MainWindow()
     delete mp_gameboy;
 }
 
-Gameboy* MainWindow::getGameBoy()
+const Gameboy* MainWindow::getGameBoy() const
 {
     return mp_gameboy;
 }

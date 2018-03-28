@@ -25,12 +25,12 @@ Gameboy::~Gameboy()
 // ACCESSEURS
 // ********************************************************
 
-const Cpu *Gameboy::getCpu() const
+const Cpu* Gameboy::getCpu() const
 {
     return mp_cpu;
 }
 
-const Mpu *Gameboy::getMpu() const
+const Mpu* Gameboy::getMpu() const
 {
     return mp_mpu;
 }
@@ -40,7 +40,7 @@ const Mpu *Gameboy::getMpu() const
 // CHARGEMENT DE LA ROM EN MEMOIRE
 // ********************************************************
 
-te_status Gameboy::loadROM(std::string ai_ROMFileName)
+te_status Gameboy::loadROM(const std::string& ai_ROMFileName)
 {
     // Variables locales
     char 				w_caractere;
