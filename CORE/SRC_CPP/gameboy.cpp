@@ -9,8 +9,6 @@ Gameboy::Gameboy()
 {
     mp_mpu = new Mpu();
     mp_cpu = new Cpu(mp_mpu);
-
-    m_romSize = 0u;
 }
 
 // Destructeur
@@ -64,8 +62,6 @@ te_status Gameboy::loadROM(const std::string& ai_ROMFileName)
             w_i++;
         }
 
-        m_romSize = w_i;
-
         // Fermeture du fichier
         w_ROMFile.close();
     }
@@ -79,43 +75,13 @@ te_status Gameboy::loadROM(const std::string& ai_ROMFileName)
 
 
 // ********************************************************
-// AFFICHAGE DE LA ROM
-// ********************************************************
-
-void Gameboy::printROMBank0() const
-{
-    // Affichage de la ROM BANK 0
-    for (std::uint16_t w_k = 0; w_k < MPU_MEMORY_CARD_MBC_0_SIZE; w_k++)
-    {
-        std::cout << std::hex << std::uppercase << static_cast<std::uint16_t>(mp_mpu->getMemVal(MPU_MEMORY_CARD_BANK_0_OFFSET+w_k)) << " ";
-    }
-    std::cout << std::endl;
-}
-
-std::uint32_t		Gameboy::getRomSize() const
-{
-	return m_romSize;
-}
-
-std::string			Gameboy::showInstr(std::uint16_t ai_pos) const
-{
-    return mp_cpu->showInstruction(ai_pos);
-}
-
-
-// ********************************************************
 // EXECUTION DE L'EMULATION
 // ********************************************************
-
-void    Gameboy::execInstr(std::uint16_t ai_pos)
-{
-    mp_cpu->executeOpcode(ai_pos);
-}
 
 te_status Gameboy::run()
 {
     // Exécution de l'opcode à l'adresse de PC
-    execInstr(mp_cpu->getRegisterPC());
+    mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
 
     return E_OK;
 }

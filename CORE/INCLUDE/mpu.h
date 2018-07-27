@@ -18,12 +18,13 @@ public:
     explicit Mpu();
     ~Mpu();
 
+    // Initialisation de la mémoire
+    void initMemory();
+
     // Accesseurs sur la mémoire
     std::uint8_t getMemVal(std::uint16_t ai_offset) const;
     void setMemVal(std::uint16_t ai_offset, std::uint8_t ai_val);
 
-    // Initialisation de la mémoire
-    void initMemory();
 
 private:
     std::uint8_t m_memory[MPU_MEMORY_SIZE];	// Mémoire

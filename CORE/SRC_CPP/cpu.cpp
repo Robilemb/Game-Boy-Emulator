@@ -862,7 +862,6 @@ std::string Cpu::__decodeInc(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
     uint8_t w_register           = 0u;
     uint16_t * wp_register16bits = NULL;
     uint8_t * wp_register8bits   = NULL;
-    uint16_t w_pos               = 0u;
 
     switch (ai_id) {
         case 0x03: // INC R sur registre 16b
