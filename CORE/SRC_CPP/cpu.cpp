@@ -24,6 +24,7 @@ Cpu::~Cpu()
 {
 }
 
+
 // ********************************************************
 // ACCESSEURS
 // ********************************************************
@@ -173,57 +174,57 @@ void Cpu::initRegisters()
 void Cpu::initOpcodesDesc()
 {
     // Initialisation des masques et identifiants des opcodes 8 bits
-    m_opcodesDesc.masque8bits[0]  = 0xFF; m_opcodesDesc.id8bits[0]  = 0x00; m_opcodesDesc.instr8bits[0] = "NOP";	// NOP
-    m_opcodesDesc.masque8bits[1]  = 0xFF; m_opcodesDesc.id8bits[1]  = 0x08; m_opcodesDesc.instr8bits[1] = "LN";    	// LN (N),SP
-    m_opcodesDesc.masque8bits[2]  = 0xCF; m_opcodesDesc.id8bits[2]  = 0x01; m_opcodesDesc.instr8bits[2] = "LD";     // LD R,N
-    m_opcodesDesc.masque8bits[3]  = 0xCF; m_opcodesDesc.id8bits[3]  = 0x09; m_opcodesDesc.instr8bits[3] = "ADD";    // ADD HL,R
-    m_opcodesDesc.masque8bits[4]  = 0xEF; m_opcodesDesc.id8bits[4]  = 0x02; m_opcodesDesc.instr8bits[4] = "LD";     // LD (R),A
-    m_opcodesDesc.masque8bits[5]  = 0xEF; m_opcodesDesc.id8bits[5]  = 0x0A; m_opcodesDesc.instr8bits[5] = "LD";     // LD A,(R)
-    m_opcodesDesc.masque8bits[6]  = 0xCF; m_opcodesDesc.id8bits[6]  = 0x03; m_opcodesDesc.instr8bits[6] = "INC";    // INC R
-    m_opcodesDesc.masque8bits[7]  = 0xCF; m_opcodesDesc.id8bits[7]  = 0x0B; m_opcodesDesc.instr8bits[7] = "DEC";    // DEC R
-    m_opcodesDesc.masque8bits[8]  = 0xC7; m_opcodesDesc.id8bits[8]  = 0x04; m_opcodesDesc.instr8bits[8] = "INC";    // INC D
-    m_opcodesDesc.masque8bits[9]  = 0xC7; m_opcodesDesc.id8bits[9]  = 0x05; m_opcodesDesc.instr8bits[9] = "DEC";    // DEC D
-    m_opcodesDesc.masque8bits[10] = 0xC7; m_opcodesDesc.id8bits[10] = 0x06; m_opcodesDesc.instr8bits[10] = "LD";     // LD D,N
-    m_opcodesDesc.masque8bits[11] = 0xF7; m_opcodesDesc.id8bits[11] = 0x07; m_opcodesDesc.instr8bits[11] = "RdCA";   // RdCA
-    m_opcodesDesc.masque8bits[12] = 0xF7; m_opcodesDesc.id8bits[12] = 0x17; m_opcodesDesc.instr8bits[12] = "RdA";    // RdA
-    m_opcodesDesc.masque8bits[13] = 0xFF; m_opcodesDesc.id8bits[13] = 0x10; m_opcodesDesc.instr8bits[13] = "STOP";   // STOP
-    m_opcodesDesc.masque8bits[14] = 0xFF; m_opcodesDesc.id8bits[14] = 0x18; m_opcodesDesc.instr8bits[14] = "JR";     // JR N
-    m_opcodesDesc.masque8bits[15] = 0xE7; m_opcodesDesc.id8bits[15] = 0x20; m_opcodesDesc.instr8bits[15] = "JR";     // JR F,N
-    m_opcodesDesc.masque8bits[16] = 0xFF; m_opcodesDesc.id8bits[16] = 0x22; m_opcodesDesc.instr8bits[16] = "LDI";    // LDI (HL),A
-    m_opcodesDesc.masque8bits[17] = 0xFF; m_opcodesDesc.id8bits[17] = 0x2A; m_opcodesDesc.instr8bits[17] = "LDI";    // LDI A,(HL)
-    m_opcodesDesc.masque8bits[18] = 0xFF; m_opcodesDesc.id8bits[18] = 0x32; m_opcodesDesc.instr8bits[18] = "LDD";    // LDD (HL),A
-    m_opcodesDesc.masque8bits[19] = 0xFF; m_opcodesDesc.id8bits[19] = 0x3A; m_opcodesDesc.instr8bits[19] = "LDD";    // LDD A,(HL)
-    m_opcodesDesc.masque8bits[20] = 0xFF; m_opcodesDesc.id8bits[20] = 0x27; m_opcodesDesc.instr8bits[20] = "DAA";    // DAA
-    m_opcodesDesc.masque8bits[21] = 0xFF; m_opcodesDesc.id8bits[21] = 0x2F; m_opcodesDesc.instr8bits[21] = "CPL";    // CPL
-    m_opcodesDesc.masque8bits[22] = 0xFF; m_opcodesDesc.id8bits[22] = 0x37; m_opcodesDesc.instr8bits[22] = "SCF";    // SCF
-    m_opcodesDesc.masque8bits[23] = 0xFF; m_opcodesDesc.id8bits[23] = 0x3F; m_opcodesDesc.instr8bits[23] = "CCF";    // CCF
-    m_opcodesDesc.masque8bits[24] = 0xC0; m_opcodesDesc.id8bits[24] = 0x40; m_opcodesDesc.instr8bits[24] = "LD";     // LD D,D
-    m_opcodesDesc.masque8bits[25] = 0xFF; m_opcodesDesc.id8bits[25] = 0x76; m_opcodesDesc.instr8bits[25] = "HALT";   // HALT
-    m_opcodesDesc.masque8bits[26] = 0xC0; m_opcodesDesc.id8bits[26] = 0x80; m_opcodesDesc.instr8bits[26] = "ALU";    // ALU A,D
-    m_opcodesDesc.masque8bits[27] = 0xC7; m_opcodesDesc.id8bits[27] = 0xC6; m_opcodesDesc.instr8bits[27] = "ALU";    // ALU A,N
-    m_opcodesDesc.masque8bits[28] = 0xCF; m_opcodesDesc.id8bits[28] = 0xC1; m_opcodesDesc.instr8bits[28] = "POP";    // POP R
-    m_opcodesDesc.masque8bits[29] = 0xCF; m_opcodesDesc.id8bits[29] = 0xC5; m_opcodesDesc.instr8bits[29] = "PUSH";   // PUSH R
-    m_opcodesDesc.masque8bits[30] = 0xC7; m_opcodesDesc.id8bits[30] = 0xC7; m_opcodesDesc.instr8bits[30] = "RST";    // RST N
-    m_opcodesDesc.masque8bits[31] = 0xE7; m_opcodesDesc.id8bits[31] = 0xC0; m_opcodesDesc.instr8bits[31] = "RET";    // RET F
-    m_opcodesDesc.masque8bits[32] = 0xFF; m_opcodesDesc.id8bits[32] = 0xC9; m_opcodesDesc.instr8bits[32] = "RET";    // RET
-    m_opcodesDesc.masque8bits[33] = 0xFF; m_opcodesDesc.id8bits[33] = 0xD9; m_opcodesDesc.instr8bits[33] = "RETI";   // RETI
-    m_opcodesDesc.masque8bits[34] = 0xE7; m_opcodesDesc.id8bits[34] = 0xC2; m_opcodesDesc.instr8bits[34] = "JP";     // JP F,N
-    m_opcodesDesc.masque8bits[35] = 0xFF; m_opcodesDesc.id8bits[35] = 0xC3; m_opcodesDesc.instr8bits[35] = "JP";     // JP N
-    m_opcodesDesc.masque8bits[36] = 0xE7; m_opcodesDesc.id8bits[36] = 0xC4; m_opcodesDesc.instr8bits[36] = "CALL";   // CALL F,N
-    m_opcodesDesc.masque8bits[37] = 0xFF; m_opcodesDesc.id8bits[37] = 0xCD; m_opcodesDesc.instr8bits[37] = "CALL";   // CALL N
-    m_opcodesDesc.masque8bits[38] = 0xFF; m_opcodesDesc.id8bits[38] = 0xE8; m_opcodesDesc.instr8bits[38] = "ADD";    // ADD SP,N
-    m_opcodesDesc.masque8bits[39] = 0xFF; m_opcodesDesc.id8bits[39] = 0xF8; m_opcodesDesc.instr8bits[39] = "LD";     // LD HL,SP+N
-    m_opcodesDesc.masque8bits[40] = 0xFF; m_opcodesDesc.id8bits[40] = 0xE0; m_opcodesDesc.instr8bits[40] = "LD";     // LD (FF00+N),A
-    m_opcodesDesc.masque8bits[41] = 0xFF; m_opcodesDesc.id8bits[41] = 0xF0; m_opcodesDesc.instr8bits[41] = "LD";     // LD A,(FF00+N)
-    m_opcodesDesc.masque8bits[42] = 0xFF; m_opcodesDesc.id8bits[42] = 0xE2; m_opcodesDesc.instr8bits[42] = "LD";     // LD (C),A
-    m_opcodesDesc.masque8bits[43] = 0xFF; m_opcodesDesc.id8bits[43] = 0xF2; m_opcodesDesc.instr8bits[43] = "LD";     // LD A,(C)
-    m_opcodesDesc.masque8bits[44] = 0xFF; m_opcodesDesc.id8bits[44] = 0xEA; m_opcodesDesc.instr8bits[44] = "LD";     // LD (N),A
-    m_opcodesDesc.masque8bits[45] = 0xFF; m_opcodesDesc.id8bits[45] = 0xFA; m_opcodesDesc.instr8bits[45] = "LD";     // LD A,(N)
-    m_opcodesDesc.masque8bits[46] = 0xFF; m_opcodesDesc.id8bits[46] = 0xE9; m_opcodesDesc.instr8bits[46] = "JP";     // JP HL
-    m_opcodesDesc.masque8bits[47] = 0xFF; m_opcodesDesc.id8bits[47] = 0xF9; m_opcodesDesc.instr8bits[47] = "LD";     // LD SP,HL
-    m_opcodesDesc.masque8bits[48] = 0xFF; m_opcodesDesc.id8bits[48] = 0xF3; m_opcodesDesc.instr8bits[48] = "DI";     // DI
-    m_opcodesDesc.masque8bits[49] = 0xFF; m_opcodesDesc.id8bits[49] = 0xFB; m_opcodesDesc.instr8bits[49] = "EI";     // EI
-    m_opcodesDesc.masque8bits[50] = 0xFF; m_opcodesDesc.id8bits[50] = 0xCB; m_opcodesDesc.instr8bits[50] = "16BITS"; // 16b opcode
+    m_opcodesDesc.masque8bits[0]  = 0xFF; m_opcodesDesc.id8bits[0]  = 0x00; // NOP
+    m_opcodesDesc.masque8bits[1]  = 0xFF; m_opcodesDesc.id8bits[1]  = 0x08; // LN (N),SP
+    m_opcodesDesc.masque8bits[2]  = 0xCF; m_opcodesDesc.id8bits[2]  = 0x01; // LD R,N
+    m_opcodesDesc.masque8bits[3]  = 0xCF; m_opcodesDesc.id8bits[3]  = 0x09; // ADD HL,R
+    m_opcodesDesc.masque8bits[4]  = 0xEF; m_opcodesDesc.id8bits[4]  = 0x02; // LD (R),A
+    m_opcodesDesc.masque8bits[5]  = 0xEF; m_opcodesDesc.id8bits[5]  = 0x0A; // LD A,(R)
+    m_opcodesDesc.masque8bits[6]  = 0xCF; m_opcodesDesc.id8bits[6]  = 0x03; // INC R
+    m_opcodesDesc.masque8bits[7]  = 0xCF; m_opcodesDesc.id8bits[7]  = 0x0B; // DEC R
+    m_opcodesDesc.masque8bits[8]  = 0xC7; m_opcodesDesc.id8bits[8]  = 0x04; // INC D
+    m_opcodesDesc.masque8bits[9]  = 0xC7; m_opcodesDesc.id8bits[9]  = 0x05; // DEC D
+    m_opcodesDesc.masque8bits[10] = 0xC7; m_opcodesDesc.id8bits[10] = 0x06; // LD D,N
+    m_opcodesDesc.masque8bits[11] = 0xF7; m_opcodesDesc.id8bits[11] = 0x07; // RdCA
+    m_opcodesDesc.masque8bits[12] = 0xF7; m_opcodesDesc.id8bits[12] = 0x17; // RdA
+    m_opcodesDesc.masque8bits[13] = 0xFF; m_opcodesDesc.id8bits[13] = 0x10; // STOP
+    m_opcodesDesc.masque8bits[14] = 0xFF; m_opcodesDesc.id8bits[14] = 0x18; // JR N
+    m_opcodesDesc.masque8bits[15] = 0xE7; m_opcodesDesc.id8bits[15] = 0x20; // JR F,N
+    m_opcodesDesc.masque8bits[16] = 0xFF; m_opcodesDesc.id8bits[16] = 0x22; // LDI (HL),A
+    m_opcodesDesc.masque8bits[17] = 0xFF; m_opcodesDesc.id8bits[17] = 0x2A; // LDI A,(HL)
+    m_opcodesDesc.masque8bits[18] = 0xFF; m_opcodesDesc.id8bits[18] = 0x32; // LDD (HL),A
+    m_opcodesDesc.masque8bits[19] = 0xFF; m_opcodesDesc.id8bits[19] = 0x3A; // LDD A,(HL)
+    m_opcodesDesc.masque8bits[20] = 0xFF; m_opcodesDesc.id8bits[20] = 0x27; // DAA
+    m_opcodesDesc.masque8bits[21] = 0xFF; m_opcodesDesc.id8bits[21] = 0x2F; // CPL
+    m_opcodesDesc.masque8bits[22] = 0xFF; m_opcodesDesc.id8bits[22] = 0x37; // SCF
+    m_opcodesDesc.masque8bits[23] = 0xFF; m_opcodesDesc.id8bits[23] = 0x3F; // CCF
+    m_opcodesDesc.masque8bits[24] = 0xC0; m_opcodesDesc.id8bits[24] = 0x40; // LD D,D
+    m_opcodesDesc.masque8bits[25] = 0xFF; m_opcodesDesc.id8bits[25] = 0x76; // HALT
+    m_opcodesDesc.masque8bits[26] = 0xC0; m_opcodesDesc.id8bits[26] = 0x80; // ALU A,D
+    m_opcodesDesc.masque8bits[27] = 0xC7; m_opcodesDesc.id8bits[27] = 0xC6; // ALU A,N
+    m_opcodesDesc.masque8bits[28] = 0xCF; m_opcodesDesc.id8bits[28] = 0xC1; // POP R
+    m_opcodesDesc.masque8bits[29] = 0xCF; m_opcodesDesc.id8bits[29] = 0xC5; // PUSH R
+    m_opcodesDesc.masque8bits[30] = 0xC7; m_opcodesDesc.id8bits[30] = 0xC7; // RST N
+    m_opcodesDesc.masque8bits[31] = 0xE7; m_opcodesDesc.id8bits[31] = 0xC0; // RET F
+    m_opcodesDesc.masque8bits[32] = 0xFF; m_opcodesDesc.id8bits[32] = 0xC9; // RET
+    m_opcodesDesc.masque8bits[33] = 0xFF; m_opcodesDesc.id8bits[33] = 0xD9; // RETI
+    m_opcodesDesc.masque8bits[34] = 0xE7; m_opcodesDesc.id8bits[34] = 0xC2; // JP F,N
+    m_opcodesDesc.masque8bits[35] = 0xFF; m_opcodesDesc.id8bits[35] = 0xC3; // JP N
+    m_opcodesDesc.masque8bits[36] = 0xE7; m_opcodesDesc.id8bits[36] = 0xC4; // CALL F,N
+    m_opcodesDesc.masque8bits[37] = 0xFF; m_opcodesDesc.id8bits[37] = 0xCD; // CALL N
+    m_opcodesDesc.masque8bits[38] = 0xFF; m_opcodesDesc.id8bits[38] = 0xE8; // ADD SP,N
+    m_opcodesDesc.masque8bits[39] = 0xFF; m_opcodesDesc.id8bits[39] = 0xF8; // LD HL,SP+N
+    m_opcodesDesc.masque8bits[40] = 0xFF; m_opcodesDesc.id8bits[40] = 0xE0; // LD (FF00+N),A
+    m_opcodesDesc.masque8bits[41] = 0xFF; m_opcodesDesc.id8bits[41] = 0xF0; // LD A,(FF00+N)
+    m_opcodesDesc.masque8bits[42] = 0xFF; m_opcodesDesc.id8bits[42] = 0xE2; // LD (C),A
+    m_opcodesDesc.masque8bits[43] = 0xFF; m_opcodesDesc.id8bits[43] = 0xF2; // LD A,(C)
+    m_opcodesDesc.masque8bits[44] = 0xFF; m_opcodesDesc.id8bits[44] = 0xEA; // LD (N),A
+    m_opcodesDesc.masque8bits[45] = 0xFF; m_opcodesDesc.id8bits[45] = 0xFA; // LD A,(N)
+    m_opcodesDesc.masque8bits[46] = 0xFF; m_opcodesDesc.id8bits[46] = 0xE9; // JP HL
+    m_opcodesDesc.masque8bits[47] = 0xFF; m_opcodesDesc.id8bits[47] = 0xF9; // LD SP,HL
+    m_opcodesDesc.masque8bits[48] = 0xFF; m_opcodesDesc.id8bits[48] = 0xF3; // DI
+    m_opcodesDesc.masque8bits[49] = 0xFF; m_opcodesDesc.id8bits[49] = 0xFB; // EI
+    m_opcodesDesc.masque8bits[50] = 0xFF; m_opcodesDesc.id8bits[50] = 0xCB; // 16b opcode
 
     // Initialisation des masques et identifiants des LSW des opcodes 16 bits
     m_opcodesDesc.masque16bitsLSW[0] = 0xF0; m_opcodesDesc.id16bitsLSW[0] = 0x00;   // RdC D
@@ -241,7 +242,7 @@ void Cpu::initOpcodesDesc()
 // DECODAGE D'UN OPCODE
 // ********************************************************
 
-std::uint8_t Cpu::decodeOpcode(std::uint8_t ai_opcode) const
+std::uint8_t Cpu::_decodeOpcode(const std::uint8_t ai_opcode) const
 {
     std::uint16_t w_id;
 
@@ -260,68 +261,20 @@ std::uint8_t Cpu::decodeOpcode(std::uint8_t ai_opcode) const
 }
 
 
-std::string			Cpu::showInstruction(std::uint16_t ai_idx) const
-{
-    return decodeInstr(ai_idx);
-}
-
-std::uint8_t		Cpu::showInstructionId(std::uint16_t ai_idx) const
-{
-    std::uint8_t 	w_id = decodeOpcode(mp_mpu->getMemVal(ai_idx));
-
-    return w_id;
-}
-
-std::string			Cpu::showInstructionIdStr(std::uint16_t ai_idx) const
-{
-    std::string		w_str = "";
-
-    std::uint8_t 	w_id = decodeOpcode(mp_mpu->getMemVal(ai_idx));
-
-    for(std::uint16_t w_i = 0; w_i < CPU_NB_OPCODES_8_BITS; w_i++)
-    {
-        if (w_id == m_opcodesDesc.id8bits[w_i])
-        {
-            w_str = m_opcodesDesc.instr8bits[w_i];
-            break;
-        }
-    }
-
-    return w_str;
-}
-
 // ********************************************************
 // EXECUTION D'UN OPCODE
 // ********************************************************
 
-void Cpu::executeOpcode(std::uint16_t ai_opcodeIdx)
+void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
 {
-    decodeInstr(ai_opcodeIdx, true);
-}
-
-std::string         Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec) const {
-    if (ai_exec == true) {
-        throw std::logic_error("const version of decodeInstr must have ai_exec argument to false");
-    }
-
-    // Appel à la fonction non const decodeInstr qui avec le second paramètre false
-    // ne modifie aucune donnée interne à la classe, ce qui permet de rester en dehors
-    // des cas à comportement indéterminé.
-    return const_cast<Cpu*>(this)->decodeInstr(ai_idx, false);
-}
-
-std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
-{
-    std::string		w_str = "";
-
     // On récupère l'ID de l'opcode à executer
-    std::uint8_t 	w_id = decodeOpcode(mp_mpu->getMemVal(ai_idx));
+    std::uint8_t w_id = _decodeOpcode(mp_mpu->getMemVal(ai_opcodeIdx));
 
     // On exécute l'opcode correspondant
     switch(w_id)
     {
         case 0x00:  // NOP
-            w_str = __decodeNop(ai_exec);
+            _decodeNop();
             break;
 
         case 0x06:  // LD D,N
@@ -338,61 +291,47 @@ std::string			Cpu::decodeInstr(std::uint16_t ai_idx, bool ai_exec)
         case 0xF2:  // LD A,(C)
         case 0xEA:  // LD (N),A
         case 0xFA:  // LD A,(N)
-            w_str = __decodeLoad8bits(w_id, ai_idx, ai_exec);
+            _decodeLoad8bits(w_id, ai_opcodeIdx);
             break;
 
         case 0x08:  // LD (N),SP
         case 0x01:  // LD R,N
         case 0xF8:  // LD HL,SP+N
         case 0xF9:  // LD SP,HL
-            w_str = __decodeLoad16bits(w_id, ai_idx, ai_exec);
+            _decodeLoad16bits(w_id, ai_opcodeIdx);
             break;
 
         case 0xC2:  // JP F,N
         case 0xC3:  // JP N
         case 0xE9:  // JP HL
-            w_str = __decodeJump(w_id, ai_idx, ai_exec);
+            _decodeJump(w_id, ai_opcodeIdx);
             break;
 
         case 0x03:  // INC R
         case 0x04:  // INC D
-            w_str = __decodeInc(w_id, ai_idx, ai_exec);
+            _decodeInc(w_id, ai_opcodeIdx);
             break;
 
         case 0x0B:  // DEC R
         case 0x05:  // DEC D
-            w_str = __decodeDec(w_id, ai_idx, ai_exec);
+            _decodeDec(w_id, ai_opcodeIdx);
             break;
 
         default:
             // Mise à jour de PC
-            if (ai_exec) {
-                m_pc = m_pc + 1;
-            }
+            m_pc = m_pc + 1;
             break;
     }
-
-    return w_str;
 }
 
-std::string			Cpu::__decodeNop(bool ai_exec)
+void Cpu::_decodeNop()
 {
-    std::string		w_str = "";
-
-    w_str = "NOP";
-
-    if (ai_exec)
-    {
-        m_pc = m_pc + 1;
-    }
-
-    return w_str;
+    m_pc = m_pc + 1;
 }
 
-std::string			Cpu::__decodeLoad8bits(std::uint8_t ai_id, std::uint16_t ai_idx, bool ai_exec)
+void Cpu::_decodeLoad8bits(const std::uint8_t ai_id, const std::uint16_t ai_opcodeIdx)
 {
-    // Variable locale
-    std::string		w_str;
+    // Variables locales
     std::string		w_sReg;
     std::string		w_sReg2;
     std::uint8_t 	w_data8bits         = 0;
@@ -427,115 +366,96 @@ std::string			Cpu::__decodeLoad8bits(std::uint8_t ai_id, std::uint16_t ai_idx, b
     if (w_id == 0x06)    // LD D,N
     {
         // Récupération du registre
-        w_register = ( mp_mpu->getMemVal(ai_idx) & 0x38 ) >> 3;
+        w_register = ( mp_mpu->getMemVal(ai_opcodeIdx) & 0x38 ) >> 3;
 
         // Récupération de la valeur à charger dans le registre
-        w_data8bits = mp_mpu->getMemVal(ai_idx + 1);
+        w_data8bits = mp_mpu->getMemVal(ai_opcodeIdx + 1);
 
         // Chargement de la valeur dans le registre
         _decodeRegister8Bits(w_register, w_sReg, wp_register8bits, wp_register16bits);
-
-        w_str = "LOAD " + w_sReg + "," + std::to_string(w_data8bits);
     }
     else if (w_id == 0x02)   // LD (R),A
     {
         // Récupération du registre
-        w_register = mp_mpu->getMemVal(ai_idx) >> 4;
+        w_register = mp_mpu->getMemVal(ai_opcodeIdx) >> 4;
 
         wp_register16bits = _decodeRegister16Bits(w_register, w_id, w_sReg);
-
-        w_str = "LOAD " + w_sReg + ",A";
     }
     else if (w_id == 0x0A)   // LD A,(R)
     {
         // Récupération du registre
-        w_register = mp_mpu->getMemVal(ai_idx) >> 4;
+        w_register = mp_mpu->getMemVal(ai_opcodeIdx) >> 4;
 
         wp_register16bits = _decodeRegister16Bits(w_register, w_id, w_sReg);
-
-        w_str = "LOAD A," + w_sReg;
     }
     else if (w_id == 0x22)  // LDI (HL),A
     {
         wp_register16bits = &m_registers.s16bits.hl;
         w_sReg = "(HL)";
-        w_str = "LOADI " + w_sReg + ",A";
     }
     else if (w_id == 0x2A)  // LDI A,(HL)
     {
         wp_register16bits = &m_registers.s16bits.hl;
         w_sReg = "(HL)";
-        w_str = "LOADI A," + w_sReg;
     }
     else if (w_id == 0x32)  // LDD (HL),A
     {
         wp_register16bits = &m_registers.s16bits.hl;
         w_sReg = "(HL)";
-        w_str = "LOADD " + w_sReg + ",A";
     }
     else if (w_id == 0x3A)  // LDD A,(HL)
     {
         wp_register16bits = &m_registers.s16bits.hl;
         w_sReg = "(HL)";
-        w_str = "LOADD A," + w_sReg;
     }
     else if (w_id == 0x40)  // LD D,D
     {
         // Récupération du premier registre
-        w_register = ( mp_mpu->getMemVal(ai_idx) >> 3 ) & 0x07;
+        w_register = ( mp_mpu->getMemVal(ai_opcodeIdx) >> 3 ) & 0x07;
         _decodeRegister8Bits(w_register, w_sReg, wp_register8bits, wp_register16bits);
 
         // Récupération du deuxième registre
-        w_register = mp_mpu->getMemVal(ai_idx) & 0x07;
+        w_register = mp_mpu->getMemVal(ai_opcodeIdx) & 0x07;
         _decodeRegister8Bits(w_register, w_sReg2, wp_register8bits2, wp_register16bits2);
-
-        w_str = "LOAD " + w_sReg +"," + w_sReg2;
     }
     else if (w_id == 0xE0)   // LD (FF00+N),A
     {
         // Récupération de l'offset N
-        w_data8bits = mp_mpu->getMemVal(ai_idx + 1);
+        w_data8bits = mp_mpu->getMemVal(ai_opcodeIdx + 1);
 
         // Registre 8 bits à utiliser
         wp_register8bits = &m_registers.s8bits.a;
-
-        w_str = "LOAD ($FF00+" + std::to_string(w_data8bits) + "),A";
     }
     else if (w_id == 0xF0)  // LD A,(FF00+N)
     {
         // Récupération de l'offset N
-        w_data8bits = mp_mpu->getMemVal(ai_idx + 1);
+        w_data8bits = mp_mpu->getMemVal(ai_opcodeIdx + 1);
 
         // Registre 8 bits à utiliser
         wp_register8bits = &m_registers.s8bits.a;
 
-        w_str = "LOAD A,($FF00+" + std::to_string(w_data8bits) + ")";
     }
     else if (w_id == 0xEA)  // LD (N),A
     {
         // Récupération de l'adresse d'écriture
-        w_data16bits = (mp_mpu->getMemVal(ai_idx + 2) * 0x100) + mp_mpu->getMemVal(ai_idx + 1);
+        w_data16bits = (mp_mpu->getMemVal(ai_opcodeIdx + 2) * 0x100) + mp_mpu->getMemVal(ai_opcodeIdx + 1);
 
         // Registre 8 bits à utiliser
         wp_register8bits = &m_registers.s8bits.a;
-
-        w_str = "LOAD (" + std::to_string(w_data16bits) + "),A";
     }
     else if (w_id == 0xFA)  // LD A,(N)
     {
         // Récupération de l'adresse de lecture
-        w_data16bits = (mp_mpu->getMemVal(ai_idx + 2) * 0x100) + mp_mpu->getMemVal(ai_idx + 1);
+        w_data16bits = (mp_mpu->getMemVal(ai_opcodeIdx + 2) * 0x100) + mp_mpu->getMemVal(ai_opcodeIdx + 1);
 
         // Registre 8 bits à utiliser
         wp_register8bits = &m_registers.s8bits.a;
-
-        w_str = "LOAD A,(" + std::to_string(w_data16bits) + ")";
     }
 
 
     // EXECUTION DE L'INSTRUCTION
     // **************************
-    if (ai_exec && (wp_register8bits != NULL || wp_register16bits != NULL))
+    if (wp_register8bits != NULL || wp_register16bits != NULL)
     {
         if (w_id == 0x06)    // LD D,N
         {
@@ -672,11 +592,9 @@ std::string			Cpu::__decodeLoad8bits(std::uint8_t ai_id, std::uint16_t ai_idx, b
         std::cout << "ERREUR : Pointeur NULL" << std::endl;
         exit(-1);
     }
-
-    return w_str;
 }
 
-std::string Cpu::__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, bool ai_exec)
+void Cpu::_decodeLoad16bits(const std::uint8_t ai_id, const std::uint16_t ai_opcodeIdx)
 {
     // Variable locale
     std::string		w_str;
@@ -695,7 +613,7 @@ std::string Cpu::__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, bo
     if (w_id == 0x08)
     {
         // Récupération de la valeur à charger dans le registre
-        w_data16bits = (mp_mpu->getMemVal(ai_idx + 2) * 0x100) + mp_mpu->getMemVal(ai_idx + 1);
+        w_data16bits = (mp_mpu->getMemVal(ai_opcodeIdx + 2) * 0x100) + mp_mpu->getMemVal(ai_opcodeIdx + 1);
 
         wp_register16bits = &m_sp;
         w_str += "(" + std::to_string(w_data16bits) + "),SP";
@@ -703,7 +621,7 @@ std::string Cpu::__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, bo
     else if (w_id == 0xF8)
     {
         // Récupération de la valeur 8 bits signés
-        w_data8bits = (mp_mpu->getMemVal(ai_idx + 1));
+        w_data8bits = (mp_mpu->getMemVal(ai_opcodeIdx + 1));
 
         w_str += "HL,SP+" + std::to_string(w_data8bits);
     }
@@ -714,17 +632,17 @@ std::string Cpu::__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, bo
     else
     {
         // Récupération de la valeur à charger dans le registre
-        w_data16bits = (mp_mpu->getMemVal(ai_idx + 2) * 0x100) + mp_mpu->getMemVal(ai_idx + 1);
+        w_data16bits = (mp_mpu->getMemVal(ai_opcodeIdx + 2) * 0x100) + mp_mpu->getMemVal(ai_opcodeIdx + 1);
 
         // On récupère l'indice du registre à utiliser
-        w_register = ( mp_mpu->getMemVal(ai_idx) & 0x30 ) >> 4;
+        w_register = ( mp_mpu->getMemVal(ai_opcodeIdx) & 0x30 ) >> 4;
 
         wp_register16bits = _decodeRegister16Bits(w_register, w_id, w_str);
     }
 
     // EXECUTION DE L'INSTRUCTION
     // **************************
-    if (ai_exec) // && (wp_register16bits != NULL)
+    if (wp_register16bits != NULL)
     {
         if (w_id == 0x08)
         {
@@ -786,78 +704,74 @@ std::string Cpu::__decodeLoad16bits(std::uint8_t ai_id, std::uint16_t ai_idx, bo
             m_pc += 3;
         }
     }
-
-    return w_str;
+    else
+    {
+        std::cout << "ERREUR : Pointeur NULL" << std::endl;
+        exit(-1);
+    }
 }
 
-std::string	Cpu::__decodeJump(std::uint8_t ai_id, std::uint16_t ai_idx, bool ai_exec)
+void Cpu::_decodeJump(const std::uint8_t ai_id, const std::uint16_t ai_opcodeIdx)
 {
-    std::string		w_str = "JP ";
-    std::uint16_t	w_pos = 0;
+    std::uint16_t	w_pos   = 0;
     std::uint8_t	w_mnemo = 0;
-    bool			w_test = true;
-    std::uint8_t	w_size = 1;
+    bool			w_test  = true;
+    std::uint8_t	w_size  = 1;
 
     // DECODAGE DE LA COMMANDE JUMP
     // ****************************
-    w_mnemo = (mp_mpu->getMemVal(ai_idx) & 0x18) >> 3;
+    w_mnemo = (mp_mpu->getMemVal(ai_opcodeIdx) & 0x18) >> 3;
 
     switch(ai_id)
     {
     case 0xE9:  // JP HL
         w_pos = getRegisterHL();
-        w_str += "HL";
         w_size = 1;
         break;
+
     case 0xC2:  // JP F,N
-        w_pos = (mp_mpu->getMemVal(ai_idx + 2) * 0x100) + mp_mpu->getMemVal(ai_idx + 1);
+        w_pos = (mp_mpu->getMemVal(ai_opcodeIdx + 2) * 0x100) + mp_mpu->getMemVal(ai_opcodeIdx + 1);
         switch (w_mnemo)
         {
         case 0:
-            w_str += "NZ,";
             w_test = (getFlagZ() == 0);
             break;
+
         case 1:
-            w_str += "Z,";
             w_test = (getFlagZ() == 1);
             break;
+
         case 2:
-            w_str += "NC,";
             w_test = (getFlagC() == 0);
             break;
+
         case 3:
-            w_str += "C,";
             w_test = (getFlagC() == 1);
             break;
         }
-        w_str += std::to_string(w_pos);
+
         w_size = 3;
         break;
+
     case 0xC3:  // JP N
-        w_pos = (mp_mpu->getMemVal(ai_idx + 2) * 0x100) + mp_mpu->getMemVal(ai_idx + 1);
-        w_str += std::to_string(w_pos);
+        w_pos = (mp_mpu->getMemVal(ai_opcodeIdx + 2) * 0x100) + mp_mpu->getMemVal(ai_opcodeIdx + 1);
         w_size = 3;
         break;
     }
 
     // EXECUTION DE LA COMMANDE
     // ************************
-    if (ai_exec)
+    if (w_test)
     {
-        if (w_test)
-        {
-            m_pc = w_pos;
-        }
-        else
-        {
-            m_pc += w_size;
-        }
+        m_pc = w_pos;
     }
-
-    return w_str;
+    else
+    {
+        m_pc += w_size;
+    }
 }
 
-std::string Cpu::__decodeInc(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
+void Cpu::_decodeInc(const uint8_t ai_id, const uint16_t ai_opcodeIdx) {
     std::string w_str            = "INC ";
     uint8_t w_register           = 0u;
     uint16_t * wp_register16bits = NULL;
@@ -866,18 +780,18 @@ std::string Cpu::__decodeInc(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
     switch (ai_id) {
         case 0x03: // INC R sur registre 16b
             // Récupération du registre
-            w_register = (mp_mpu->getMemVal(ai_idx) >> 4);
+            w_register = (mp_mpu->getMemVal(ai_opcodeIdx) >> 4);
             wp_register16bits = _decodeRegister16Bits(w_register, ai_id, w_str);
 
         case 0x4: // INC D
             // Récupération du registre
-            w_register = ((mp_mpu->getMemVal(ai_idx) & 0x38) >> 3);
+            w_register = ((mp_mpu->getMemVal(ai_opcodeIdx) & 0x38) >> 3);
             _decodeRegister8Bits(w_register, w_str, wp_register8bits, wp_register16bits);
 
             break;
     }
-    if (ai_exec) {
-        switch (ai_id) {
+
+    switch (ai_id) {
         case 0x03:
             //Registre 16 bits, pas de modifications des flags
             ++(*wp_register16bits);
@@ -886,59 +800,58 @@ std::string Cpu::__decodeInc(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
         case 0x04:
             // Registre 8 bits, prendre en compte les modifications des flags
             switch(w_register) {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 7:
-                // Gestion du Half-Carry
-                if (((*wp_register8bits) & 0x0F) == 0x0F) {
-                    m_registers.sFlags.h = 1;
-                } else {
-                    m_registers.sFlags.h = 0;
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 7:
+                    // Gestion du Half-Carry
+                    if (((*wp_register8bits) & 0x0F) == 0x0F) {
+                        m_registers.sFlags.h = 1;
+                    } else {
+                        m_registers.sFlags.h = 0;
+                    }
+                    // Incrémentation
+                    ++(*wp_register8bits);
+                    // Gestion du zéro
+                    if ((*wp_register8bits) == 0) {
+                        m_registers.sFlags.z = 1;
+                    } else {
+                        m_registers.sFlags.z = 0;
+                    }
+                    // Reset du substract
+                    m_registers.sFlags.n = 0;
+                    // Flag carry non modifié
+                    break;
+                case 6:
+                    uint8_t w_val = mp_mpu->getMemVal(*wp_register16bits);
+                    if ((w_val & 0x0F) == 0x0F) {
+                        m_registers.sFlags.h = 1;
+                    } else {
+                        m_registers.sFlags.h = 0;
+                    }
+                    // Incrémentation
+                    mp_mpu->setMemVal(*wp_register16bits, ++w_val);
+                    //Gestion du Zéro
+                    if (w_val == 0) {
+                        m_registers.sFlags.z = 1;
+                    } else {
+                        m_registers.sFlags.z = 0;
+                    }
+                    // Reset du substract
+                    m_registers.sFlags.n = 0;
+                    // Flag carry non modifié
+                    break;
                 }
-                // Incrémentation
-                ++(*wp_register8bits);
-                // Gestion du zéro
-                if ((*wp_register8bits) == 0) {
-                    m_registers.sFlags.z = 1;
-                } else {
-                    m_registers.sFlags.z = 0;
-                }
-                // Reset du substract
-                m_registers.sFlags.n = 0;
-                // Flag carry non modifié
                 break;
-            case 6:
-                uint8_t w_val = mp_mpu->getMemVal(*wp_register16bits);
-                if ((w_val & 0x0F) == 0x0F) {
-                    m_registers.sFlags.h = 1;
-                } else {
-                    m_registers.sFlags.h = 0;
-                }
-                // Incrémentation
-                mp_mpu->setMemVal(*wp_register16bits, ++w_val);
-                //Gestion du Zéro
-                if (w_val == 0) {
-                    m_registers.sFlags.z = 1;
-                } else {
-                    m_registers.sFlags.z = 0;
-                }
-                // Reset du substract
-                m_registers.sFlags.n = 0;
-                // Flag carry non modifié
-                break;
-            }
-            break;
-        }
+
         ++m_pc;
     }
-    return w_str;
 }
 
-std::string Cpu::__decodeDec(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
+void Cpu::_decodeDec(const uint8_t ai_id, const uint16_t ai_opcodeIdx) {
     std::string w_str            = "DEC ";
     uint8_t w_register           = 0u;
     uint16_t * wp_register16bits = NULL;
@@ -948,81 +861,78 @@ std::string Cpu::__decodeDec(uint8_t ai_id, uint16_t ai_idx, bool ai_exec) {
     switch (ai_id) {
         case 0x0B: // DEC R sur registre 16b
             // Récupération du registre
-            w_register = (mp_mpu->getMemVal(ai_idx) >> 4);
+            w_register = (mp_mpu->getMemVal(ai_opcodeIdx) >> 4);
             wp_register16bits = _decodeRegister16Bits(w_register, ai_id, w_str);
 
         case 0x5: // DEC D
             // Récupération du registre
-            w_register = ((mp_mpu->getMemVal(ai_idx) & 0x38) >> 3);
+            w_register = ((mp_mpu->getMemVal(ai_opcodeIdx) & 0x38) >> 3);
             _decodeRegister8Bits(w_register, w_str, wp_register8bits, wp_register16bits);
 
             break;
     }
 
-    if (ai_exec) {
-        switch (ai_id) {
-        case 0x0B:
-            //Registre 16 bits, pas de modifications des flags
-            --(*wp_register16bits);
-            break;
+    switch (ai_id) {
+    case 0x0B:
+        //Registre 16 bits, pas de modifications des flags
+        --(*wp_register16bits);
+        break;
 
-        case 0x05:
-            // Registre 8 bits, prendre en compte les modifications des flags
-            switch(w_register) {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 7:
-                // Gestion du Half-Carry
-                if (((*wp_register8bits) & 0x0F) == 0x00) {
-                    m_registers.sFlags.h = 1;
-                } else {
-                    m_registers.sFlags.h = 0;
-                }
-                // Décrémentation
-                --(*wp_register8bits);
-                // Gestion du zéro
-                if ((*wp_register8bits) == 0) {
-                    m_registers.sFlags.z = 1;
-                } else {
-                    m_registers.sFlags.z = 0;
-                }
-                // Set du substract
-                m_registers.sFlags.n = 1;
-                // Flag carry non modifié
-                break;
-            case 6:
-                uint8_t w_val = mp_mpu->getMemVal(w_pos);
-                if ((w_val & 0x0F) == 0x00) {
-                    m_registers.sFlags.h = 1;
-                } else {
-                    m_registers.sFlags.h = 0;
-                }
-                // Décrémentation
-                mp_mpu->setMemVal(w_pos, --w_val);
-                //Gestion du Zéro
-                if (w_val == 0) {
-                    m_registers.sFlags.z = 1;
-                } else {
-                    m_registers.sFlags.z = 0;
-                }
-                // Set du substract
-                m_registers.sFlags.n = 1;
-                // Flag carry non modifié
-                break;
+    case 0x05:
+        // Registre 8 bits, prendre en compte les modifications des flags
+        switch(w_register) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 7:
+            // Gestion du Half-Carry
+            if (((*wp_register8bits) & 0x0F) == 0x00) {
+                m_registers.sFlags.h = 1;
+            } else {
+                m_registers.sFlags.h = 0;
             }
+            // Décrémentation
+            --(*wp_register8bits);
+            // Gestion du zéro
+            if ((*wp_register8bits) == 0) {
+                m_registers.sFlags.z = 1;
+            } else {
+                m_registers.sFlags.z = 0;
+            }
+            // Set du substract
+            m_registers.sFlags.n = 1;
+            // Flag carry non modifié
+            break;
+        case 6:
+            uint8_t w_val = mp_mpu->getMemVal(w_pos);
+            if ((w_val & 0x0F) == 0x00) {
+                m_registers.sFlags.h = 1;
+            } else {
+                m_registers.sFlags.h = 0;
+            }
+            // Décrémentation
+            mp_mpu->setMemVal(w_pos, --w_val);
+            //Gestion du Zéro
+            if (w_val == 0) {
+                m_registers.sFlags.z = 1;
+            } else {
+                m_registers.sFlags.z = 0;
+            }
+            // Set du substract
+            m_registers.sFlags.n = 1;
+            // Flag carry non modifié
             break;
         }
-        ++m_pc;
+        break;
     }
-    return w_str;
+    ++m_pc;
 }
 
 
-void Cpu::_decodeRegister8Bits(std::uint8_t ai_registerMask, std::string &ai_sReg, std::uint8_t* &aop_register8bits, std::uint16_t* &aop_register16bits)
+void Cpu::_decodeRegister8Bits(const std::uint8_t ai_registerMask, std::string &ai_sReg, std::uint8_t* &aop_register8bits, std::uint16_t* &aop_register16bits)
 {
     switch (ai_registerMask)
     {
@@ -1073,7 +983,7 @@ void Cpu::_decodeRegister8Bits(std::uint8_t ai_registerMask, std::string &ai_sRe
 }
 
 
-std::uint16_t* Cpu::_decodeRegister16Bits(std::uint8_t ai_registerMask, std::uint8_t ai_opcodeId, std::string &ai_sReg)
+std::uint16_t* Cpu::_decodeRegister16Bits(const std::uint8_t ai_registerMask, const std::uint8_t ai_opcodeIdx, std::string &ai_sReg)
 {
     std::uint16_t* wp_registers16bit = NULL;
 
@@ -1095,7 +1005,7 @@ std::uint16_t* Cpu::_decodeRegister16Bits(std::uint8_t ai_registerMask, std::uin
 
         case 3:
             // Renvoie AF uniquement dans le cas d'un POP ou d'un PUSH, SP sinon
-            if (ai_opcodeId == 0xC1 || ai_opcodeId == 0xC5)
+            if (ai_opcodeIdx == 0xC1 || ai_opcodeIdx == 0xC5)
             {
                 ai_sReg += "AF";
                 wp_registers16bit = &m_registers.s16bits.af;
