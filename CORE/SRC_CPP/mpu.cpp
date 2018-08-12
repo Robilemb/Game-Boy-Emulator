@@ -37,8 +37,8 @@ void Mpu::setMemVal(std::uint16_t ai_offset, std::uint8_t ai_val)
 void Mpu::initMemory()
 {
     // Initialisation de la mémoire
-    for (std::uint16_t w_i = 0; w_i < MPU_MEMORY_SIZE; w_i++)
+    for (std::uint16_t w_i = 0u; w_i < MPU_MEMORY_SIZE; ++w_i)
     {
-        m_memory[w_i] = 0;
+        m_memory[w_i] = 0u;
     }
 }

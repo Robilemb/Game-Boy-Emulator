@@ -10,7 +10,7 @@
 // Enum des status de fonction
 enum te_status
 {
-    E_UNDEFINED = 0,
+    E_UNDEFINED = 0u,
     E_OK,
     E_ERROR
 };

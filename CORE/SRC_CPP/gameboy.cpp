@@ -42,7 +42,7 @@ te_status Gameboy::loadROM(const std::string& ai_ROMFileName)
 {
     // Variables locales
     char 				w_caractere;
-    std::uint32_t 		w_i = 0;
+    std::uint32_t 		w_i = 0u;
 
     // Réinitialisation de l'émulation
     mp_mpu->initMemory();

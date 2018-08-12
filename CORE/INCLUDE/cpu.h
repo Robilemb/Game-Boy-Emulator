@@ -6,8 +6,8 @@
 
 #include "mpu.h"
 
-#define CPU_NB_OPCODES_8_BITS   51
-#define CPU_NB_OPCODES_16_BITS  8
+#define CPU_NB_OPCODES_8_BITS   51u
+#define CPU_NB_OPCODES_16_BITS  8u
 
 // Union codant les différents registres de la gameboy
 union tu_registers
@@ -43,16 +43,6 @@ union tu_registers
         std::uint16_t de;
         std::uint16_t hl;
     } s16bits;
-};
-
-
-// Structure des masques et identifiants des opcodes
-struct ts_opcodesDesc
-{
-    std::uint8_t 	masque8bits[CPU_NB_OPCODES_8_BITS];
-    std::uint8_t 	id8bits[CPU_NB_OPCODES_8_BITS];
-    std::uint8_t 	masque16bitsLSW[CPU_NB_OPCODES_16_BITS];
-    std::uint8_t 	id16bitsLSW[CPU_NB_OPCODES_16_BITS];
 };
 
 
@@ -129,15 +119,90 @@ public:
     tu_registers getRegisters() const;
 
 private:
+    // Structure des masques et identifiants des opcodes
+    struct ts_opcodesDesc
+    {
+        std::uint8_t 	masque8bits[CPU_NB_OPCODES_8_BITS];
+        std::uint8_t 	id8bits[CPU_NB_OPCODES_8_BITS];
+        void            (Cpu::*execute8bits[CPU_NB_OPCODES_8_BITS])();
+        std::uint8_t 	masque16bitsLSW[CPU_NB_OPCODES_16_BITS];
+        std::uint8_t 	id16bitsLSW[CPU_NB_OPCODES_16_BITS];
+        void            (Cpu::*execute16bits[CPU_NB_OPCODES_16_BITS])();
+    };
+
+private:
     // Initialisation des masques et identifiants des opcodes
-    void initOpcodesDesc();
-
-    // Décodage d'un opcode
-    std::uint8_t _decodeOpcode(const std::uint8_t ai_opcode) const;
+    void _initOpcodesDesc();
 
 
-    // LISTE DES INSTRUCTIONS
-    // **********************
+    // LISTE DES INSTRUCTIONS 8 BITS
+    // *****************************
+    void _nop() {}
+    void _ln_n_sp() {}
+    void _ld_r_n() {}
+    void _add_hl_r() {}
+    void _ld_r_a() {}
+    void _ld_a_r() {}
+    void _inc_r() {}
+    void _dec_r() {}
+    void _inc_d() {}
+    void _dec_d() {}
+    void _ld_d_n() {}
+    void _rdca() {}
+    void _rda() {}
+    void _stop() {}
+    void _jr_n() {}
+    void _jr_f_n() {}
+    void _ldi_hl_a() {}
+    void _ldi_a_hl() {}
+    void _ldd_hl_a() {}
+    void _ldd_a_hl() {}
+    void _daa() {}
+    void _cpl() {}
+    void _scf() {}
+    void _ccf() {}
+    void _ld_d_d() {}
+    void _halt() {}
+    void _alu_a_d() {}
+    void _alu_a_n() {}
+    void _pop_r() {}
+    void _push_r() {}
+    void _rst_n() {}
+    void _ret_f() {}
+    void _ret() {}
+    void _reti() {}
+    void _jp_f_n() {}
+    void _jp_n() {}
+    void _call_f_n() {}
+    void _call_n() {}
+    void _add_sp_n() {}
+    void _ld_hl_sp_plus_n() {}
+    void _ld_ff00_plus_n_a() {}
+    void _ld_a_ff00_plus_n() {}
+    void _ld_c_a() {}
+    void _ld_a_c() {}
+    void _ld_n_a() {}
+    void _ld_a_n() {}
+    void _jp_hl() {}
+    void _ld_sp_hl() {}
+    void _di() {}
+    void _ei() {}
+    void _16b_opcode() {}
+
+    // LISTE DES INSTRUCTIONS 16 BITS
+    // ******************************
+    void _rdc_d() {}
+    void _rd_d() {}
+    void _sda_d() {}
+    void _swap_d() {}
+    void _srl_d() {}
+    void _bit_n_d() {}
+    void _res_n_d() {}
+    void _set_n_d() {}
+
+
+    // A supprimer
+    // ************
     void _decodeNop();
     void _decodeLoad8bits(const std::uint8_t ai_id, const std::uint16_t ai_opcodeIdx);
     void _decodeLoad16bits(const std::uint8_t ai_id, const std::uint16_t ai_opcodeIdx);

@@ -16,7 +16,7 @@ Cpu::Cpu(Mpu* ai_mpu)
     initRegisters();
 
     // Initialisation des masques et identifiants des opcodes
-    initOpcodesDesc();
+    _initOpcodesDesc();
 }
 
 // Destructeur
@@ -171,93 +171,70 @@ void Cpu::initRegisters()
 // INITIALISATION DES MASQUES ET IDENTIFIANTS DES OPCODES
 // ********************************************************
 
-void Cpu::initOpcodesDesc()
+void Cpu::_initOpcodesDesc()
 {
     // Initialisation des masques et identifiants des opcodes 8 bits
-    m_opcodesDesc.masque8bits[0]  = 0xFF; m_opcodesDesc.id8bits[0]  = 0x00; // NOP
-    m_opcodesDesc.masque8bits[1]  = 0xFF; m_opcodesDesc.id8bits[1]  = 0x08; // LN (N),SP
-    m_opcodesDesc.masque8bits[2]  = 0xCF; m_opcodesDesc.id8bits[2]  = 0x01; // LD R,N
-    m_opcodesDesc.masque8bits[3]  = 0xCF; m_opcodesDesc.id8bits[3]  = 0x09; // ADD HL,R
-    m_opcodesDesc.masque8bits[4]  = 0xEF; m_opcodesDesc.id8bits[4]  = 0x02; // LD (R),A
-    m_opcodesDesc.masque8bits[5]  = 0xEF; m_opcodesDesc.id8bits[5]  = 0x0A; // LD A,(R)
-    m_opcodesDesc.masque8bits[6]  = 0xCF; m_opcodesDesc.id8bits[6]  = 0x03; // INC R
-    m_opcodesDesc.masque8bits[7]  = 0xCF; m_opcodesDesc.id8bits[7]  = 0x0B; // DEC R
-    m_opcodesDesc.masque8bits[8]  = 0xC7; m_opcodesDesc.id8bits[8]  = 0x04; // INC D
-    m_opcodesDesc.masque8bits[9]  = 0xC7; m_opcodesDesc.id8bits[9]  = 0x05; // DEC D
-    m_opcodesDesc.masque8bits[10] = 0xC7; m_opcodesDesc.id8bits[10] = 0x06; // LD D,N
-    m_opcodesDesc.masque8bits[11] = 0xF7; m_opcodesDesc.id8bits[11] = 0x07; // RdCA
-    m_opcodesDesc.masque8bits[12] = 0xF7; m_opcodesDesc.id8bits[12] = 0x17; // RdA
-    m_opcodesDesc.masque8bits[13] = 0xFF; m_opcodesDesc.id8bits[13] = 0x10; // STOP
-    m_opcodesDesc.masque8bits[14] = 0xFF; m_opcodesDesc.id8bits[14] = 0x18; // JR N
-    m_opcodesDesc.masque8bits[15] = 0xE7; m_opcodesDesc.id8bits[15] = 0x20; // JR F,N
-    m_opcodesDesc.masque8bits[16] = 0xFF; m_opcodesDesc.id8bits[16] = 0x22; // LDI (HL),A
-    m_opcodesDesc.masque8bits[17] = 0xFF; m_opcodesDesc.id8bits[17] = 0x2A; // LDI A,(HL)
-    m_opcodesDesc.masque8bits[18] = 0xFF; m_opcodesDesc.id8bits[18] = 0x32; // LDD (HL),A
-    m_opcodesDesc.masque8bits[19] = 0xFF; m_opcodesDesc.id8bits[19] = 0x3A; // LDD A,(HL)
-    m_opcodesDesc.masque8bits[20] = 0xFF; m_opcodesDesc.id8bits[20] = 0x27; // DAA
-    m_opcodesDesc.masque8bits[21] = 0xFF; m_opcodesDesc.id8bits[21] = 0x2F; // CPL
-    m_opcodesDesc.masque8bits[22] = 0xFF; m_opcodesDesc.id8bits[22] = 0x37; // SCF
-    m_opcodesDesc.masque8bits[23] = 0xFF; m_opcodesDesc.id8bits[23] = 0x3F; // CCF
-    m_opcodesDesc.masque8bits[24] = 0xC0; m_opcodesDesc.id8bits[24] = 0x40; // LD D,D
-    m_opcodesDesc.masque8bits[25] = 0xFF; m_opcodesDesc.id8bits[25] = 0x76; // HALT
-    m_opcodesDesc.masque8bits[26] = 0xC0; m_opcodesDesc.id8bits[26] = 0x80; // ALU A,D
-    m_opcodesDesc.masque8bits[27] = 0xC7; m_opcodesDesc.id8bits[27] = 0xC6; // ALU A,N
-    m_opcodesDesc.masque8bits[28] = 0xCF; m_opcodesDesc.id8bits[28] = 0xC1; // POP R
-    m_opcodesDesc.masque8bits[29] = 0xCF; m_opcodesDesc.id8bits[29] = 0xC5; // PUSH R
-    m_opcodesDesc.masque8bits[30] = 0xC7; m_opcodesDesc.id8bits[30] = 0xC7; // RST N
-    m_opcodesDesc.masque8bits[31] = 0xE7; m_opcodesDesc.id8bits[31] = 0xC0; // RET F
-    m_opcodesDesc.masque8bits[32] = 0xFF; m_opcodesDesc.id8bits[32] = 0xC9; // RET
-    m_opcodesDesc.masque8bits[33] = 0xFF; m_opcodesDesc.id8bits[33] = 0xD9; // RETI
-    m_opcodesDesc.masque8bits[34] = 0xE7; m_opcodesDesc.id8bits[34] = 0xC2; // JP F,N
-    m_opcodesDesc.masque8bits[35] = 0xFF; m_opcodesDesc.id8bits[35] = 0xC3; // JP N
-    m_opcodesDesc.masque8bits[36] = 0xE7; m_opcodesDesc.id8bits[36] = 0xC4; // CALL F,N
-    m_opcodesDesc.masque8bits[37] = 0xFF; m_opcodesDesc.id8bits[37] = 0xCD; // CALL N
-    m_opcodesDesc.masque8bits[38] = 0xFF; m_opcodesDesc.id8bits[38] = 0xE8; // ADD SP,N
-    m_opcodesDesc.masque8bits[39] = 0xFF; m_opcodesDesc.id8bits[39] = 0xF8; // LD HL,SP+N
-    m_opcodesDesc.masque8bits[40] = 0xFF; m_opcodesDesc.id8bits[40] = 0xE0; // LD (FF00+N),A
-    m_opcodesDesc.masque8bits[41] = 0xFF; m_opcodesDesc.id8bits[41] = 0xF0; // LD A,(FF00+N)
-    m_opcodesDesc.masque8bits[42] = 0xFF; m_opcodesDesc.id8bits[42] = 0xE2; // LD (C),A
-    m_opcodesDesc.masque8bits[43] = 0xFF; m_opcodesDesc.id8bits[43] = 0xF2; // LD A,(C)
-    m_opcodesDesc.masque8bits[44] = 0xFF; m_opcodesDesc.id8bits[44] = 0xEA; // LD (N),A
-    m_opcodesDesc.masque8bits[45] = 0xFF; m_opcodesDesc.id8bits[45] = 0xFA; // LD A,(N)
-    m_opcodesDesc.masque8bits[46] = 0xFF; m_opcodesDesc.id8bits[46] = 0xE9; // JP HL
-    m_opcodesDesc.masque8bits[47] = 0xFF; m_opcodesDesc.id8bits[47] = 0xF9; // LD SP,HL
-    m_opcodesDesc.masque8bits[48] = 0xFF; m_opcodesDesc.id8bits[48] = 0xF3; // DI
-    m_opcodesDesc.masque8bits[49] = 0xFF; m_opcodesDesc.id8bits[49] = 0xFB; // EI
-    m_opcodesDesc.masque8bits[50] = 0xFF; m_opcodesDesc.id8bits[50] = 0xCB; // 16b opcode
+    m_opcodesDesc.masque8bits[0]  = 0xFF; m_opcodesDesc.id8bits[0]  = 0x00; m_opcodesDesc.execute8bits[0]   = _nop;                 // NOP
+    m_opcodesDesc.masque8bits[1]  = 0xFF; m_opcodesDesc.id8bits[1]  = 0x08; m_opcodesDesc.execute8bits[1]   = _ln_n_sp;             // LN (N),SP
+    m_opcodesDesc.masque8bits[2]  = 0xCF; m_opcodesDesc.id8bits[2]  = 0x01; m_opcodesDesc.execute8bits[2]   = _ld_r_n;              // LD R,N
+    m_opcodesDesc.masque8bits[3]  = 0xCF; m_opcodesDesc.id8bits[3]  = 0x09; m_opcodesDesc.execute8bits[3]   = _add_hl_r;            // ADD HL,R
+    m_opcodesDesc.masque8bits[4]  = 0xEF; m_opcodesDesc.id8bits[4]  = 0x02; m_opcodesDesc.execute8bits[4]   = _ld_r_a;              // LD (R),A
+    m_opcodesDesc.masque8bits[5]  = 0xEF; m_opcodesDesc.id8bits[5]  = 0x0A; m_opcodesDesc.execute8bits[5]   = _ld_a_r;              // LD A,(R)
+    m_opcodesDesc.masque8bits[6]  = 0xCF; m_opcodesDesc.id8bits[6]  = 0x03; m_opcodesDesc.execute8bits[6]   = _inc_r;               // INC R
+    m_opcodesDesc.masque8bits[7]  = 0xCF; m_opcodesDesc.id8bits[7]  = 0x0B; m_opcodesDesc.execute8bits[7]   = _dec_r;               // DEC R
+    m_opcodesDesc.masque8bits[8]  = 0xC7; m_opcodesDesc.id8bits[8]  = 0x04; m_opcodesDesc.execute8bits[8]   = _inc_d;               // INC D
+    m_opcodesDesc.masque8bits[9]  = 0xC7; m_opcodesDesc.id8bits[9]  = 0x05; m_opcodesDesc.execute8bits[9]   = _dec_d;               // DEC D
+    m_opcodesDesc.masque8bits[10] = 0xC7; m_opcodesDesc.id8bits[10] = 0x06; m_opcodesDesc.execute8bits[10]  = _ld_d_n;              // LD D,N
+    m_opcodesDesc.masque8bits[11] = 0xF7; m_opcodesDesc.id8bits[11] = 0x07; m_opcodesDesc.execute8bits[11]  = _rdca;                // RdCA
+    m_opcodesDesc.masque8bits[12] = 0xF7; m_opcodesDesc.id8bits[12] = 0x17; m_opcodesDesc.execute8bits[12]  = _rda;                 // RdA
+    m_opcodesDesc.masque8bits[13] = 0xFF; m_opcodesDesc.id8bits[13] = 0x10; m_opcodesDesc.execute8bits[13]  = _stop;                // STOP
+    m_opcodesDesc.masque8bits[14] = 0xFF; m_opcodesDesc.id8bits[14] = 0x18; m_opcodesDesc.execute8bits[14]  = _jr_n;                // JR N
+    m_opcodesDesc.masque8bits[15] = 0xE7; m_opcodesDesc.id8bits[15] = 0x20; m_opcodesDesc.execute8bits[15]  = _jr_f_n;              // JR F,N
+    m_opcodesDesc.masque8bits[16] = 0xFF; m_opcodesDesc.id8bits[16] = 0x22; m_opcodesDesc.execute8bits[16]  = _ldi_hl_a;            // LDI (HL),A
+    m_opcodesDesc.masque8bits[17] = 0xFF; m_opcodesDesc.id8bits[17] = 0x2A; m_opcodesDesc.execute8bits[17]  = _ldi_a_hl;            // LDI A,(HL)
+    m_opcodesDesc.masque8bits[18] = 0xFF; m_opcodesDesc.id8bits[18] = 0x32; m_opcodesDesc.execute8bits[18]  = _ldd_hl_a;            // LDD (HL),A
+    m_opcodesDesc.masque8bits[19] = 0xFF; m_opcodesDesc.id8bits[19] = 0x3A; m_opcodesDesc.execute8bits[19]  = _ldd_a_hl;            // LDD A,(HL)
+    m_opcodesDesc.masque8bits[20] = 0xFF; m_opcodesDesc.id8bits[20] = 0x27; m_opcodesDesc.execute8bits[20]  = _daa;                 // DAA
+    m_opcodesDesc.masque8bits[21] = 0xFF; m_opcodesDesc.id8bits[21] = 0x2F; m_opcodesDesc.execute8bits[21]  = _cpl;                 // CPL
+    m_opcodesDesc.masque8bits[22] = 0xFF; m_opcodesDesc.id8bits[22] = 0x37; m_opcodesDesc.execute8bits[22]  = _scf;                 // SCF
+    m_opcodesDesc.masque8bits[23] = 0xFF; m_opcodesDesc.id8bits[23] = 0x3F; m_opcodesDesc.execute8bits[23]  = _ccf;                 // CCF
+    m_opcodesDesc.masque8bits[24] = 0xC0; m_opcodesDesc.id8bits[24] = 0x40; m_opcodesDesc.execute8bits[24]  = _ld_d_d;              // LD D,D
+    m_opcodesDesc.masque8bits[25] = 0xFF; m_opcodesDesc.id8bits[25] = 0x76; m_opcodesDesc.execute8bits[25]  = _halt;                // HALT
+    m_opcodesDesc.masque8bits[26] = 0xC0; m_opcodesDesc.id8bits[26] = 0x80; m_opcodesDesc.execute8bits[26]  = _alu_a_d;             // ALU A,D
+    m_opcodesDesc.masque8bits[27] = 0xC7; m_opcodesDesc.id8bits[27] = 0xC6; m_opcodesDesc.execute8bits[27]  = _alu_a_n;             // ALU A,N
+    m_opcodesDesc.masque8bits[28] = 0xCF; m_opcodesDesc.id8bits[28] = 0xC1; m_opcodesDesc.execute8bits[28]  = _pop_r;               // POP R
+    m_opcodesDesc.masque8bits[29] = 0xCF; m_opcodesDesc.id8bits[29] = 0xC5; m_opcodesDesc.execute8bits[29]  = _push_r;              // PUSH R
+    m_opcodesDesc.masque8bits[30] = 0xC7; m_opcodesDesc.id8bits[30] = 0xC7; m_opcodesDesc.execute8bits[30]  = _rst_n;               // RST N
+    m_opcodesDesc.masque8bits[31] = 0xE7; m_opcodesDesc.id8bits[31] = 0xC0; m_opcodesDesc.execute8bits[31]  = _ret_f;               // RET F
+    m_opcodesDesc.masque8bits[32] = 0xFF; m_opcodesDesc.id8bits[32] = 0xC9; m_opcodesDesc.execute8bits[32]  = _ret;                 // RET
+    m_opcodesDesc.masque8bits[33] = 0xFF; m_opcodesDesc.id8bits[33] = 0xD9; m_opcodesDesc.execute8bits[33]  = _reti;                // RETI
+    m_opcodesDesc.masque8bits[34] = 0xE7; m_opcodesDesc.id8bits[34] = 0xC2; m_opcodesDesc.execute8bits[34]  = _jp_f_n;              // JP F,N
+    m_opcodesDesc.masque8bits[35] = 0xFF; m_opcodesDesc.id8bits[35] = 0xC3; m_opcodesDesc.execute8bits[35]  = _jp_n;                // JP N
+    m_opcodesDesc.masque8bits[36] = 0xE7; m_opcodesDesc.id8bits[36] = 0xC4; m_opcodesDesc.execute8bits[36]  = _call_f_n;            // CALL F,N
+    m_opcodesDesc.masque8bits[37] = 0xFF; m_opcodesDesc.id8bits[37] = 0xCD; m_opcodesDesc.execute8bits[37]  = _call_n;              // CALL N
+    m_opcodesDesc.masque8bits[38] = 0xFF; m_opcodesDesc.id8bits[38] = 0xE8; m_opcodesDesc.execute8bits[38]  = _add_sp_n;            // ADD SP,N
+    m_opcodesDesc.masque8bits[39] = 0xFF; m_opcodesDesc.id8bits[39] = 0xF8; m_opcodesDesc.execute8bits[39]  = _ld_hl_sp_plus_n;     // LD HL,SP+N
+    m_opcodesDesc.masque8bits[40] = 0xFF; m_opcodesDesc.id8bits[40] = 0xE0; m_opcodesDesc.execute8bits[40]  = _ld_ff00_plus_n_a;    // LD (FF00+N),A
+    m_opcodesDesc.masque8bits[41] = 0xFF; m_opcodesDesc.id8bits[41] = 0xF0; m_opcodesDesc.execute8bits[41]  = _ld_a_ff00_plus_n;    // LD A,(FF00+N)
+    m_opcodesDesc.masque8bits[42] = 0xFF; m_opcodesDesc.id8bits[42] = 0xE2; m_opcodesDesc.execute8bits[42]  = _ld_c_a;              // LD (C),A
+    m_opcodesDesc.masque8bits[43] = 0xFF; m_opcodesDesc.id8bits[43] = 0xF2; m_opcodesDesc.execute8bits[43]  = _ld_a_c;              // LD A,(C)
+    m_opcodesDesc.masque8bits[44] = 0xFF; m_opcodesDesc.id8bits[44] = 0xEA; m_opcodesDesc.execute8bits[44]  = _ld_n_a;              // LD (N),A
+    m_opcodesDesc.masque8bits[45] = 0xFF; m_opcodesDesc.id8bits[45] = 0xFA; m_opcodesDesc.execute8bits[45]  = _ld_a_n;              // LD A,(N)
+    m_opcodesDesc.masque8bits[46] = 0xFF; m_opcodesDesc.id8bits[46] = 0xE9; m_opcodesDesc.execute8bits[46]  = _jp_hl;               // JP HL
+    m_opcodesDesc.masque8bits[47] = 0xFF; m_opcodesDesc.id8bits[47] = 0xF9; m_opcodesDesc.execute8bits[47]  = _ld_sp_hl;            // LD SP,HL
+    m_opcodesDesc.masque8bits[48] = 0xFF; m_opcodesDesc.id8bits[48] = 0xF3; m_opcodesDesc.execute8bits[48]  = _di;                  // DI
+    m_opcodesDesc.masque8bits[49] = 0xFF; m_opcodesDesc.id8bits[49] = 0xFB; m_opcodesDesc.execute8bits[49]  = _ei;                  // EI
+    m_opcodesDesc.masque8bits[50] = 0xFF; m_opcodesDesc.id8bits[50] = 0xCB; m_opcodesDesc.execute8bits[50]  = _16b_opcode;          // 16b opcode
 
     // Initialisation des masques et identifiants des LSW des opcodes 16 bits
-    m_opcodesDesc.masque16bitsLSW[0] = 0xF0; m_opcodesDesc.id16bitsLSW[0] = 0x00;   // RdC D
-    m_opcodesDesc.masque16bitsLSW[1] = 0xF0; m_opcodesDesc.id16bitsLSW[1] = 0x10;   // Rd D
-    m_opcodesDesc.masque16bitsLSW[2] = 0xF0; m_opcodesDesc.id16bitsLSW[2] = 0x20;   // SdA D
-    m_opcodesDesc.masque16bitsLSW[3] = 0xF8; m_opcodesDesc.id16bitsLSW[3] = 0x30;   // SWAP D
-    m_opcodesDesc.masque16bitsLSW[4] = 0xF8; m_opcodesDesc.id16bitsLSW[4] = 0x38;   // SRL D
-    m_opcodesDesc.masque16bitsLSW[5] = 0xC0; m_opcodesDesc.id16bitsLSW[5] = 0x40;   // BIT N,D
-    m_opcodesDesc.masque16bitsLSW[6] = 0xC0; m_opcodesDesc.id16bitsLSW[6] = 0x80;   // RES N,D
-    m_opcodesDesc.masque16bitsLSW[7] = 0xC0; m_opcodesDesc.id16bitsLSW[7] = 0xC0;   // SET N,D
-}
-
-
-// ********************************************************
-// DECODAGE D'UN OPCODE
-// ********************************************************
-
-std::uint8_t Cpu::_decodeOpcode(const std::uint8_t ai_opcode) const
-{
-    std::uint16_t w_id;
-
-    for(std::uint16_t w_i = 0; w_i < CPU_NB_OPCODES_8_BITS; w_i++)
-    {
-        // Recherche de l'ID correspondant à l'opcode
-        w_id = (m_opcodesDesc.masque8bits[w_i] & ai_opcode);
-
-        if(w_id == m_opcodesDesc.id8bits[w_i])
-        {
-           break;
-        }
-    }
-
-    return w_id;
+    m_opcodesDesc.masque16bitsLSW[0] = 0xF0; m_opcodesDesc.id16bitsLSW[0] = 0x00; m_opcodesDesc.execute16bits[0] = _rdc_d;          // RdC D
+    m_opcodesDesc.masque16bitsLSW[1] = 0xF0; m_opcodesDesc.id16bitsLSW[1] = 0x10; m_opcodesDesc.execute16bits[1] = _rd_d;           // Rd D
+    m_opcodesDesc.masque16bitsLSW[2] = 0xF0; m_opcodesDesc.id16bitsLSW[2] = 0x20; m_opcodesDesc.execute16bits[2] = _sda_d;          // SdA D
+    m_opcodesDesc.masque16bitsLSW[3] = 0xF8; m_opcodesDesc.id16bitsLSW[3] = 0x30; m_opcodesDesc.execute16bits[3] = _swap_d;         // SWAP D
+    m_opcodesDesc.masque16bitsLSW[4] = 0xF8; m_opcodesDesc.id16bitsLSW[4] = 0x38; m_opcodesDesc.execute16bits[4] = _srl_d;          // SRL D
+    m_opcodesDesc.masque16bitsLSW[5] = 0xC0; m_opcodesDesc.id16bitsLSW[5] = 0x40; m_opcodesDesc.execute16bits[5] = _bit_n_d;        // BIT N,D
+    m_opcodesDesc.masque16bitsLSW[6] = 0xC0; m_opcodesDesc.id16bitsLSW[6] = 0x80; m_opcodesDesc.execute16bits[6] = _res_n_d;        // RES N,D
+    m_opcodesDesc.masque16bitsLSW[7] = 0xC0; m_opcodesDesc.id16bitsLSW[7] = 0xC0; m_opcodesDesc.execute16bits[7] = _set_n_d;        // SET N,D
 }
 
 
@@ -267,10 +244,24 @@ std::uint8_t Cpu::_decodeOpcode(const std::uint8_t ai_opcode) const
 
 void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
 {
-    // On récupère l'ID de l'opcode à executer
-    std::uint8_t w_id = _decodeOpcode(mp_mpu->getMemVal(ai_opcodeIdx));
+    std::uint16_t w_i       = 0u;
+    std::uint16_t w_id      = 0u;
+    std::uint8_t w_opcode   = mp_mpu->getMemVal(ai_opcodeIdx);
 
-    // On exécute l'opcode correspondant
+    // Récupération de l'ID de l'opcode à executer
+    for(w_i = 0u; w_i < CPU_NB_OPCODES_8_BITS; ++w_i)
+    {
+        // Recherche de l'ID correspondant à l'opcode par les opcodes 8 bits
+        w_id = (m_opcodesDesc.masque8bits[w_i] & w_opcode);
+
+        if(w_id == m_opcodesDesc.id8bits[w_i])
+        {
+           (this->*m_opcodesDesc.execute8bits[w_i])();
+           break;
+        }
+    }
+
+    // Execution de l'opcode correspondant
     switch(w_id)
     {
         case 0x00:  // NOP
@@ -321,6 +312,12 @@ void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
             // Mise à jour de PC
             m_pc = m_pc + 1;
             break;
+    }
+
+    if (w_i == CPU_NB_OPCODES_8_BITS)
+    {
+        std::cout << "Erreur : opcode inconnu" << std::endl;
+        exit(-1);
     }
 }
 

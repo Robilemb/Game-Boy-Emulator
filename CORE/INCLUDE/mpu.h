@@ -4,13 +4,13 @@
 #include <iostream>
 
 // Taille de la mémoire = 64ko
-#define MPU_MEMORY_SIZE                 65535
+#define MPU_MEMORY_SIZE                 65535u
 
 // Offset mémoire pour accès à la cartouche
-#define MPU_MEMORY_CARD_BANK_0_OFFSET   0
+#define MPU_MEMORY_CARD_BANK_0_OFFSET   0u
 
 // MBC (Memory Bank Controller) type 0 : pas de ROM banking, taille max de la ROM = 32ko
-#define MPU_MEMORY_CARD_MBC_0_SIZE      32767
+#define MPU_MEMORY_CARD_MBC_0_SIZE      32767u
 
 class Mpu
 {
