@@ -134,10 +134,13 @@ private:
     // Initialisation des masques et identifiants des opcodes
     void _initOpcodesDesc();
 
+    // Décodage d'un registre 8 bits
+    void _decodeRegister8Bits(const std::uint8_t ai_registerMask, std::uint8_t* &aop_register8bits, std::uint16_t* &aop_register16bits);
+
 
     // LISTE DES INSTRUCTIONS 8 BITS
     // *****************************
-    void _nop() {}
+    void _nop();
     void _ln_n_sp() {}
     void _ld_r_n() {}
     void _add_hl_r() {}
@@ -147,7 +150,7 @@ private:
     void _dec_r() {}
     void _inc_d() {}
     void _dec_d() {}
-    void _ld_d_n() {}
+    void _ld_d_n();
     void _rdca() {}
     void _rda() {}
     void _stop() {}
@@ -172,7 +175,7 @@ private:
     void _ret() {}
     void _reti() {}
     void _jp_f_n() {}
-    void _jp_n() {}
+    void _jp_n();
     void _call_f_n() {}
     void _call_n() {}
     void _add_sp_n() {}
@@ -182,7 +185,7 @@ private:
     void _ld_c_a() {}
     void _ld_a_c() {}
     void _ld_n_a() {}
-    void _ld_a_n() {}
+    void _ld_a_n();
     void _jp_hl() {}
     void _ld_sp_hl() {}
     void _di() {}
@@ -201,34 +204,16 @@ private:
     void _set_n_d() {}
 
 
-    // A supprimer
-    // ************
-    void _decodeNop();
-    void _decodeLoad8bits(const std::uint8_t ai_id, const std::uint16_t ai_opcodeIdx);
-    void _decodeLoad16bits(const std::uint8_t ai_id, const std::uint16_t ai_opcodeIdx);
-    void _decodeJump(const std::uint8_t ai_id, const std::uint16_t ai_opcodeIdx);
-    void _decodeInc(const std::uint8_t ai_id, const std::uint16_t ai_opcodeIdx);
-    void _decodeDec(const std::uint8_t ai_id, const std::uint16_t ai_opcodeIdx);
-
-    // Récupération d'un registre 8/16 bits en fonction de son masque
-    // 0 1 2 3 4 5    6 7
-    // B C D E H L (HL) A
-    void _decodeRegister8Bits(const std::uint8_t ai_registerMask, std::string &ai_sReg, std::uint8_t* &aop_register8bits, std::uint16_t* &aop_register16bits);
-
-    // Récupération d'un registre 16 bits en fonction de son masque et de l'opcode courant
-    //  0  1  2     3
-    // BC DE HL SP/AF
-    std::uint16_t* _decodeRegister16Bits(const std::uint8_t ai_registerMask, const std::uint8_t ai_opcodeIdx, std::string &ai_sReg);
-
-
 private:
-    ts_opcodesDesc  m_opcodesDesc;              // Masque et identifiant des opcodes
+    std::uint16_t   m_opcodeIdx;    // Opcode courant à exécuter
 
-    tu_registers 	m_registers;				// Registres 8-16 bits
-    std::uint16_t	m_pc;						// Program Counter
-    std::uint16_t	m_sp;						// Stack Pointer
+    ts_opcodesDesc  m_opcodesDesc;  // Masque et identifiant des opcodes
 
-    Mpu*            mp_mpu;                     // Pointeur vers la mémoire
+    tu_registers 	m_registers;	// Registres 8-16 bits
+    std::uint16_t	m_pc;			// Program Counter
+    std::uint16_t	m_sp;			// Stack Pointer
+
+    Mpu*            mp_mpu;         // Pointeur vers la mémoire
 };
 
 
