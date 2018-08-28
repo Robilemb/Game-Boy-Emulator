@@ -335,12 +335,6 @@ void Cpu::_nop()
     m_pc = m_pc + 1u;
 }
 
-void Cpu::_jp_n()
-{
-    // Passage à l'instruction située à l'adresse (N)
-    m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) * 0x100) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
-}
-
 void Cpu::_ld_d_n()
 {
     // Variables locales
@@ -374,6 +368,12 @@ void Cpu::_ld_d_n()
     m_pc += 2u;
 }
 
+void Cpu::_jp_n()
+{
+    // Passage à l'instruction située à l'adresse (N)
+    m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) * 0x100) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
+}
+
 void Cpu::_ld_a_n()
 {
     // Récupération de la valeur à charger dans A
@@ -384,4 +384,19 @@ void Cpu::_ld_a_n()
 
     // Mise à jour de PC
     m_pc += 3u;
+}
+
+void Cpu::_jp_hl()
+{
+    // Passage à l'instruction située à l'adresse contenue par HL
+    m_pc = m_registers.s16bits.hl;
+}
+
+void Cpu::_ld_sp_hl()
+{
+    // Stockage du contenu de HL dans SP
+    m_sp = m_registers.s16bits.hl;
+
+    // Mise à jour de PC
+    m_pc += 1u;
 }

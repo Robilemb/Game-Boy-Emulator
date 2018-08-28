@@ -186,8 +186,8 @@ private:
     void _ld_a_c() {}
     void _ld_n_a() {}
     void _ld_a_n();
-    void _jp_hl() {}
-    void _ld_sp_hl() {}
+    void _jp_hl();
+    void _ld_sp_hl();
     void _di() {}
     void _ei() {}
     void _16b_opcode() {}
