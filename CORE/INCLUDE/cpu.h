@@ -179,12 +179,12 @@ private:
     void _call_f_n() {}
     void _call_n() {}
     void _add_sp_n() {}
-    void _ld_hl_sp_plus_n() {}
-    void _ld_ff00_plus_n_a() {}
-    void _ld_a_ff00_plus_n() {}
-    void _ld_c_a() {}
-    void _ld_a_c() {}
-    void _ld_n_a() {}
+    void _ld_hl_sp_plus_n();
+    void _ld_ff00_plus_n_a();
+    void _ld_a_ff00_plus_n();
+    void _ld_c_a();
+    void _ld_a_c();
+    void _ld_n_a();
     void _ld_a_n();
     void _jp_hl();
     void _ld_sp_hl();

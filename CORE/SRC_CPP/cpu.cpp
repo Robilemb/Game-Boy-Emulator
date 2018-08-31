@@ -374,6 +374,90 @@ void Cpu::_jp_n()
     m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) * 0x100) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
 }
 
+void Cpu::_ld_hl_sp_plus_n()
+{
+    // Récupération de la valeur 8 bits signés
+    std::int8_t w_data8bits = static_cast<std::int8_t>(mp_mpu->getMemVal(m_opcodeIdx + 1u));
+
+    // Stockage dans HL du résultat de l'addition de SP par la valeur 8 bits fournie
+    m_registers.s16bits.hl = m_sp + w_data8bits;
+
+    // Reset des flags Z et N
+    m_registers.sFlags.z = 0u;
+    m_registers.sFlags.n = 0u;
+
+    // Gestion du flag C
+    if ((static_cast<std::int32_t>(m_sp + w_data8bits) > 0xFFFF) || (static_cast<std::int32_t>(m_sp + w_data8bits) < 0))
+    {
+        m_registers.sFlags.c = 1u;
+    }
+    else
+    {
+        m_registers.sFlags.c = 0u;
+    }
+
+    // Gestion du flag H
+    if ((((m_sp & 0x0FFF) + (w_data8bits & 0x0FFF)) & 0x1000))
+    {
+        m_registers.sFlags.h = 1u;
+    }
+    else
+    {
+        m_registers.sFlags.h = 0u;
+    }
+
+    // Mise à jour de PC
+    m_pc += 2u;
+}
+
+void Cpu::_ld_ff00_plus_n_a()
+{
+    // Récupération de l'offset N
+    std::uint8_t w_data8bits = mp_mpu->getMemVal(m_opcodeIdx + 1u);
+
+    // Stockage du contenu du registre A dans la mémoire à l'adresse $FF00+N
+    mp_mpu->setMemVal((0xFF00 + w_data8bits), m_registers.s8bits.a);
+
+    // Mise à jour de PC
+    m_pc += 2u;
+}
+
+void Cpu::_ld_a_ff00_plus_n()
+{
+    // Récupération de l'offset N
+    std::uint8_t w_data8bits = mp_mpu->getMemVal(m_opcodeIdx + 1u);
+
+    // Stockage dans A du contenu de la mémoire à l'adresse $FF00+N
+    m_registers.s8bits.a = mp_mpu->getMemVal(0xFF00 + w_data8bits);
+
+    // Mise à jour de PC
+    m_pc += 2u;
+}
+
+void Cpu::_ld_c_a()
+{
+    // Réalise la même opération que LD (FF00+N),A
+    _ld_ff00_plus_n_a();
+}
+
+void Cpu::_ld_a_c()
+{
+    // Réalise la même opération que LD A,(FF00+N)
+    _ld_a_ff00_plus_n();
+}
+
+void Cpu::_ld_n_a()
+{
+    // Récupération de l'adresse d'écriture
+    std::uint16_t w_data16bits = (mp_mpu->getMemVal(m_opcodeIdx + 2u) * 0x100) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
+
+    // On stocke le contenu de A à l'adresse mémoire (N)
+    mp_mpu->setMemVal(w_data16bits, m_registers.s8bits.a);
+
+    // Mise à jour de PC
+    m_pc += 3u;
+}
+
 void Cpu::_ld_a_n()
 {
     // Récupération de la valeur à charger dans A
