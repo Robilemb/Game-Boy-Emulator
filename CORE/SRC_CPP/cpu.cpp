@@ -281,6 +281,37 @@ void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
 // Fonctions privées
 // *****************
 
+bool Cpu::_decodeMnemonic(const std::uint8_t ai_mnemo)
+{
+    bool w_test = true;
+
+    switch (ai_mnemo)
+    {
+        case 0u:
+            w_test = (m_registers.sFlags.z == 0u);
+            break;
+
+        case 1u:
+            w_test = (m_registers.sFlags.z == 1u);
+            break;
+
+        case 2u:
+            w_test = (m_registers.sFlags.c == 0u);
+            break;
+
+        case 3u:
+            w_test = (m_registers.sFlags.c == 1u);
+            break;
+
+        default:
+            std::cout << "ERREUR : Mnemonique inconnu" << std::endl;
+            exit(-1);
+            break;
+    }
+
+    return w_test;
+}
+
 void Cpu::_decodeRegister8Bits(const std::uint8_t ai_registerMask, std::uint8_t* &aop_register8bits, std::uint16_t* &aop_register16bits)
 {
     switch (ai_registerMask)
@@ -355,7 +386,7 @@ void Cpu::_ld_d_n()
     // Si chargement dans HL
     if (w_registerMask == 6u)
     {
-        // Stackage de la valeur en mémoire à l'adresse contenue par HL
+        // Stockage de la valeur en mémoire à l'adresse contenue par HL
         mp_mpu->setMemVal(*wp_register16bits, w_data8bits);
     }
     else
@@ -370,31 +401,10 @@ void Cpu::_ld_d_n()
 
 void Cpu::_jp_f_n()
 {
-    bool            w_test  = true;
-    std::uint8_t    w_mnemo = (mp_mpu->getMemVal(m_opcodeIdx) & 0x18) >> 3u;
-
-    switch (w_mnemo)
+    // Si la condition F est vraie, passage à l'instruction située à l'adresse (N) ; sinon passage à l'instruction suivante
+    if (_decodeMnemonic((mp_mpu->getMemVal(m_opcodeIdx) & 0x18) >> 3u))
     {
-        case 0:
-            w_test = (m_registers.sFlags.z == 0u);
-            break;
-
-        case 1:
-            w_test = (m_registers.sFlags.z == 1u);
-            break;
-
-        case 2:
-            w_test = (m_registers.sFlags.c == 0u);
-            break;
-
-        case 3:
-            w_test = (m_registers.sFlags.c == 1u);
-            break;
-    }
-
-    if (w_test)
-    {
-        m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) * 0x100) + mp_mpu->getMemVal(m_opcodeIdx + 1u);;
+        m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) * 0x100) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
     }
     else
     {
