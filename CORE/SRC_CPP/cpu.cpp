@@ -368,6 +368,40 @@ void Cpu::_ld_d_n()
     m_pc += 2u;
 }
 
+void Cpu::_jp_f_n()
+{
+    bool            w_test  = true;
+    std::uint8_t    w_mnemo = (mp_mpu->getMemVal(m_opcodeIdx) & 0x18) >> 3u;
+
+    switch (w_mnemo)
+    {
+        case 0:
+            w_test = (m_registers.sFlags.z == 0u);
+            break;
+
+        case 1:
+            w_test = (m_registers.sFlags.z == 1u);
+            break;
+
+        case 2:
+            w_test = (m_registers.sFlags.c == 0u);
+            break;
+
+        case 3:
+            w_test = (m_registers.sFlags.c == 1u);
+            break;
+    }
+
+    if (w_test)
+    {
+        m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) * 0x100) + mp_mpu->getMemVal(m_opcodeIdx + 1u);;
+    }
+    else
+    {
+        m_pc += 3u;
+    }
+}
+
 void Cpu::_jp_n()
 {
     // Passage à l'instruction située à l'adresse (N)

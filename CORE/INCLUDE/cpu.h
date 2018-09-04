@@ -174,7 +174,7 @@ private:
     void _ret_f() {}
     void _ret() {}
     void _reti() {}
-    void _jp_f_n() {}
+    void _jp_f_n();
     void _jp_n();
     void _call_f_n() {}
     void _call_n() {}
