@@ -15,11 +15,11 @@ union tu_registers
     // Modélisation du registre F (flags)
     struct ts_Flags
     {
-        std::uint8_t 	res:4,
-                        c:1,
-                        h:1,
-                        n:1,
-                        z:1;
+        std::uint8_t 	res:4u,
+                        c:1u,
+                        h:1u,
+                        n:1u,
+                        z:1u;
     } sFlags;
 
     // Registres 8 bits
@@ -167,7 +167,7 @@ private:
     void _cpl() {}
     void _scf() {}
     void _ccf() {}
-    void _ld_d_d() {}
+    void _ld_d_d();
     void _halt() {}
     void _alu_a_d() {}
     void _alu_a_n() {}

@@ -34,8 +34,8 @@ public:
     const Mpu* getMpu() const;
 
 private:
-    Cpu*            	mp_cpu;     // CPU
-    Mpu*                mp_mpu;     // MPU
+    Cpu* mp_cpu;     // CPU
+    Mpu* mp_mpu;     // MPU
 };
 
 #endif // GAMEBOY_H
