@@ -316,40 +316,75 @@ void Cpu::_decodeRegister8Bits(const std::uint8_t ai_registerMask, std::uint8_t*
 {
     switch (ai_registerMask)
     {
-        case 0:
+        case 0u:
             aop_register8bits = &m_registers.s8bits.b;
             break;
 
-        case 1:
+        case 1u:
             aop_register8bits = &m_registers.s8bits.c;
             break;
 
-        case 2:
+        case 2u:
             aop_register8bits = &m_registers.s8bits.d;
             break;
 
-        case 3:
+        case 3u:
             aop_register8bits = &m_registers.s8bits.e;
             break;
 
-        case 4:
+        case 4u:
             aop_register8bits = &m_registers.s8bits.h;
             break;
 
-        case 5:
+        case 5u:
             aop_register8bits = &m_registers.s8bits.l;
             break;
 
-        case 6:
+        case 6u:
             aop_register16bits = &m_registers.s16bits.hl;
             break;
 
-        case 7:
+        case 7u:
             aop_register8bits = &m_registers.s8bits.a;
             break;
 
         default:
             std::cout << "ERREUR : Registre 8 bits inconnu" << std::endl;
+            exit(-1);
+            break;
+    }
+}
+
+void Cpu::_decodeRegister16Bits(const std::uint8_t ai_registerMask, std::uint16_t* &aop_register16bits)
+{
+    switch (ai_registerMask)
+    {
+        case 0u:
+            aop_register16bits = &m_registers.s16bits.bc;
+            break;
+
+        case 1u:
+            aop_register16bits = &m_registers.s16bits.de;
+            break;
+
+        case 2u:
+            aop_register16bits = &m_registers.s16bits.hl;
+            break;
+
+        case 3u:
+            // Renvoie AF uniquement dans le cas d'un POP ou d'un PUSH, SP sinon
+            if (m_opcodeIdx == 0xC1 || m_opcodeIdx == 0xC5)
+            {
+                aop_register16bits = &m_registers.s16bits.af;
+            }
+            else
+            {
+                aop_register16bits = &m_sp;
+            }
+            break;
+
+        default:
+            std::cout << "ERREUR : Registre 16 bits inconnu" << std::endl;
             exit(-1);
             break;
     }
