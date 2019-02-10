@@ -159,10 +159,10 @@ private:
     void _stop() {}
     void _jr_n() {}
     void _jr_f_n() {}
-    void _ldi_hl_a() {}
-    void _ldi_a_hl() {}
-    void _ldd_hl_a() {}
-    void _ldd_a_hl() {}
+    void _ldi_hl_a();
+    void _ldi_a_hl();
+    void _ldd_hl_a();
+    void _ldd_a_hl();
     void _daa() {}
     void _cpl() {}
     void _scf() {}

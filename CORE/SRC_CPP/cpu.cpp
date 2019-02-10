@@ -399,6 +399,54 @@ void Cpu::_ld_d_n()
     m_pc += 2u;
 }
 
+void Cpu::_ldi_hl_a()
+{
+    // On stocke le contenu du registre A en mémoire à l'adresse contenue par HL
+    mp_mpu->setMemVal(m_registers.s16bits.hl, m_registers.s8bits.a);
+
+    // On incrémente HL
+    m_registers.s16bits.hl += 1u;
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
+void Cpu::_ldi_a_hl()
+{
+    // On stocke le contenu de la mémoire à l'adresse contenue par HL dans A
+    m_registers.s8bits.a = mp_mpu->getMemVal(m_registers.s16bits.hl);
+
+    // On incrémente HL
+    m_registers.s16bits.hl += 1u;
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
+void Cpu::_ldd_hl_a()
+{
+    // On stocke le contenu du registre A en mémoire à l'adresse contenue par HL
+    mp_mpu->setMemVal(m_registers.s16bits.hl, m_registers.s8bits.a);
+
+    // On décrémente HL
+    m_registers.s16bits.hl -= 1u;
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
+void Cpu::_ldd_a_hl()
+{
+    // On stocke le contenu de la mémoire à l'adresse contenue par HL dans A
+    m_registers.s8bits.a = mp_mpu->getMemVal(m_registers.s16bits.hl);
+
+    // On décrémente HL
+    m_registers.s16bits.hl -= 1u;
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
 void Cpu::_ld_d_d()
 {
     // Variables locales
