@@ -153,9 +153,9 @@ private:
     void _ld_r_a() {}
     void _ld_a_r() {}
     void _inc_r() {}
-    void _dec_r() {}
+    void _dec_r();
     void _inc_d() {}
-    void _dec_d() {}
+    void _dec_d();
     void _ld_d_n();
     void _rdca() {}
     void _rda() {}

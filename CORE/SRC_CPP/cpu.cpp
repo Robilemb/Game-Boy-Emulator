@@ -401,6 +401,71 @@ void Cpu::_nop()
     m_pc = m_pc + 1u;
 }
 
+void Cpu::_dec_r()
+{
+    // Variables locales
+    std::uint8_t 	w_registerMask      = 0u;
+    std::uint16_t*	wp_register16bits   = NULL;
+
+    // Récupération du registre 16b
+    w_registerMask = (mp_mpu->getMemVal(m_opcodeIdx) >> 4u);
+    _decodeRegister16Bits(w_registerMask, wp_register16bits);
+
+    // Décrémentation
+    --(*wp_register16bits);
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
+void Cpu::_dec_d()
+{
+    // Variables locales
+    std::uint8_t 	w_registerMask      = 0u;
+    std::uint8_t*	wp_register8bits    = NULL;
+    std::uint16_t*	wp_register16bits   = NULL;
+    std::uint8_t    w_valueAtHL         = 0u;
+
+    // Récupération du registre 16b
+    w_registerMask = ((mp_mpu->getMemVal(m_opcodeIdx) & 0x38) >> 3u);
+    _decodeRegister8Bits(w_registerMask, wp_register8bits, wp_register16bits);
+
+    if (w_registerMask == 6u)
+    {
+        // Récupération de la valeur à l'adresse contenue par HL
+        w_valueAtHL = mp_mpu->getMemVal(*wp_register16bits);
+
+        // Gestion du flag H
+        m_registers.sFlags.h = static_cast<std::uint8_t>(w_valueAtHL == 0u);
+
+        // Décrémentation de la valeur à l'adresse contenue par HL
+        mp_mpu->setMemVal(*wp_register16bits, --w_valueAtHL);
+
+        // Gestion du flag Z
+        m_registers.sFlags.z = static_cast<std::uint8_t>(w_valueAtHL == 0u);
+
+        // Gestion du flag N
+        m_registers.sFlags.n = 1u;
+    }
+    else
+    {
+        // Gestion du flag H
+        m_registers.sFlags.h = static_cast<std::uint8_t>(*wp_register8bits == 0u);
+
+        // Décrémentation du registre 8 bits
+        --(*wp_register8bits);
+
+        // Gestion du flag Z
+        m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
+
+        // Gestion du flag N
+        m_registers.sFlags.n = 1u;
+    }
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
 void Cpu::_ld_d_n()
 {
     // Variables locales
@@ -561,24 +626,10 @@ void Cpu::_ld_hl_sp_plus_n()
     m_registers.sFlags.n = 0u;
 
     // Gestion du flag C
-    if ((static_cast<std::int32_t>(m_sp + w_data8bits) > 0xFFFF) || (static_cast<std::int32_t>(m_sp + w_data8bits) < 0))
-    {
-        m_registers.sFlags.c = 1u;
-    }
-    else
-    {
-        m_registers.sFlags.c = 0u;
-    }
+    m_registers.sFlags.c = static_cast<std::uint8_t>((static_cast<std::int32_t>(m_sp + w_data8bits) > 0xFFFF) || (static_cast<std::int32_t>(m_sp + w_data8bits) < 0));
 
     // Gestion du flag H
-    if ((((m_sp & 0x0FFF) + (w_data8bits & 0x0FFF)) & 0x1000))
-    {
-        m_registers.sFlags.h = 1u;
-    }
-    else
-    {
-        m_registers.sFlags.h = 0u;
-    }
+    m_registers.sFlags.h = static_cast<std::uint8_t>((((m_sp & 0x0FFF) + (w_data8bits & 0x0FFF)) & 0x1000));
 
     // Mise à jour de PC
     m_pc += 2u;
