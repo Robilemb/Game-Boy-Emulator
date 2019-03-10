@@ -440,6 +440,36 @@ void Cpu::_ld_r_n()
     m_pc += 3u;
 }
 
+void Cpu::_add_hl_r()
+{
+    // Variables locales
+    std::uint8_t 	w_registerMask      = 0u;
+    std::uint16_t*	wp_register16bits   = NULL;
+    std::int32_t    w_sum               = 0;
+
+    // Récupération du registre 16b
+    w_registerMask = (mp_mpu->getMemVal(m_opcodeIdx) & 0x30) >> 4u;
+    _decodeRegister16Bits(w_registerMask, wp_register16bits);
+
+    // Additionne à HL la valeur du registre 16b
+    w_sum = static_cast<std::int32_t>(m_registers.s16bits.hl) + static_cast<std::int32_t>(*wp_register16bits);
+
+    // Gestion du flag C
+    m_registers.sFlags.c = static_cast<std::uint8_t>((w_sum & 0x10000) == 0x10000);
+
+    // Gestion du flag H
+    m_registers.sFlags.h = static_cast<std::uint8_t>((((m_registers.s16bits.hl & 0x0FFF) + (*wp_register16bits & 0x0FFF)) & 0x1000) == 0x1000);
+
+    // Gestion du flag N
+    m_registers.sFlags.n = 0u;
+
+    // Sauvegarde dans HL
+    m_registers.s16bits.hl = static_cast<std::uint16_t>(w_sum & 0xFFFF);
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
 void Cpu::_ld_r_a()
 {
     // Variables locales
@@ -753,21 +783,26 @@ void Cpu::_jp_n()
 
 void Cpu::_ld_hl_sp_plus_n()
 {
+    // Variables locales
+    std::int8_t     w_data8bits = 0u;
+    std::int32_t    w_sum       = 0;
+
     // Récupération de la valeur 8 bits signés
-    std::int8_t w_data8bits = static_cast<std::int8_t>(mp_mpu->getMemVal(m_opcodeIdx + 1u));
+    w_data8bits = static_cast<std::int8_t>(mp_mpu->getMemVal(m_opcodeIdx + 1u));
 
     // Stockage dans HL du résultat de l'addition de SP par la valeur 8 bits fournie
-    m_registers.s16bits.hl = m_sp + w_data8bits;
+    w_sum = static_cast<std::int32_t>(m_sp) + static_cast<std::int32_t>(w_data8bits);
+    m_registers.s16bits.hl = static_cast<std::uint16_t>(w_sum & 0xFFFF);
 
     // Reset des flags Z et N
     m_registers.sFlags.z = 0u;
     m_registers.sFlags.n = 0u;
 
     // Gestion du flag C
-    m_registers.sFlags.c = static_cast<std::uint8_t>((static_cast<std::int32_t>(m_sp + w_data8bits) > 0xFFFF) || (static_cast<std::int32_t>(m_sp + w_data8bits) < 0));
+    m_registers.sFlags.c = static_cast<std::uint8_t>((w_sum & 0x10000) == 0x10000);
 
     // Gestion du flag H
-    m_registers.sFlags.h = static_cast<std::uint8_t>((((m_sp & 0x0FFF) + (w_data8bits & 0x0FFF)) & 0x1000));
+    m_registers.sFlags.h = static_cast<std::uint8_t>((((m_sp & 0x0FFF) + (w_data8bits & 0x0FFF)) & 0x1000) == 0x1000);
 
     // Mise à jour de PC
     m_pc += 2u;
