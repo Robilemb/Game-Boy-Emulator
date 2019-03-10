@@ -22,8 +22,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    Gameboy*        getGameBoy();
-    Ui::MainWindow* getUi();
+    const Gameboy*      getGameBoy() const;
+    Ui::MainWindow*     getUi();
 
 private slots:
     void openDebugRegistersWindow();

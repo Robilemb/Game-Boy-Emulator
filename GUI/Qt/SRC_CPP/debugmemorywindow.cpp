@@ -59,9 +59,9 @@ void DebugMemoryWindow::refreshDownDebugMemoryWindow()
     std::int32_t w_idxAddress = getIdxInFirstRow();
 
     // Gestion des bords
-    if (w_idxAddress + 1 > MPU_MEMORY_SIZE)
+    if (w_idxAddress + 1u > MPU_MEMORY_SIZE)
     {
-        w_idxAddress = 0;
+        w_idxAddress = 0u;
     }
     else
     {
@@ -75,7 +75,7 @@ void DebugMemoryWindow::refreshDownDebugMemoryWindow()
 void DebugMemoryWindow::displayAtSelectedMemoryAddress()
 {
     // Variables locales
-    std::uint16_t w_address = 0;
+    std::uint16_t w_address = 0u;
 
     // Récupération de l'adresse à afficher
     w_address = this->ui->spinBox->value();
@@ -87,8 +87,8 @@ void DebugMemoryWindow::displayAtSelectedMemoryAddress()
 void DebugMemoryWindow::displayAtDefinedMemoryAddress()
 {
     // Variables locales
-    std::uint8_t  w_index   = 0;
-    std::uint16_t w_address = 0;
+    std::uint8_t  w_index   = 0u;
+    std::uint16_t w_address = 0u;
 
     // Récupération de l'index selectionné
     w_index = this->ui->comboBox->currentIndex();
@@ -145,14 +145,14 @@ void DebugMemoryWindow::refresh(std::uint16_t ai_idx)
 {
     // Variables loacales
     std::uint8_t        w_nbItems       = ui->tableMemoryWidget->rowCount();
-    std::uint8_t        w_memValue      = 0;
-    std::uint16_t       w_idxMemValue   = 0;
-    std::uint32_t       w_idxAddress    = 0;
+    std::uint8_t        w_memValue      = 0u;
+    std::uint16_t       w_idxMemValue   = 0u;
+    std::uint32_t       w_idxAddress    = 0u;
     QTableWidgetItem*   w_curItem;
     QStringList         w_addressList;
 
     // Mise à jour des items
-    for (std::uint16_t w_i = 0; w_i < w_nbItems; w_i++)
+    for (std::uint16_t w_i = 0u; w_i < w_nbItems; ++w_i)
     {
         // Adresse à afficher
         w_idxAddress = ai_idx + w_i;

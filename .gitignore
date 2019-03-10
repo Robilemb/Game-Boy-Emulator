@@ -16,15 +16,4 @@ Thumbs.db
 
 # Fichiers build QtCreator #
 ############################
-*build-Emulateur*
-
-# Fichiers build Linux #
-############################
-*OBJ*
-*gbterm*
-
-# Fichiers projet Code Blocks #
-###############################
-
-*.cbp
-*.layout
+*build-Game-Boy-Emulator*

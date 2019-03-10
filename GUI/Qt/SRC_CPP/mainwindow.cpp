@@ -18,15 +18,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete ui;
-
     delete mp_debugRegistersWindow;
     delete mp_debugMemoryWindow;
 
     delete mp_gameboy;
+
+    delete ui;
 }
 
-Gameboy* MainWindow::getGameBoy()
+const Gameboy* MainWindow::getGameBoy() const
 {
     return mp_gameboy;
 }
