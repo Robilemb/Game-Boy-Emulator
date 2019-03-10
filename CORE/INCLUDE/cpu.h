@@ -150,8 +150,8 @@ private:
     void _ln_n_sp() {}
     void _ld_r_n() {}
     void _add_hl_r() {}
-    void _ld_r_a() {}
-    void _ld_a_r() {}
+    void _ld_r_a();
+    void _ld_a_r();
     void _inc_r();
     void _dec_r();
     void _inc_d();
