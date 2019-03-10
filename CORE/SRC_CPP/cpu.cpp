@@ -401,6 +401,27 @@ void Cpu::_nop()
     m_pc = m_pc + 1u;
 }
 
+void Cpu::_ld_r_n()
+{
+    // Variables locales
+    std::uint16_t 	w_data16bits        = 0u;
+    std::uint8_t 	w_registerMask      = 0u;
+    std::uint16_t*	wp_register16bits   = NULL;
+
+    // Récupération de la valeur à charger dans le registre 16b
+    w_data16bits = (mp_mpu->getMemVal(m_opcodeIdx + 2u) * 0x100) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
+
+    // Récupération du registre 16b
+    w_registerMask = (mp_mpu->getMemVal(m_opcodeIdx) & 0x30) >> 4u;
+    _decodeRegister16Bits(w_registerMask, wp_register16bits);
+
+    // Stockage de la valeur dans le registre
+    *wp_register16bits = w_data16bits;
+
+    // Mise à jour de PC
+    m_pc += 3u;
+}
+
 void Cpu::_ld_r_a()
 {
     // Variables locales

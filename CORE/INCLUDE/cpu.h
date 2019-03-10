@@ -148,7 +148,7 @@ private:
     // *****************************
     void _nop();
     void _ln_n_sp() {}
-    void _ld_r_n() {}
+    void _ld_r_n();
     void _add_hl_r() {}
     void _ld_r_a();
     void _ld_a_r();
