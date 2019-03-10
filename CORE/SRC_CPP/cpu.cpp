@@ -178,7 +178,7 @@ void Cpu::_initOpcodesDesc()
 {
     // Initialisation des masques et identifiants des opcodes 8 bits
     m_opcodesDesc.masque8bits[0]  = 0xFF; m_opcodesDesc.id8bits[0]  = 0x00; m_opcodesDesc.execute8bits[0]   = &Cpu::_nop;                 // NOP
-    m_opcodesDesc.masque8bits[1]  = 0xFF; m_opcodesDesc.id8bits[1]  = 0x08; m_opcodesDesc.execute8bits[1]   = &Cpu::_ln_n_sp;             // LN (N),SP
+    m_opcodesDesc.masque8bits[1]  = 0xFF; m_opcodesDesc.id8bits[1]  = 0x08; m_opcodesDesc.execute8bits[1]   = &Cpu::_ld_n_sp;             // LD (N),SP
     m_opcodesDesc.masque8bits[2]  = 0xCF; m_opcodesDesc.id8bits[2]  = 0x01; m_opcodesDesc.execute8bits[2]   = &Cpu::_ld_r_n;              // LD R,N
     m_opcodesDesc.masque8bits[3]  = 0xCF; m_opcodesDesc.id8bits[3]  = 0x09; m_opcodesDesc.execute8bits[3]   = &Cpu::_add_hl_r;            // ADD HL,R
     m_opcodesDesc.masque8bits[4]  = 0xEF; m_opcodesDesc.id8bits[4]  = 0x02; m_opcodesDesc.execute8bits[4]   = &Cpu::_ld_r_a;              // LD (R),A
@@ -401,6 +401,24 @@ void Cpu::_nop()
     m_pc = m_pc + 1u;
 }
 
+void Cpu::_ld_n_sp()
+{
+    // Variables locales
+    std::uint16_t w_address = 0u;
+
+    // Récupération de l'adresse d'écriture
+    w_address = (mp_mpu->getMemVal(m_opcodeIdx + 2u) << 8u) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
+
+    // Stockage des 8 bits de poids faible de SP à l'adresse fournie en entrée
+    mp_mpu->setMemVal(w_address, (m_sp & 0xFF));
+
+    // Stockage des 8 bits de poids fort de SP à l'adresse fournie en entrée + 1
+    mp_mpu->setMemVal((w_address + 1u), ((m_sp >> 8u) & 0xFF));
+
+    // Mise à jour de PC
+    m_pc += 3u;
+}
+
 void Cpu::_ld_r_n()
 {
     // Variables locales
@@ -409,7 +427,7 @@ void Cpu::_ld_r_n()
     std::uint16_t*	wp_register16bits   = NULL;
 
     // Récupération de la valeur à charger dans le registre 16b
-    w_data16bits = (mp_mpu->getMemVal(m_opcodeIdx + 2u) * 0x100) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
+    w_data16bits = (mp_mpu->getMemVal(m_opcodeIdx + 2u) << 8u) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
 
     // Récupération du registre 16b
     w_registerMask = (mp_mpu->getMemVal(m_opcodeIdx) & 0x30) >> 4u;
@@ -719,7 +737,7 @@ void Cpu::_jp_f_n()
     // Si la condition F est vraie, passage à l'instruction située à l'adresse (N) ; sinon passage à l'instruction suivante
     if (_decodeMnemonic((mp_mpu->getMemVal(m_opcodeIdx) & 0x18) >> 3u))
     {
-        m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) * 0x100) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
+        m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) << 8u) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
     }
     else
     {
@@ -730,7 +748,7 @@ void Cpu::_jp_f_n()
 void Cpu::_jp_n()
 {
     // Passage à l'instruction située à l'adresse (N)
-    m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) * 0x100) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
+    m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) << 8u) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
 }
 
 void Cpu::_ld_hl_sp_plus_n()
@@ -794,7 +812,7 @@ void Cpu::_ld_a_c()
 void Cpu::_ld_n_a()
 {
     // Récupération de l'adresse d'écriture
-    std::uint16_t w_data16bits = (mp_mpu->getMemVal(m_opcodeIdx + 2u) * 0x100) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
+    std::uint16_t w_data16bits = (mp_mpu->getMemVal(m_opcodeIdx + 2u) << 8u) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
 
     // On stocke le contenu de A à l'adresse mémoire (N)
     mp_mpu->setMemVal(w_data16bits, m_registers.s8bits.a);
@@ -806,7 +824,7 @@ void Cpu::_ld_n_a()
 void Cpu::_ld_a_n()
 {
     // Récupération de la valeur à charger dans A
-    std::uint16_t w_data16bits = (mp_mpu->getMemVal(m_opcodeIdx + 2u) * 0x100) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
+    std::uint16_t w_data16bits = (mp_mpu->getMemVal(m_opcodeIdx + 2u) << 8u) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
 
     // Stockage dans A du contenu de la mémoire à l'adresse (N)
     m_registers.s8bits.a = mp_mpu->getMemVal(w_data16bits);
