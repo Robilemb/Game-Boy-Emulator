@@ -255,12 +255,12 @@ void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
     m_opcodeIdx = ai_opcodeIdx;
 
     // Récupération de l'ID de l'opcode à executer
-    for(w_i = 0u; w_i < CPU_NB_OPCODES_8_BITS; ++w_i)
+    for (w_i = 0u; w_i < CPU_NB_OPCODES_8_BITS; ++w_i)
     {
-        // Recherche de l'ID correspondant à l'opcode par les opcodes 8 bits
+        // Recherche de l'ID correspondant à l'opcode 8 bits
         w_id = (m_opcodesDesc.masque8bits[w_i] & w_opcode);
 
-        if(w_id == m_opcodesDesc.id8bits[w_i])
+        if (w_id == m_opcodesDesc.id8bits[w_i])
         {
             // Exécution de l'opcode
             (this->*m_opcodesDesc.execute8bits[w_i])();
@@ -665,6 +665,42 @@ void Cpu::_ld_d_n()
 
     // Mise à jour de PC
     m_pc += 2u;
+}
+
+void Cpu::_rdca()
+{
+    // Variables locales
+    std::uint8_t w_direction = 0u;
+
+    // Récupération du sens de rotation (0 = gauche, 1 = droite)
+    w_direction = (mp_mpu->getMemVal(m_opcodeIdx) & 0x08) >> 3u;
+
+    if (w_direction == 0u)
+    {
+        // Sauvegarde du MSB de A dans le flag C
+        m_registers.sFlags.c = (m_registers.s8bits.a & 0x80) >> 7u;
+
+        // Rotation circulaire de A vers la gauche
+        m_registers.s8bits.a = static_cast<std::uint8_t>(((m_registers.s8bits.a) << 1u) & 0xFF) + m_registers.sFlags.c;
+    }
+    else
+    {
+        // Sauvegarde du LSB de A dans le flag C
+        m_registers.sFlags.c = (m_registers.s8bits.a & 0x01);
+
+        // Rotation ciruclaire de A vers la droite
+        m_registers.s8bits.a = static_cast<std::uint8_t>(m_registers.s8bits.a >> 1u) + static_cast<std::uint8_t>(m_registers.sFlags.c << 7u);
+    }
+
+    // Gestion du flag Z
+    m_registers.sFlags.z = static_cast<std::uint8_t>(m_registers.s8bits.a == 0u);
+
+    // Reset des flags H et N
+    m_registers.sFlags.h = 0u;
+    m_registers.sFlags.n = 0u;
+
+    // Mise à jour de PC
+    m_pc += 1u;
 }
 
 void Cpu::_ldi_hl_a()

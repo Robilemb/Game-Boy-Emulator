@@ -157,7 +157,7 @@ private:
     void _inc_d();
     void _dec_d();
     void _ld_d_n();
-    void _rdca() {}
+    void _rdca();
     void _rda() {}
     void _stop() {}
     void _jr_n() {}
