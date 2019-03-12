@@ -703,6 +703,52 @@ void Cpu::_rdca()
     m_pc += 1u;
 }
 
+void Cpu::_rda()
+{
+    // Variables locales
+    std::uint8_t w_direction = 0u;
+    std::uint8_t w_flagCSave = 0u;
+
+    // Récupération du sens de rotation (0 = gauche, 1 = droite)
+    w_direction = (mp_mpu->getMemVal(m_opcodeIdx) & 0x08) >> 3u;
+
+    // Sauvegarde du flag C
+    w_flagCSave = m_registers.sFlags.c;
+
+    if (w_direction == 0u)
+    {
+        // Sauvegarde du MSB de A dans le flag C
+        m_registers.sFlags.c = (m_registers.s8bits.a & 0x80) >> 7u;
+
+        // Rotation de A vers la gauche et recopie de la sauvegarde du flag C sur le LSB de A
+        m_registers.s8bits.a = static_cast<std::uint8_t>(((m_registers.s8bits.a) << 1u) & 0xFF) + w_flagCSave;
+    }
+    else
+    {
+        // Sauvegarde du LSB de A dans le flag C
+        m_registers.sFlags.c = (m_registers.s8bits.a & 0x01);
+
+        // Rotation de A vers la droite et recopie de la sauvegarde du flag C sur le MSB de A
+        m_registers.s8bits.a = static_cast<std::uint8_t>(m_registers.s8bits.a >> 1u) + static_cast<std::uint8_t>(w_flagCSave << 7u);
+    }
+
+    // Gestion du flag Z
+    m_registers.sFlags.z = static_cast<std::uint8_t>(m_registers.s8bits.a == 0u);
+
+    // Reset des flags H et N
+    m_registers.sFlags.h = 0u;
+    m_registers.sFlags.n = 0u;
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
+void Cpu::_stop()
+{
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
 void Cpu::_ldi_hl_a()
 {
     // On stocke le contenu du registre A en mémoire à l'adresse contenue par HL

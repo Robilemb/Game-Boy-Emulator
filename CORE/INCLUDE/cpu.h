@@ -158,8 +158,8 @@ private:
     void _dec_d();
     void _ld_d_n();
     void _rdca();
-    void _rda() {}
-    void _stop() {}
+    void _rda();
+    void _stop();
     void _jr_n() {}
     void _jr_f_n() {}
     void _ldi_hl_a();
