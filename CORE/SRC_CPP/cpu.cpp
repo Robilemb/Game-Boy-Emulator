@@ -749,6 +749,27 @@ void Cpu::_stop()
     m_pc += 1u;
 }
 
+void Cpu::_jr_n()
+{
+    // Passage à l'instruction située à l'adresse PC + N
+    m_pc += static_cast<std::int8_t>(mp_mpu->getMemVal(m_opcodeIdx + 1u));
+}
+
+void Cpu::_jr_f_n()
+{
+    // Si la condition F est vraie
+    if (_decodeMnemonic((mp_mpu->getMemVal(m_opcodeIdx) & 0x18) >> 3u))
+    {
+        // Passage à l'instruction située à l'adresse PC + N
+        m_pc += static_cast<std::int8_t>(mp_mpu->getMemVal(m_opcodeIdx + 1u));
+    }
+    else
+    {
+        // Passage à l'instruction suivante
+        m_pc += 2u;
+    }
+}
+
 void Cpu::_ldi_hl_a()
 {
     // On stocke le contenu du registre A en mémoire à l'adresse contenue par HL

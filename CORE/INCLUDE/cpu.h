@@ -160,8 +160,8 @@ private:
     void _rdca();
     void _rda();
     void _stop();
-    void _jr_n() {}
-    void _jr_f_n() {}
+    void _jr_n();
+    void _jr_f_n();
     void _ldi_hl_a();
     void _ldi_a_hl();
     void _ldd_hl_a();
