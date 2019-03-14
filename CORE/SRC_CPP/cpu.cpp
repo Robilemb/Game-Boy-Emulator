@@ -818,6 +818,19 @@ void Cpu::_ldd_a_hl()
     m_pc += 1u;
 }
 
+void Cpu::_cpl()
+{
+    // Complément à 1 de A
+    m_registers.s8bits.a = 255u - m_registers.s8bits.a;
+
+    // Gestion des flags N et H
+    m_registers.sFlags.n = 1u;
+    m_registers.sFlags.h = 1u;
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
 void Cpu::_ld_d_d()
 {
     // Variables locales

@@ -167,7 +167,7 @@ private:
     void _ldd_hl_a();
     void _ldd_a_hl();
     void _daa() {}
-    void _cpl() {}
+    void _cpl();
     void _scf() {}
     void _ccf() {}
     void _ld_d_d();
