@@ -831,6 +831,31 @@ void Cpu::_cpl()
     m_pc += 1u;
 }
 
+void Cpu::_scf()
+{
+    // C = 1
+    m_registers.sFlags.c = 1u;
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
+void Cpu::_ccf()
+{
+    // Flip C
+    if (m_registers.sFlags.c == 1u)
+    {
+        m_registers.sFlags.c = 0u;
+    }
+    else
+    {
+        m_registers.sFlags.c = 1u;
+    }
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
 void Cpu::_ld_d_d()
 {
     // Variables locales
@@ -874,6 +899,12 @@ void Cpu::_ld_d_d()
 
     // le cas LD (HL),(HL) revient à ne rien faire
 
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
+void Cpu::_halt()
+{
     // Mise à jour de PC
     m_pc += 1u;
 }
@@ -995,6 +1026,18 @@ void Cpu::_ld_sp_hl()
     // Stockage du contenu de HL dans SP
     m_sp = m_registers.s16bits.hl;
 
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
+void Cpu::_di()
+{
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
+void Cpu::_ei()
+{
     // Mise à jour de PC
     m_pc += 1u;
 }

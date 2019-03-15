@@ -168,10 +168,10 @@ private:
     void _ldd_a_hl();
     void _daa() {}
     void _cpl();
-    void _scf() {}
-    void _ccf() {}
+    void _scf();
+    void _ccf();
     void _ld_d_d();
-    void _halt() {}
+    void _halt();
     void _alu_a_d() {}
     void _alu_a_n() {}
     void _pop_r() {}
@@ -194,8 +194,8 @@ private:
     void _ld_a_n();
     void _jp_hl();
     void _ld_sp_hl();
-    void _di() {}
-    void _ei() {}
+    void _di();
+    void _ei();
     void _16b_opcode() {}
 
     // LISTE DES INSTRUCTIONS 16 BITS
