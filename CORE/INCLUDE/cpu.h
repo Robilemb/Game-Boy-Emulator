@@ -9,6 +9,8 @@
 #define CPU_NB_OPCODES_8_BITS   51u
 #define CPU_NB_OPCODES_16_BITS  8u
 
+#define CPU_DAA_TABLE_NB        13u
+
 // Union codant les différents registres de la gameboy
 union tu_registers
 {
@@ -130,6 +132,20 @@ private:
         void            (Cpu::*execute16bits[CPU_NB_OPCODES_16_BITS])();
     };
 
+    // Structure des données nécessaires à l'exécution de l'instruction DAA
+    struct ts_daaTableDesc
+    {
+        std::uint8_t    flagN;
+        std::uint8_t    flagH;
+        std::uint8_t    flagCCur;
+        std::uint8_t    flagCNew;
+        std::uint8_t    minAMsw;
+        std::uint8_t    maxAMsw;
+        std::uint8_t    minALsw;
+        std::uint8_t    maxALsw;
+        std::uint8_t    addValue;
+    };
+
 private:
     // Initialisation des masques et identifiants des opcodes
     void _initOpcodesDesc();
@@ -166,7 +182,7 @@ private:
     void _ldi_a_hl();
     void _ldd_hl_a();
     void _ldd_a_hl();
-    void _daa() {}
+    void _daa();
     void _cpl();
     void _scf();
     void _ccf();
@@ -211,15 +227,17 @@ private:
 
 
 private:
-    std::uint16_t   m_opcodeIdx;    // Opcode courant à exécuter
+    std::uint16_t   m_opcodeIdx;                        // Opcode courant à exécuter
 
-    ts_opcodesDesc  m_opcodesDesc;  // Masque et identifiant des opcodes
+    ts_opcodesDesc  m_opcodesDesc;                      // Masque et identifiant des opcodes
 
-    tu_registers 	m_registers;	// Registres 8-16 bits
-    std::uint16_t	m_pc;			// Program Counter
-    std::uint16_t	m_sp;			// Stack Pointer
+    tu_registers 	m_registers;                        // Registres 8-16 bits
+    std::uint16_t	m_pc;                               // Program Counter
+    std::uint16_t	m_sp;                               // Stack Pointer
 
-    Mpu*            mp_mpu;         // Pointeur vers la mémoire
+    Mpu*            mp_mpu;                             // Pointeur vers la mémoire
+
+    ts_daaTableDesc m_daaTable[CPU_DAA_TABLE_NB];       // Table des données nécessaires à l'exécution de l'instruction DAA
 };
 
 

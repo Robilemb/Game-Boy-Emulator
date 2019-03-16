@@ -20,6 +20,21 @@ Cpu::Cpu(Mpu* ai_mpu)
 
     // Initialisation des masques et identifiants des opcodes
     _initOpcodesDesc();
+
+    // Initialisation de la table des données d'exécution de l'instruction DAA
+    m_daaTable[0u]  = {0u, 0u, 0u, 0u, 0x0, 0x9, 0x0, 0x9, 0x00};
+    m_daaTable[1u]  = {0u, 0u, 0u, 0u, 0x0, 0x8, 0xA, 0xF, 0x06};
+    m_daaTable[2u]  = {0u, 1u, 0u, 0u, 0x0, 0x9, 0x0, 0x3, 0x06};
+    m_daaTable[3u]  = {0u, 0u, 0u, 1u, 0xA, 0xF, 0x0, 0x9, 0x60};
+    m_daaTable[4u]  = {0u, 0u, 0u, 1u, 0x9, 0xF, 0xA, 0xF, 0x66};
+    m_daaTable[5u]  = {0u, 1u, 0u, 1u, 0xA, 0xF, 0x0, 0x3, 0x66};
+    m_daaTable[6u]  = {0u, 0u, 1u, 1u, 0x0, 0x2, 0x0, 0x9, 0x60};
+    m_daaTable[7u]  = {0u, 0u, 1u, 1u, 0x0, 0x2, 0xA, 0xF, 0x66};
+    m_daaTable[8u]  = {0u, 1u, 1u, 1u, 0x0, 0x3, 0x0, 0x3, 0x66};
+    m_daaTable[9u]  = {1u, 0u, 0u, 0u, 0x0, 0x9, 0x0, 0x9, 0x00};
+    m_daaTable[10u] = {1u, 1u, 0u, 0u, 0x0, 0x8, 0x6, 0xF, 0xFA};
+    m_daaTable[11u] = {1u, 0u, 1u, 1u, 0x7, 0xF, 0x0, 0x9, 0xA0};
+    m_daaTable[12u] = {1u, 1u, 1u, 1u, 0x6, 0xF, 0x6, 0xF, 0x9A};
 }
 
 // Destructeur
@@ -833,6 +848,44 @@ void Cpu::_cpl()
     // Gestion des flags N et H
     m_registers.sFlags.n = 1u;
     m_registers.sFlags.h = 1u;
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
+void Cpu::_daa()
+{
+    // Variables locales
+    std::uint8_t w_idx  = 0u;
+    std::uint8_t w_AMsw = (m_registers.s8bits.a & 0xF0) >> 4u;
+    std::uint8_t w_ALsw = m_registers.s8bits.a & 0x0F;
+
+    // Recherche de la configuration à exécuter
+    for (w_idx = 0u; w_idx < CPU_DAA_TABLE_NB; ++w_idx)
+    {
+        if (    (m_registers.sFlags.n == m_daaTable[w_idx].flagN)
+             && (m_registers.sFlags.h == m_daaTable[w_idx].flagH)
+             && (m_registers.sFlags.c == m_daaTable[w_idx].flagCCur)
+             && (w_AMsw >= m_daaTable[w_idx].minAMsw)
+             && (w_AMsw <= m_daaTable[w_idx].maxAMsw)
+             && (w_ALsw >= m_daaTable[w_idx].minALsw)
+             && (w_ALsw <= m_daaTable[w_idx].maxALsw)   )
+        {
+            // Ajoute à A la valeur correspondante à la configuration courante
+            m_registers.s8bits.a = static_cast<std::uint8_t>((static_cast<std::uint16_t>(m_registers.s8bits.a) + static_cast<std::uint16_t>(m_daaTable[w_idx].addValue)) & 0xFF);
+
+            // Gestion du flag C
+            m_registers.sFlags.c = m_daaTable[w_idx].flagCNew;
+
+            break;
+        }
+    }
+
+    // Gestion du flag Z
+    m_registers.sFlags.z = static_cast<std::uint8_t>(m_registers.s8bits.a == 0u);
+
+    // Reset du flag H
+    m_registers.sFlags.h = 0u;
 
     // Mise à jour de PC
     m_pc += 1u;
