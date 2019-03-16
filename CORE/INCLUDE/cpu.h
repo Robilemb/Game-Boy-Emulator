@@ -174,8 +174,8 @@ private:
     void _halt();
     void _alu_a_d() {}
     void _alu_a_n() {}
-    void _pop_r() {}
-    void _push_r() {}
+    void _pop_r();
+    void _push_r();
     void _rst_n() {}
     void _ret_f() {}
     void _ret() {}

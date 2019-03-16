@@ -283,8 +283,10 @@ void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
 
 bool Cpu::_decodeMnemonic(const std::uint8_t ai_mnemo)
 {
+    // Variables locales
     bool w_test = true;
 
+    // Recherche du mnémonique
     switch (ai_mnemo)
     {
         case 0u:
@@ -314,6 +316,7 @@ bool Cpu::_decodeMnemonic(const std::uint8_t ai_mnemo)
 
 void Cpu::_decodeRegister8Bits(const std::uint8_t ai_registerMask, std::uint8_t* &aop_register8bits, std::uint16_t* &aop_register16bits)
 {
+    // Recherche du registre 8 bits
     switch (ai_registerMask)
     {
         case 0u:
@@ -357,6 +360,10 @@ void Cpu::_decodeRegister8Bits(const std::uint8_t ai_registerMask, std::uint8_t*
 
 void Cpu::_decodeRegister16Bits(const std::uint8_t ai_registerMask, std::uint16_t* &aop_register16bits)
 {
+    // Variables locales
+    std::uint8_t w_opcodeId = mp_mpu->getMemVal(m_opcodeIdx) & 0xCF;
+
+    // Recherche du registre 16 bits
     switch (ai_registerMask)
     {
         case 0u:
@@ -373,7 +380,7 @@ void Cpu::_decodeRegister16Bits(const std::uint8_t ai_registerMask, std::uint16_
 
         case 3u:
             // Renvoie AF uniquement dans le cas d'un POP ou d'un PUSH, SP sinon
-            if (m_opcodeIdx == 0xC1 || m_opcodeIdx == 0xC5)
+            if ((w_opcodeId == 0xC1) || (w_opcodeId == 0xC5))
             {
                 aop_register16bits = &m_registers.s16bits.af;
             }
@@ -905,6 +912,51 @@ void Cpu::_ld_d_d()
 
 void Cpu::_halt()
 {
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
+void Cpu::_pop_r()
+{
+    // Variables locales
+    std::uint8_t 	w_registerMask      = 0u;
+    std::uint16_t*	wp_register16bits   = NULL;
+
+    // Récupération du registre 16b
+    w_registerMask = ((mp_mpu->getMemVal(m_opcodeIdx) & 0x30) >> 4u);
+    _decodeRegister16Bits(w_registerMask, wp_register16bits);
+
+    // Sauvegarde dans le registre 16b des données contenues aux adresses SP (LSW) et SP + 1 (MSW)
+
+    // Sauvegarde du MSW du registre 16b à l'adresse mémoire de SP - 1
+    *wp_register16bits = (static_cast<std::uint16_t>(mp_mpu->getMemVal(m_sp + 1u)) << 8u) + static_cast<std::uint16_t>(mp_mpu->getMemVal(m_sp));
+
+    // SP = SP + 2
+    m_sp += 2u;
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
+void Cpu::_push_r()
+{
+    // Variables locales
+    std::uint8_t 	w_registerMask      = 0u;
+    std::uint16_t*	wp_register16bits   = NULL;
+
+    // Récupération du registre 16b
+    w_registerMask = ((mp_mpu->getMemVal(m_opcodeIdx) & 0x30) >> 4u);
+    _decodeRegister16Bits(w_registerMask, wp_register16bits);
+
+    // Sauvegarde du MSW du registre 16b à l'adresse mémoire de SP - 1
+    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 1u), static_cast<std::uint8_t>((*wp_register16bits & 0xFF00) >> 8u));
+
+    // Sauvegarde du LSW du registre 16b à l'adresse mémoire de SP - 2
+    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 2u), static_cast<std::uint8_t>(*wp_register16bits & 0x00FF));
+
+    // SP = SP - 2
+    m_sp -= 2u;
+
     // Mise à jour de PC
     m_pc += 1u;
 }
