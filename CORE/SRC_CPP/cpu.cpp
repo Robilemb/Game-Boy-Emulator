@@ -1039,6 +1039,36 @@ void Cpu::_jp_n()
     m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) << 8u) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
 }
 
+void Cpu::_call_f_n()
+{
+    // Si la condition F est vraie
+    if (_decodeMnemonic((mp_mpu->getMemVal(m_opcodeIdx) & 0x18) >> 3u))
+    {
+        // Passage à l'instruction située à l'adresse (N)
+        _call_n();
+    }
+    else
+    {
+        // Passage à l'instruction suivante
+        m_pc += 3u;
+    }
+}
+
+void Cpu::_call_n()
+{
+    // Sauvegarde du MSW de PC à l'adresse mémoire de SP - 1
+    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 1u), static_cast<std::uint8_t>((m_pc & 0xFF00) >> 8u));
+
+    // Sauvegarde du LSW de PC à l'adresse mémoire de SP - 2
+    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 2u), static_cast<std::uint8_t>(m_pc & 0x00FF));
+
+    // SP = SP - 2
+    m_sp -= 2u;
+
+    // Passage à l'instruction située à l'adresse (N)
+    m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) << 8u) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
+}
+
 void Cpu::_add_sp_n()
 {
     // Variables locales

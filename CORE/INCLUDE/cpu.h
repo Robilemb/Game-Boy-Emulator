@@ -198,8 +198,8 @@ private:
     void _reti();
     void _jp_f_n();
     void _jp_n();
-    void _call_f_n() {}
-    void _call_n() {}
+    void _call_f_n();
+    void _call_n();
     void _add_sp_n();
     void _ld_hl_sp_plus_n();
     void _ld_ff00_plus_n_a();
