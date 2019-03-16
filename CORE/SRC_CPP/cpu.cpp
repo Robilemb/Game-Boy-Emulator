@@ -961,6 +961,12 @@ void Cpu::_push_r()
     m_pc += 1u;
 }
 
+void Cpu::_reti()
+{
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
 void Cpu::_jp_f_n()
 {
     // Si la condition F est vraie, passage à l'instruction située à l'adresse (N) ; sinon passage à l'instruction suivante
@@ -980,10 +986,37 @@ void Cpu::_jp_n()
     m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) << 8u) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
 }
 
+void Cpu::_add_sp_n()
+{
+    // Variables locales
+    std::int8_t     w_data8bits = 0;
+    std::int32_t    w_sum       = 0;
+
+    // Récupération de la valeur 8 bits signés
+    w_data8bits = static_cast<std::int8_t>(mp_mpu->getMemVal(m_opcodeIdx + 1u));
+
+    // Gestion du flag H
+    m_registers.sFlags.h = static_cast<std::uint8_t>((((m_sp & 0x0FFF) + static_cast<std::uint16_t>(w_data8bits)) & 0x1000) == 0x1000);
+
+    // Stockage dans SP du résultat de l'addition de SP par la valeur 8 bits fournie
+    w_sum = static_cast<std::int32_t>(m_sp) + static_cast<std::int32_t>(w_data8bits);
+    m_sp = static_cast<std::uint16_t>(w_sum & 0xFFFF);
+
+    // Reset des flags Z et N
+    m_registers.sFlags.z = 0u;
+    m_registers.sFlags.n = 0u;
+
+    // Gestion du flag C
+    m_registers.sFlags.c = static_cast<std::uint8_t>((w_sum & 0x10000) == 0x10000);
+
+    // Mise à jour de PC
+    m_pc += 2u;
+}
+
 void Cpu::_ld_hl_sp_plus_n()
 {
     // Variables locales
-    std::int8_t     w_data8bits = 0u;
+    std::int8_t     w_data8bits = 0;
     std::int32_t    w_sum       = 0;
 
     // Récupération de la valeur 8 bits signés
@@ -1001,7 +1034,7 @@ void Cpu::_ld_hl_sp_plus_n()
     m_registers.sFlags.c = static_cast<std::uint8_t>((w_sum & 0x10000) == 0x10000);
 
     // Gestion du flag H
-    m_registers.sFlags.h = static_cast<std::uint8_t>((((m_sp & 0x0FFF) + (w_data8bits & 0x0FFF)) & 0x1000) == 0x1000);
+    m_registers.sFlags.h = static_cast<std::uint8_t>((((m_sp & 0x0FFF) + static_cast<std::uint16_t>(w_data8bits)) & 0x1000) == 0x1000);
 
     // Mise à jour de PC
     m_pc += 2u;
