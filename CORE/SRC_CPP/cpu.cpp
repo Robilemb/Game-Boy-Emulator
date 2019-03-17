@@ -980,8 +980,6 @@ void Cpu::_pop_r()
     _decodeRegister16Bits(w_registerMask, wp_register16bits);
 
     // Sauvegarde dans le registre 16b des données contenues aux adresses SP (LSW) et SP + 1 (MSW)
-
-    // Sauvegarde du MSW du registre 16b à l'adresse mémoire de SP - 1
     *wp_register16bits = (static_cast<std::uint16_t>(mp_mpu->getMemVal(m_sp + 1u)) << 8u) + static_cast<std::uint16_t>(mp_mpu->getMemVal(m_sp));
 
     // SP = SP + 2
@@ -1014,6 +1012,28 @@ void Cpu::_push_r()
     m_pc += 1u;
 }
 
+void Cpu::_ret_f()
+{
+    // Si la condition F est vraie, sauvegarde dans PC des données contenues aux adresses SP (LSW) et SP + 1 (MSW) ; sinon passage à l'instruction suivante
+    if (_decodeMnemonic((mp_mpu->getMemVal(m_opcodeIdx) & 0x18) >> 3u))
+    {
+        _ret();
+    }
+    else
+    {
+        m_pc += 1u;
+    }
+}
+
+void Cpu::_ret()
+{
+    // Sauvegarde dans PC des données contenues aux adresses SP (LSW) et SP + 1 (MSW)
+    m_pc = (static_cast<std::uint16_t>(mp_mpu->getMemVal(m_sp + 1u)) << 8u) + static_cast<std::uint16_t>(mp_mpu->getMemVal(m_sp));
+
+    // SP = SP + 2
+    m_sp += 2u;
+}
+
 void Cpu::_reti()
 {
     // Mise à jour de PC
@@ -1025,7 +1045,7 @@ void Cpu::_jp_f_n()
     // Si la condition F est vraie, passage à l'instruction située à l'adresse (N) ; sinon passage à l'instruction suivante
     if (_decodeMnemonic((mp_mpu->getMemVal(m_opcodeIdx) & 0x18) >> 3u))
     {
-        m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) << 8u) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
+        _jp_n();
     }
     else
     {
@@ -1056,17 +1076,20 @@ void Cpu::_call_f_n()
 
 void Cpu::_call_n()
 {
+    // Adresse de l'instruction suivante
+    std::uint16_t w_nextInstruction = m_pc + 3u;
+
     // Sauvegarde du MSW de PC à l'adresse mémoire de SP - 1
-    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 1u), static_cast<std::uint8_t>((m_pc & 0xFF00) >> 8u));
+    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 1u), static_cast<std::uint8_t>((w_nextInstruction & 0xFF00) >> 8u));
 
     // Sauvegarde du LSW de PC à l'adresse mémoire de SP - 2
-    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 2u), static_cast<std::uint8_t>(m_pc & 0x00FF));
+    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 2u), static_cast<std::uint8_t>(w_nextInstruction & 0x00FF));
 
     // SP = SP - 2
     m_sp -= 2u;
 
     // Passage à l'instruction située à l'adresse (N)
-    m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) << 8u) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
+    _jp_n();
 }
 
 void Cpu::_add_sp_n()

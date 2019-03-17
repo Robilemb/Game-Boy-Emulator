@@ -193,8 +193,8 @@ private:
     void _pop_r();
     void _push_r();
     void _rst_n() {}
-    void _ret_f() {}
-    void _ret() {}
+    void _ret_f();
+    void _ret();
     void _reti();
     void _jp_f_n();
     void _jp_n();
