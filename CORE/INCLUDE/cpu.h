@@ -159,6 +159,9 @@ private:
     // Décodage d'un registre 16 bits
     void _decodeRegister16Bits(const std::uint8_t ai_registerMask, std::uint16_t* &aop_register16bits);
 
+    // Décodage et exécution d'une opération ALU
+    void _decodeAndRunALU(const std::uint8_t ai_aluMask, const std::uint8_t ai_operand);
+
 
     // LISTE DES INSTRUCTIONS 8 BITS
     // *****************************
@@ -188,8 +191,8 @@ private:
     void _ccf();
     void _ld_d_d();
     void _halt();
-    void _alu_a_d() {}
-    void _alu_a_n() {}
+    void _alu_a_d();
+    void _alu_a_n();
     void _pop_r();
     void _push_r();
     void _rst_n();

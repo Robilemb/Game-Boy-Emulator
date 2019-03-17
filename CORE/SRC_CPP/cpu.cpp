@@ -323,7 +323,6 @@ bool Cpu::_decodeMnemonic(const std::uint8_t ai_mnemo)
         default:
             std::cout << "ERREUR : Mnemonique inconnu" << std::endl;
             exit(-1);
-            break;
     }
 
     return w_test;
@@ -369,7 +368,6 @@ void Cpu::_decodeRegister8Bits(const std::uint8_t ai_registerMask, std::uint8_t*
         default:
             std::cout << "ERREUR : Registre 8 bits inconnu" << std::endl;
             exit(-1);
-            break;
     }
 }
 
@@ -408,7 +406,147 @@ void Cpu::_decodeRegister16Bits(const std::uint8_t ai_registerMask, std::uint16_
         default:
             std::cout << "ERREUR : Registre 16 bits inconnu" << std::endl;
             exit(-1);
+    }
+}
+
+void Cpu::_decodeAndRunALU(const std::uint8_t ai_aluMask, const std::uint8_t ai_operand)
+{
+    // Variables locales
+    std::uint16_t w_sum     = 0u;
+    std::uint16_t w_diff    = 0u;
+
+    // Recherche et exécution de l'opération à effectuer
+    switch (ai_aluMask)
+    {
+        // ADD
+        case 0u:
+            // Calcul de la somme entre A et l'opérande
+            w_sum = static_cast<std::uint16_t>(m_registers.s8bits.a) + static_cast<std::uint16_t>(ai_operand);
+
+            // Gestion du flags H
+            m_registers.sFlags.h = static_cast<std::uint8_t>((((m_registers.s8bits.a & 0x0F) + (ai_operand & 0x0F)) & 0x10) == 0x10);
+
+            // Sauvegarde de la somme dans A
+            m_registers.s8bits.a = static_cast<std::uint8_t>(w_sum & 0xFF);
+
+            // Gestion des flags N, Z et C
+            m_registers.sFlags.n = 0u;
+            m_registers.sFlags.z = static_cast<std::uint8_t>(m_registers.s8bits.a == 0u);
+            m_registers.sFlags.c = static_cast<std::uint8_t>((w_sum & 0x100) == 0x100);
+
             break;
+
+        // ADC
+        case 1u:
+            // Calcul de la somme entre A, l'opérande et le flag C
+            w_sum = static_cast<std::uint16_t>(m_registers.s8bits.a) + static_cast<std::uint16_t>(ai_operand) + static_cast<std::uint8_t>(m_registers.sFlags.c);
+
+            // Gestion du flags H
+            m_registers.sFlags.h = static_cast<std::uint8_t>((((m_registers.s8bits.a & 0x0F) + (ai_operand & 0x0F) + m_registers.sFlags.c) & 0x10) == 0x10);
+
+            // Sauvegarde de la somme dans A
+            m_registers.s8bits.a = static_cast<std::uint8_t>(w_sum & 0xFF);
+
+            // Gestion des flags N, Z et C
+            m_registers.sFlags.n = 0u;
+            m_registers.sFlags.z = static_cast<std::uint8_t>(m_registers.s8bits.a == 0u);
+            m_registers.sFlags.c = static_cast<std::uint8_t>((w_sum & 0x100) == 0x100);
+
+            break;
+
+        // SUB
+        case 2u:
+            // Calcul de la soustraction entre A et l'opérande
+            w_diff = static_cast<std::uint16_t>(m_registers.s8bits.a) - static_cast<std::uint16_t>(ai_operand);
+
+            // Gestion du flags H
+            m_registers.sFlags.h = static_cast<std::uint8_t>((((m_registers.s8bits.a & 0x0F) - (ai_operand & 0x0F)) & 0x10) == 0x10);
+
+            // Sauvegarde de la différence dans A
+            m_registers.s8bits.a = static_cast<std::uint8_t>(w_diff & 0xFF);
+
+            // Gestion des flags N, Z et C
+            m_registers.sFlags.n = 1u;
+            m_registers.sFlags.z = static_cast<std::uint8_t>(m_registers.s8bits.a == 0u);
+            m_registers.sFlags.c = static_cast<std::uint8_t>((w_diff & 0x100) == 0x100);
+
+            break;
+
+        // SBC
+        case 3u:
+            // Calcul de la soustraction entre A et l'opérande
+            w_diff = static_cast<std::uint16_t>(m_registers.s8bits.a) - static_cast<std::uint16_t>(ai_operand) - static_cast<std::uint8_t>(m_registers.sFlags.c);
+
+            // Gestion du flags H
+            m_registers.sFlags.h = static_cast<std::uint8_t>((((m_registers.s8bits.a & 0x0F) - (ai_operand & 0x0F) - m_registers.sFlags.c) & 0x10) == 0x10);
+
+            // Sauvegarde de la différence dans A
+            m_registers.s8bits.a = static_cast<std::uint8_t>(w_diff & 0xFF);
+
+            // Gestion des flags N, Z et C
+            m_registers.sFlags.n = 1u;
+            m_registers.sFlags.z = static_cast<std::uint8_t>(m_registers.s8bits.a == 0u);
+            m_registers.sFlags.c = static_cast<std::uint8_t>((w_diff & 0x100) == 0x100);
+
+            break;
+
+        // AND
+        case 4u:
+            // ET logique entre A et l'opérande
+            m_registers.s8bits.a &= ai_operand;
+
+            // Gestion des flags
+            m_registers.sFlags.n = 0u;
+            m_registers.sFlags.z = static_cast<std::uint8_t>(m_registers.s8bits.a == 0u);
+            m_registers.sFlags.h = 1u;
+            m_registers.sFlags.c = 0u;
+
+            break;
+
+        // XOR
+        case 5u:
+            // OU EXCLUSIF logique entre A et l'opérande
+            m_registers.s8bits.a ^= ai_operand;
+
+            // Gestion des flags
+            m_registers.sFlags.n = 0u;
+            m_registers.sFlags.z = static_cast<std::uint8_t>(m_registers.s8bits.a == 0u);
+            m_registers.sFlags.h = 0u;
+            m_registers.sFlags.c = 0u;
+
+            break;
+
+        // OR
+        case 6u:
+            // OU logique entre A et l'opérande
+            m_registers.s8bits.a |= ai_operand;
+
+            // Gestion des flags
+            m_registers.sFlags.n = 0u;
+            m_registers.sFlags.z = static_cast<std::uint8_t>(m_registers.s8bits.a == 0u);
+            m_registers.sFlags.h = 0u;
+            m_registers.sFlags.c = 0u;
+
+            break;
+
+        // CP
+        case 7u:
+            // Calcul de la soustraction entre A et l'opérande
+            w_diff = static_cast<std::uint16_t>(m_registers.s8bits.a) - static_cast<std::uint16_t>(ai_operand);
+
+            // Gestion du flags H
+            m_registers.sFlags.h = static_cast<std::uint8_t>((((m_registers.s8bits.a & 0x0F) - (ai_operand & 0x0F)) & 0x10) == 0x10);
+
+            // Gestion des flags N, Z et C
+            m_registers.sFlags.n = 1u;
+            m_registers.sFlags.z = static_cast<std::uint8_t>(w_diff == 0u);
+            m_registers.sFlags.c = static_cast<std::uint8_t>((w_diff & 0x100) == 0x100);
+
+            break;
+
+        default:
+            std::cout << "Erreur : Opérateur ALU incoonu" << std::endl;
+            exit(-1);
     }
 }
 
@@ -843,7 +981,7 @@ void Cpu::_ldd_a_hl()
 void Cpu::_cpl()
 {
     // Complément à 1 de A
-    m_registers.s8bits.a = 255u - m_registers.s8bits.a;
+    m_registers.s8bits.a = ~m_registers.s8bits.a;
 
     // Gestion des flags N et H
     m_registers.sFlags.n = 1u;
@@ -967,6 +1105,53 @@ void Cpu::_halt()
 {
     // Mise à jour de PC
     m_pc += 1u;
+}
+
+void Cpu::_alu_a_d()
+{
+    // Variables locales
+    std::uint8_t    w_aluMask           = (mp_mpu->getMemVal(m_opcodeIdx) & 0x38) >> 3u;
+    std::uint8_t    w_data8bits         = 0u;
+    std::uint8_t 	w_registerMask      = 0u;
+    std::uint8_t*	wp_register8bits    = NULL;
+    std::uint16_t*	wp_register16bits   = NULL;
+
+    // Récupération du masque du registre
+    w_registerMask = mp_mpu->getMemVal(m_opcodeIdx) & 0x07;
+
+    // Récupération du registre
+    _decodeRegister8Bits(w_registerMask, wp_register8bits, wp_register16bits);
+
+    // Si registre HL
+    if (w_registerMask == 6u)
+    {
+        // Lecture de la valeur à l'adresse (HL)
+        w_data8bits = mp_mpu->getMemVal(*wp_register16bits);
+    }
+    else
+    {
+        // Lecture de la valeur du registre 8b
+        w_data8bits = *wp_register8bits;
+    }
+
+    // Opération ALU
+    _decodeAndRunALU(w_aluMask, w_data8bits);
+
+    // Mise à jour de PC
+    m_pc += 1u;
+}
+
+void Cpu::_alu_a_n()
+{
+    // Variables locales
+    std::uint8_t w_aluMask      = (mp_mpu->getMemVal(m_opcodeIdx) & 0x38) >> 3u;
+    std::uint8_t w_data8bits    = mp_mpu->getMemVal(m_opcodeIdx + 1u);
+
+    // Opération ALU
+    _decodeAndRunALU(w_aluMask, w_data8bits);
+
+    // Mise à jour de PC
+    m_pc += 2u;
 }
 
 void Cpu::_pop_r()
