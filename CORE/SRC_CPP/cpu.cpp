@@ -1012,6 +1012,24 @@ void Cpu::_push_r()
     m_pc += 1u;
 }
 
+void Cpu::_rst_n()
+{
+    // Récupération de la commande de reset
+    std::uint8_t w_rstCmd = ((mp_mpu->getMemVal(m_opcodeIdx) & 0x38)) >> 3u;
+
+    // Sauvegarde du MSW de PC à l'adresse mémoire de SP - 1
+    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 1u), static_cast<std::uint8_t>((m_pc & 0xFF00) >> 8u));
+
+    // Sauvegarde du LSW de PC à l'adresse mémoire de SP - 2
+    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 2u), static_cast<std::uint8_t>(m_pc & 0x00FF));
+
+    // SP = SP - 2
+    m_sp -= 2u;
+
+    // Reset de PC en fonction de N
+    m_pc = static_cast<std::uint16_t>(w_rstCmd) << 3u;
+}
+
 void Cpu::_ret_f()
 {
     // Si la condition F est vraie, sauvegarde dans PC des données contenues aux adresses SP (LSW) et SP + 1 (MSW) ; sinon passage à l'instruction suivante

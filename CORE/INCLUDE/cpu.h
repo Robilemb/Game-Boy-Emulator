@@ -192,7 +192,7 @@ private:
     void _alu_a_n() {}
     void _pop_r();
     void _push_r();
-    void _rst_n() {}
+    void _rst_n();
     void _ret_f();
     void _ret();
     void _reti();
