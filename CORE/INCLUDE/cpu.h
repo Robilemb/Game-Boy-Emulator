@@ -215,18 +215,18 @@ private:
     void _ld_sp_hl();
     void _di();
     void _ei();
-    void _16b_opcode() {}
+    void _execute16bOpcode();
 
     // LISTE DES INSTRUCTIONS 16 BITS
     // ******************************
-    void _rdc_d() {}
-    void _rd_d() {}
-    void _sda_d() {}
-    void _swap_d() {}
-    void _srl_d() {}
-    void _bit_n_d() {}
-    void _res_n_d() {}
-    void _set_n_d() {}
+    void _rdc_d();
+    void _rd_d();
+    void _sda_d();
+    void _swap_d();
+    void _srl_d();
+    void _bit_n_d();
+    void _res_n_d();
+    void _set_n_d();
 
 
 private:
