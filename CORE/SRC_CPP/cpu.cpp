@@ -1620,6 +1620,74 @@ void Cpu::_rd_d()
 
 void Cpu::_sda_d()
 {
+    // Variables locales
+    std::uint8_t    w_direction         = 0u;
+    std::uint8_t    w_data8bits         = 0u;
+    std::uint8_t 	w_registerMask      = 0u;
+    std::uint8_t*	wp_register8bits    = NULL;
+    std::uint16_t*	wp_register16bits   = NULL;
+
+    // Récupération du sens de rotation (0 = gauche, 1 = droite)
+    w_direction = (mp_mpu->getMemVal(m_opcodeIdx) & 0x08) >> 3u;
+
+    // Récupération du masque du registre
+    w_registerMask = mp_mpu->getMemVal(m_opcodeIdx) & 0x07;
+
+    // Récupération du registre
+    _decodeRegister8Bits(w_registerMask, wp_register8bits, wp_register16bits);
+
+    if (w_registerMask == 6u)
+    {
+        // Récupération de la valeur contenue dans (HL)
+        w_data8bits = mp_mpu->getMemVal(m_registers.s16bits.hl);
+
+        if (w_direction == 0u)
+        {
+            // Sauvegarde du MSB de (HL) dans le flag C
+            m_registers.sFlags.c = (w_data8bits & 0x80) >> 7u;
+
+            // Rotation de (HL) vers la gauche et reset du LSB
+            mp_mpu->setMemVal(m_registers.s16bits.hl, static_cast<std::uint8_t>((w_data8bits << 1u) & 0xFE));
+        }
+        else
+        {
+            // Sauvegarde du LSB de (HL) dans le flag C
+            m_registers.sFlags.c = (w_data8bits & 0x01);
+
+            // Rotation de A vers la droite et recopie MSB
+            mp_mpu->setMemVal(m_registers.s16bits.hl, static_cast<std::uint8_t>((w_data8bits >> 1u) + (w_data8bits & 0x80)));
+        }
+
+        // Gestion du flag Z
+        m_registers.sFlags.z = static_cast<std::uint8_t>(mp_mpu->getMemVal(m_registers.s16bits.hl) == 0u);
+    }
+    else
+    {
+        if (w_direction == 0u)
+        {
+            // Sauvegarde du MSB du registre 8b dans le flag C
+            m_registers.sFlags.c = (*wp_register8bits & 0x80) >> 7u;
+
+            // Rotation du registre 8b vers la gauche et reset du LSB
+            *wp_register8bits = static_cast<std::uint8_t>((*wp_register8bits << 1u) & 0xFE);
+        }
+        else
+        {
+            // Sauvegarde du LSB du registre 8b dans le flag C
+            m_registers.sFlags.c = (*wp_register8bits & 0x01);
+
+            // Rotation du registre 8b vers la droite et recopie du MSB
+            *wp_register8bits = static_cast<std::uint8_t>((*wp_register8bits >> 1u) + (*wp_register8bits & 0x80));
+        }
+
+        // Gestion du flag Z
+        m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
+    }
+
+    // Reset des flags H et N
+    m_registers.sFlags.h = 0u;
+    m_registers.sFlags.n = 0u;
+
     // Mise à jour de PC
     m_pc += 2u;
 }
