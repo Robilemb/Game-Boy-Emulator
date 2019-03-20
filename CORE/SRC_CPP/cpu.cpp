@@ -329,7 +329,7 @@ bool Cpu::_decodeMnemonic(const std::uint8_t ai_mnemo)
     return w_test;
 }
 
-void Cpu::_decodeRegister8Bits(const std::uint8_t ai_registerMask, std::uint8_t* &aop_register8bits, std::uint16_t* &aop_register16bits)
+void Cpu::_decodeRegister8Bits(const std::uint8_t ai_registerMask, std::uint8_t* &aop_register8bits)
 {
     // Recherche du registre 8 bits
     switch (ai_registerMask)
@@ -356,10 +356,6 @@ void Cpu::_decodeRegister8Bits(const std::uint8_t ai_registerMask, std::uint8_t*
 
         case 5u:
             aop_register8bits = &m_registers.s8bits.l;
-            break;
-
-        case 6u:
-            aop_register16bits = &m_registers.s16bits.hl;
             break;
 
         case 7u:
@@ -704,23 +700,21 @@ void Cpu::_inc_d()
     // Variables locales
     std::uint8_t 	w_registerMask      = 0u;
     std::uint8_t*	wp_register8bits    = NULL;
-    std::uint16_t*	wp_register16bits   = NULL;
     std::uint8_t    w_valueAtHL         = 0u;
 
-    // Récupération du registre 8b
+    // Récupération du masque du registre 8b
     w_registerMask = ((mp_mpu->getMemVal(m_opcodeIdx) & 0x38) >> 3u);
-    _decodeRegister8Bits(w_registerMask, wp_register8bits, wp_register16bits);
 
     if (w_registerMask == 6u)
     {
         // Récupération de la valeur à l'adresse contenue par HL
-        w_valueAtHL = mp_mpu->getMemVal(*wp_register16bits);
+        w_valueAtHL = mp_mpu->getMemVal(m_registers.s16bits.hl);
 
         // Gestion du flag H
         m_registers.sFlags.h = static_cast<std::uint8_t>((w_valueAtHL & 0x0F) == 0x0F);
 
         // Incrémentation de la valeur à l'adresse contenue par HL
-        mp_mpu->setMemVal(*wp_register16bits, ++w_valueAtHL);
+        mp_mpu->setMemVal(m_registers.s16bits.hl, ++w_valueAtHL);
 
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(w_valueAtHL == 0u);
@@ -730,6 +724,9 @@ void Cpu::_inc_d()
     }
     else
     {
+        // Récupération du registre 8b
+        _decodeRegister8Bits(w_registerMask, wp_register8bits);
+
         // Gestion du flag H
         m_registers.sFlags.h = static_cast<std::uint8_t>((*wp_register8bits & 0x0F) == 0x0F);
 
@@ -752,23 +749,21 @@ void Cpu::_dec_d()
     // Variables locales
     std::uint8_t 	w_registerMask      = 0u;
     std::uint8_t*	wp_register8bits    = NULL;
-    std::uint16_t*	wp_register16bits   = NULL;
     std::uint8_t    w_valueAtHL         = 0u;
 
-    // Récupération du registre 8b
+    // Récupération du masque du registre 8b
     w_registerMask = ((mp_mpu->getMemVal(m_opcodeIdx) & 0x38) >> 3u);
-    _decodeRegister8Bits(w_registerMask, wp_register8bits, wp_register16bits);
 
     if (w_registerMask == 6u)
     {
         // Récupération de la valeur à l'adresse contenue par HL
-        w_valueAtHL = mp_mpu->getMemVal(*wp_register16bits);
+        w_valueAtHL = mp_mpu->getMemVal(m_registers.s16bits.hl);
 
         // Gestion du flag H
         m_registers.sFlags.h = static_cast<std::uint8_t>(w_valueAtHL == 0u);
 
         // Décrémentation de la valeur à l'adresse contenue par HL
-        mp_mpu->setMemVal(*wp_register16bits, --w_valueAtHL);
+        mp_mpu->setMemVal(m_registers.s16bits.hl, --w_valueAtHL);
 
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(w_valueAtHL == 0u);
@@ -778,6 +773,9 @@ void Cpu::_dec_d()
     }
     else
     {
+        // Récupération du registre 8b
+        _decodeRegister8Bits(w_registerMask, wp_register8bits);
+
         // Gestion du flag H
         m_registers.sFlags.h = static_cast<std::uint8_t>(*wp_register8bits == 0u);
 
@@ -801,7 +799,6 @@ void Cpu::_ld_d_n()
     std::uint8_t 	w_data8bits         = 0u;
     std::uint8_t 	w_registerMask      = 0u;
     std::uint8_t*	wp_register8bits    = NULL;
-    std::uint16_t*	wp_register16bits   = NULL;
 
     // Récupération de la valeur à charger dans le registre
     w_data8bits = mp_mpu->getMemVal(m_opcodeIdx + 1u);
@@ -809,17 +806,17 @@ void Cpu::_ld_d_n()
     // Récupération du masque du registre
     w_registerMask = (mp_mpu->getMemVal(m_opcodeIdx) & 0x38) >> 3u;
 
-    // Récupération du registre
-    _decodeRegister8Bits(w_registerMask, wp_register8bits, wp_register16bits);
-
     // Si chargement dans HL
     if (w_registerMask == 6u)
     {
         // Stockage de la valeur en mémoire à l'adresse contenue par HL
-        mp_mpu->setMemVal(*wp_register16bits, w_data8bits);
+        mp_mpu->setMemVal(m_registers.s16bits.hl, w_data8bits);
     }
     else
     {
+        // Récupération du registre
+        _decodeRegister8Bits(w_registerMask, wp_register8bits);
+
         // Mise à jour de la valeur du registre
         *wp_register8bits = w_data8bits;
     }
@@ -1061,37 +1058,41 @@ void Cpu::_ld_d_d()
     std::uint8_t 	w_registerMask_1    = 0u;
     std::uint8_t 	w_registerMask_2    = 0u;
     std::uint8_t*	wp_register8bits_1  = NULL;
-    std::uint16_t*	wp_register16bits_1 = NULL;
     std::uint8_t*	wp_register8bits_2  = NULL;
-    std::uint16_t*	wp_register16bits_2 = NULL;
 
     // Récupération du masque du premier registre
     w_registerMask_1 = ( mp_mpu->getMemVal(m_opcodeIdx) >> 3u ) & 0x07;
 
-    // Récupération du premier registre
-    _decodeRegister8Bits(w_registerMask_1, wp_register8bits_1, wp_register16bits_1);
-
     // Récupération du masque du premier registre
     w_registerMask_2 = mp_mpu->getMemVal(m_opcodeIdx) & 0x07;
-
-    // Récupération du deuxième registre
-    _decodeRegister8Bits(w_registerMask_2, wp_register8bits_2, wp_register16bits_2);
 
     // Si LD (HL),X
     if ( (w_registerMask_1 == 6u) && (w_registerMask_2 != 6u) )
     {
-        // On stocke le contenu du registre wp_register8bits_2 en mémoire à l'adresse contenue par HL (wp_register16bits_1)
-        mp_mpu->setMemVal(*wp_register16bits_1, *wp_register8bits_2);
+        // Récupération du deuxième registre
+        _decodeRegister8Bits(w_registerMask_2, wp_register8bits_2);
+
+        // On stocke le contenu du registre wp_register8bits_2 en mémoire à l'adresse contenue par HL
+        mp_mpu->setMemVal(m_registers.s16bits.hl, *wp_register8bits_2);
     }
     // Sinon si LD X,(HL)
     else if ( (w_registerMask_1 != 6u) && (w_registerMask_2 == 6u) )
     {
-        // On stocke le contenu de la mémoire à l'adresse contenue par HL (wp_register16bits_2) dans wp_register8bits_1
-        *wp_register8bits_1 = mp_mpu->getMemVal(*wp_register16bits_2);
+        // Récupération du premier registre
+        _decodeRegister8Bits(w_registerMask_1, wp_register8bits_1);
+
+        // On stocke le contenu de la mémoire à l'adresse contenue par HL dans wp_register8bits_1
+        *wp_register8bits_1 = mp_mpu->getMemVal(m_registers.s16bits.hl);
     }
     // Chargement d'un registre 8 bits dans un autre registre 8 bits
     else if ( (w_registerMask_1 != 6u) && (w_registerMask_2 != 6u) )
     {
+        // Récupération du premier registre
+        _decodeRegister8Bits(w_registerMask_1, wp_register8bits_1);
+
+        // Récupération du deuxième registre
+        _decodeRegister8Bits(w_registerMask_2, wp_register8bits_2);
+
         // On charge wp_register8bits_2 dans wp_register8bits_1
         *wp_register8bits_1 = *wp_register8bits_2;
     }
@@ -1115,22 +1116,21 @@ void Cpu::_alu_a_d()
     std::uint8_t    w_data8bits         = 0u;
     std::uint8_t 	w_registerMask      = 0u;
     std::uint8_t*	wp_register8bits    = NULL;
-    std::uint16_t*	wp_register16bits   = NULL;
 
     // Récupération du masque du registre
     w_registerMask = mp_mpu->getMemVal(m_opcodeIdx) & 0x07;
-
-    // Récupération du registre
-    _decodeRegister8Bits(w_registerMask, wp_register8bits, wp_register16bits);
 
     // Si registre HL
     if (w_registerMask == 6u)
     {
         // Lecture de la valeur à l'adresse (HL)
-        w_data8bits = mp_mpu->getMemVal(*wp_register16bits);
+        w_data8bits = mp_mpu->getMemVal(m_registers.s16bits.hl);
     }
     else
     {
+        // Récupération du registre
+        _decodeRegister8Bits(w_registerMask, wp_register8bits);
+
         // Lecture de la valeur du registre 8b
         w_data8bits = *wp_register8bits;
     }
@@ -1473,16 +1473,12 @@ void Cpu::_rdc_d()
     std::uint8_t    w_data8bits         = 0u;
     std::uint8_t 	w_registerMask      = 0u;
     std::uint8_t*	wp_register8bits    = NULL;
-    std::uint16_t*	wp_register16bits   = NULL;
 
     // Récupération du sens de rotation (0 = gauche, 1 = droite)
     w_direction = (mp_mpu->getMemVal(m_opcodeIdx) & 0x08) >> 3u;
 
     // Récupération du masque du registre
     w_registerMask = mp_mpu->getMemVal(m_opcodeIdx) & 0x07;
-
-    // Récupération du registre
-    _decodeRegister8Bits(w_registerMask, wp_register8bits, wp_register16bits);
 
     if (w_registerMask == 6u)
     {
@@ -1511,6 +1507,9 @@ void Cpu::_rdc_d()
     }
     else
     {
+        // Récupération du registre
+        _decodeRegister8Bits(w_registerMask, wp_register8bits);
+
         if (w_direction == 0u)
         {
             // Sauvegarde du MSB du registre 8b dans le flag C
@@ -1548,7 +1547,6 @@ void Cpu::_rd_d()
     std::uint8_t    w_data8bits         = 0u;
     std::uint8_t 	w_registerMask      = 0u;
     std::uint8_t*	wp_register8bits    = NULL;
-    std::uint16_t*	wp_register16bits   = NULL;
 
     // Récupération du sens de rotation (0 = gauche, 1 = droite)
     w_direction = (mp_mpu->getMemVal(m_opcodeIdx) & 0x08) >> 3u;
@@ -1558,9 +1556,6 @@ void Cpu::_rd_d()
 
     // Récupération du masque du registre
     w_registerMask = mp_mpu->getMemVal(m_opcodeIdx) & 0x07;
-
-    // Récupération du registre
-    _decodeRegister8Bits(w_registerMask, wp_register8bits, wp_register16bits);
 
     if (w_registerMask == 6u)
     {
@@ -1589,6 +1584,9 @@ void Cpu::_rd_d()
     }
     else
     {
+        // Récupération du registre
+        _decodeRegister8Bits(w_registerMask, wp_register8bits);
+
         if (w_direction == 0u)
         {
             // Sauvegarde du MSB du registre 8b dans le flag C
@@ -1625,16 +1623,12 @@ void Cpu::_sda_d()
     std::uint8_t    w_data8bits         = 0u;
     std::uint8_t 	w_registerMask      = 0u;
     std::uint8_t*	wp_register8bits    = NULL;
-    std::uint16_t*	wp_register16bits   = NULL;
 
     // Récupération du sens de rotation (0 = gauche, 1 = droite)
     w_direction = (mp_mpu->getMemVal(m_opcodeIdx) & 0x08) >> 3u;
 
     // Récupération du masque du registre
     w_registerMask = mp_mpu->getMemVal(m_opcodeIdx) & 0x07;
-
-    // Récupération du registre
-    _decodeRegister8Bits(w_registerMask, wp_register8bits, wp_register16bits);
 
     if (w_registerMask == 6u)
     {
@@ -1663,6 +1657,9 @@ void Cpu::_sda_d()
     }
     else
     {
+        // Récupération du registre
+        _decodeRegister8Bits(w_registerMask, wp_register8bits);
+
         if (w_direction == 0u)
         {
             // Sauvegarde du MSB du registre 8b dans le flag C
@@ -1699,13 +1696,9 @@ void Cpu::_swap_d()
     std::uint8_t    w_data8bits         = 0u;
     std::uint8_t 	w_registerMask      = 0u;
     std::uint8_t*	wp_register8bits    = NULL;
-    std::uint16_t*	wp_register16bits   = NULL;
 
     // Récupération du masque du registre
     w_registerMask = mp_mpu->getMemVal(m_opcodeIdx) & 0x07;
-
-    // Récupération du registre
-    _decodeRegister8Bits(w_registerMask, wp_register8bits, wp_register16bits);
 
     if (w_registerMask == 6u)
     {
@@ -1723,6 +1716,9 @@ void Cpu::_swap_d()
     }
     else
     {
+        // Récupération du registre
+        _decodeRegister8Bits(w_registerMask, wp_register8bits);
+
         // Sauvegarde du LSW du registre 8b
         w_lsw = *wp_register8bits & 0x0F;
 

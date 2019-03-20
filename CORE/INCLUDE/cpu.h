@@ -154,7 +154,7 @@ private:
     bool _decodeMnemonic(const std::uint8_t ai_mnemo);
 
     // Décodage d'un registre 8 bits
-    void _decodeRegister8Bits(const std::uint8_t ai_registerMask, std::uint8_t* &aop_register8bits, std::uint16_t* &aop_register16bits);
+    void _decodeRegister8Bits(const std::uint8_t ai_registerMask, std::uint8_t* &aop_register8bits);
 
     // Décodage d'un registre 16 bits
     void _decodeRegister16Bits(const std::uint8_t ai_registerMask, std::uint16_t* &aop_register16bits);
