@@ -1822,12 +1822,70 @@ void Cpu::_bit_n_d()
 
 void Cpu::_res_n_d()
 {
+    // Variables locales
+    std::uint8_t    w_bitNumber         = 0u;
+    std::uint8_t    w_data8bits         = 0u;
+    std::uint8_t 	w_registerMask      = 0u;
+    std::uint8_t*	wp_register8bits    = NULL;
+
+    // Récupération du masque du registre
+    w_registerMask = mp_mpu->getMemVal(m_opcodeIdx) & 0x07;
+
+    // Récupération du numéro de bit
+    w_bitNumber = (mp_mpu->getMemVal(m_opcodeIdx) & 0x38) >> 3u;
+
+    if (w_registerMask == 6u)
+    {
+        // Récupération de la valeur contenue dans (HL)
+        w_data8bits = mp_mpu->getMemVal(m_registers.s16bits.hl);
+
+        // Reset du bit N de (HL)
+        mp_mpu->setMemVal(m_registers.s16bits.hl, static_cast<std::uint8_t>(w_data8bits & ~(0x01 << w_bitNumber)));
+    }
+    else
+    {
+        // Récupération du registre
+        _decodeRegister8Bits(w_registerMask, wp_register8bits);
+
+        // Reset du bit N du registre 8b
+        *wp_register8bits = static_cast<std::uint8_t>(*wp_register8bits & ~(0x01 << w_bitNumber));
+    }
+
     // Mise à jour de PC
     m_pc += 2u;
 }
 
 void Cpu::_set_n_d()
 {
+    // Variables locales
+    std::uint8_t    w_bitNumber         = 0u;
+    std::uint8_t    w_data8bits         = 0u;
+    std::uint8_t 	w_registerMask      = 0u;
+    std::uint8_t*	wp_register8bits    = NULL;
+
+    // Récupération du masque du registre
+    w_registerMask = mp_mpu->getMemVal(m_opcodeIdx) & 0x07;
+
+    // Récupération du numéro de bit
+    w_bitNumber = (mp_mpu->getMemVal(m_opcodeIdx) & 0x38) >> 3u;
+
+    if (w_registerMask == 6u)
+    {
+        // Récupération de la valeur contenue dans (HL)
+        w_data8bits = mp_mpu->getMemVal(m_registers.s16bits.hl);
+
+        // Set du bit N de (HL)
+        mp_mpu->setMemVal(m_registers.s16bits.hl, static_cast<std::uint8_t>(w_data8bits | (0x01 << w_bitNumber)));
+    }
+    else
+    {
+        // Récupération du registre
+        _decodeRegister8Bits(w_registerMask, wp_register8bits);
+
+        // Set du bit N du registre 8b
+        *wp_register8bits = static_cast<std::uint8_t>(*wp_register8bits | (0x01 << w_bitNumber));
+    }
+
     // Mise à jour de PC
     m_pc += 2u;
 }
