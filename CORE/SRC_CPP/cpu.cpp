@@ -1740,6 +1740,47 @@ void Cpu::_swap_d()
 
 void Cpu::_srl_d()
 {
+    // Variables locales
+    std::uint8_t    w_data8bits         = 0u;
+    std::uint8_t 	w_registerMask      = 0u;
+    std::uint8_t*	wp_register8bits    = NULL;
+
+    // Récupération du masque du registre
+    w_registerMask = mp_mpu->getMemVal(m_opcodeIdx) & 0x07;
+
+    if (w_registerMask == 6u)
+    {
+        // Récupération de la valeur contenue dans (HL)
+        w_data8bits = mp_mpu->getMemVal(m_registers.s16bits.hl);
+
+        // Sauvegarde du LSB de (HL) dans le flag C
+        m_registers.sFlags.c = (w_data8bits & 0x01);
+
+        // Rotation de A vers la droite et reset MSB
+        mp_mpu->setMemVal(m_registers.s16bits.hl, static_cast<std::uint8_t>((w_data8bits >> 1u) & 0x7F));
+
+        // Gestion du flag Z
+        m_registers.sFlags.z = static_cast<std::uint8_t>(mp_mpu->getMemVal(m_registers.s16bits.hl) == 0u);
+    }
+    else
+    {
+        // Récupération du registre
+        _decodeRegister8Bits(w_registerMask, wp_register8bits);
+
+        // Sauvegarde du LSB du registre 8b dans le flag C
+        m_registers.sFlags.c = (*wp_register8bits & 0x01);
+
+        // Rotation du registre 8b vers la droite et reset du MSB
+        *wp_register8bits = static_cast<std::uint8_t>((*wp_register8bits >> 1u) & 0x7F);
+
+        // Gestion du flag Z
+        m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
+    }
+
+    // Reset des flags H et N
+    m_registers.sFlags.h = 0u;
+    m_registers.sFlags.n = 0u;
+
     // Mise à jour de PC
     m_pc += 2u;
 }
