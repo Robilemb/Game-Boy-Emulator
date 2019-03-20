@@ -1787,6 +1787,35 @@ void Cpu::_srl_d()
 
 void Cpu::_bit_n_d()
 {
+    // Variables locales
+    std::uint8_t    w_bitNumber         = 0u;
+    std::uint8_t 	w_registerMask      = 0u;
+    std::uint8_t*	wp_register8bits    = NULL;
+
+    // Récupération du masque du registre
+    w_registerMask = mp_mpu->getMemVal(m_opcodeIdx) & 0x07;
+
+    // Récupération du numéro de bit
+    w_bitNumber = (mp_mpu->getMemVal(m_opcodeIdx) & 0x38) >> 3u;
+
+    if (w_registerMask == 6u)
+    {
+        // Sauvegarde du complément du bit N de (HL) dans Z
+        m_registers.sFlags.z = ~static_cast<std::uint8_t>((mp_mpu->getMemVal(m_registers.s16bits.hl) >> w_bitNumber) & 0x01);
+    }
+    else
+    {
+        // Récupération du registre
+        _decodeRegister8Bits(w_registerMask, wp_register8bits);
+
+        // Sauvegarde du complément du bit N de registre 8b dans Z
+        m_registers.sFlags.z = ~static_cast<std::uint8_t>((*wp_register8bits >> w_bitNumber) & 0x01);
+    }
+
+    // Reset des flags H et N
+    m_registers.sFlags.h = 1u;
+    m_registers.sFlags.n = 0u;
+
     // Mise à jour de PC
     m_pc += 2u;
 }
