@@ -25,7 +25,10 @@ public:
     te_status loadROM(const std::string& ai_ROMFileName);
 
     // Exécution de l'émulation
-    te_status run();
+    te_status start();
+
+    // Arret de l'émulation
+    void stop();
 
     // Accesseur sur le CPU
     const Cpu* getCpu() const;
@@ -36,6 +39,8 @@ public:
 private:
     Cpu* mp_cpu;     // CPU
     Mpu* mp_mpu;     // MPU
+
+    bool m_isRunning;   // Booléen indiquant si l'émulation est en cours d'exécution
 };
 
 #endif // GAMEBOY_H
