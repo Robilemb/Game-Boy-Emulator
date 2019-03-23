@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowIcon(QIcon("../IMG/Icon.png"));
 
     mp_gameboy                  = new Gameboy();
+    m_emulationIsRunning        = false;
 
     mp_debugRegistersWindow     = new DebugRegistersWindow(this);
     mp_debugMemoryWindow        = new DebugMemoryWindow(this);
@@ -18,12 +19,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    // Fin de l'émulation
+    _stopEmulation();
 
-    delete mp_debugRegistersWindow;
     delete mp_debugMemoryWindow;
+    delete mp_debugRegistersWindow;
 
     delete mp_gameboy;
+
+    delete ui;
 }
 
 const Gameboy* MainWindow::getGameBoy() const
@@ -48,11 +52,6 @@ void MainWindow::openDebugMemoryWindow()
     mp_debugMemoryWindow->refresh(0);
     mp_debugMemoryWindow->show();
     ui->actionMemory->setEnabled(false);
-}
-
-void MainWindow::closeEvent(QCloseEvent*)
-{
-    qApp->quit();
 }
 
 void MainWindow::selectROMFileName()
@@ -82,11 +81,39 @@ void MainWindow::selectROMFileName()
         // Exécution de la ROM
         if (w_status == E_OK)
         {
-            // Exécution de la ROM à partir de 0x150 jusqu'à 0x1000
-            while(mp_gameboy->getCpu()->getRegisterPC() < 0x1000)
-            {
-                mp_gameboy->run();
-            }
+            _startEmulation();
+        }
+    }
+}
+
+void MainWindow::closeEvent(QCloseEvent*)
+{
+    qApp->quit();
+}
+
+void MainWindow::_startEmulation()
+{
+    // Fin du thread en cours d'exécution si rechargement d'une ROM
+    _stopEmulation();
+
+    // Thread d'exécution de la ROM
+    m_gameboyThread = std::thread(&Gameboy::start, mp_gameboy);
+    m_gameboyThread.detach();
+
+    // Emulation en cours d'exécution
+    m_emulationIsRunning = true;
+}
+
+void MainWindow::_stopEmulation()
+{
+    // Fin de l'émulation si une ROM était en cours de lecture
+    if (m_emulationIsRunning)
+    {
+        mp_gameboy->stop();
+
+        if (m_gameboyThread.joinable())
+        {
+            m_gameboyThread.join();
         }
     }
 }

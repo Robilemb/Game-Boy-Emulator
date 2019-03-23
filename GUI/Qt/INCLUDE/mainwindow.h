@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <thread>
+
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -32,14 +34,18 @@ private slots:
 
 private:
     void closeEvent(QCloseEvent*);
+    void _startEmulation();
+    void _stopEmulation();
 
 private:
     Ui::MainWindow*         ui;
 
+    Gameboy*                mp_gameboy;
+    std::thread             m_gameboyThread;
+    bool                    m_emulationIsRunning;
+
     DebugRegistersWindow*   mp_debugRegistersWindow;
     DebugMemoryWindow*      mp_debugMemoryWindow;
-
-    Gameboy*                mp_gameboy;
 };
 
 #endif // MAINWINDOW_H

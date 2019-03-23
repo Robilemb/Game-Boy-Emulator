@@ -7,8 +7,10 @@
 // Constructeur
 Gameboy::Gameboy()
 {
-    mp_mpu = new Mpu();
-    mp_cpu = new Cpu(mp_mpu);
+    mp_mpu      = new Mpu();
+    mp_cpu      = new Cpu(mp_mpu);
+
+    m_isRunning = false;
 }
 
 // Destructeur
@@ -78,10 +80,22 @@ te_status Gameboy::loadROM(const std::string& ai_ROMFileName)
 // EXECUTION DE L'EMULATION
 // ********************************************************
 
-te_status Gameboy::run()
+te_status Gameboy::start()
 {
-    // Exécution de l'opcode à l'adresse de PC
-    mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
+    // Démarrage de l'émulation
+    m_isRunning = true;
+
+    while (m_isRunning)
+    {
+        // Exécution de l'opcode à l'adresse de PC
+        mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
+    }
 
     return E_OK;
+}
+
+void Gameboy::stop()
+{
+    // Fin de l'émulation
+    m_isRunning = false;
 }
