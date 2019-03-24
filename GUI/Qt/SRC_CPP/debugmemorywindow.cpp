@@ -148,7 +148,7 @@ void DebugMemoryWindow::refresh(std::uint16_t ai_idx)
     std::uint8_t        w_memValue      = 0u;
     std::uint16_t       w_idxMemValue   = 0u;
     std::uint32_t       w_idxAddress    = 0u;
-    QTableWidgetItem*   w_curItem;
+    QTableWidgetItem*   wp_curItem      = nullptr;
     QStringList         w_addressList;
 
     // Mise à jour des items
@@ -168,10 +168,10 @@ void DebugMemoryWindow::refresh(std::uint16_t ai_idx)
         w_memValue = static_cast<MainWindow*>(parent())->getGameBoy()->getMpu()->getMemVal(w_idxMemValue);
 
         // Mise à jour de l'item
-        w_curItem = new QTableWidgetItem();
-        w_curItem->setText("0x" + QString::number(w_memValue, 16).toUpper());
-        w_curItem->setTextAlignment(Qt::AlignCenter);
-        ui->tableMemoryWidget->setItem(w_i, 0, w_curItem);
+        wp_curItem = new QTableWidgetItem();
+        wp_curItem->setText("0x" + QString::number(w_memValue, 16).toUpper());
+        wp_curItem->setTextAlignment(Qt::AlignCenter);
+        ui->tableMemoryWidget->setItem(w_i, 0, wp_curItem);
     }
 
     // Mise à jour de l'affichage des adresses
