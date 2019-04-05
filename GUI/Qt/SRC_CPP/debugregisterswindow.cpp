@@ -12,6 +12,7 @@ DebugRegistersWindow::DebugRegistersWindow(QWidget *ai_parent) :
     ui->setupUi(this);
 
     this->setFixedSize(260, 480);
+    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     refresh();
 }

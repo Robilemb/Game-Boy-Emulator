@@ -7,10 +7,10 @@
 // Constructeur
 Gameboy::Gameboy()
 {
-    mp_mpu      = new Mpu();
-    mp_cpu      = new Cpu(mp_mpu);
+    mp_mpu          = new Mpu();
+    mp_cpu          = new Cpu(mp_mpu);
 
-    m_isRunning = false;
+    m_isRunning     = false;
 }
 
 // Destructeur
@@ -80,10 +80,14 @@ te_status Gameboy::loadROM(const std::string& ai_ROMFileName)
 // EXECUTION DE L'EMULATION
 // ********************************************************
 
-te_status Gameboy::start()
+te_status Gameboy::start(updateScreenFunction updateScreen)
 {
     // Démarrage de l'émulation
     m_isRunning = true;
+
+    // Fonction de mise à jour de l'écran (fonction callback fournie par l'IHM)
+    std::array<std::uint8_t, GAMEBOY_SCREEN_SIZE> array;
+    updateScreen("Coucou");
 
     while (m_isRunning)
     {
