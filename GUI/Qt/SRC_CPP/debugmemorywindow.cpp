@@ -10,7 +10,6 @@ DebugMemoryWindow::DebugMemoryWindow(QWidget *parent) :
     ui->setupUi(this);
 
     this->setFixedSize(470, 340);
-    this->setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
     ui->upButton->setIcon(style()->standardIcon(QStyle::SP_ArrowUp));
     ui->downButton->setIcon(style()->standardIcon(QStyle::SP_ArrowDown));
