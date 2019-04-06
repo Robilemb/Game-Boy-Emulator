@@ -85,6 +85,16 @@ te_status Gameboy::start()
     // Démarrage de l'émulation
     m_isRunning = true;
 
+<<<<<<< HEAD
+=======
+    // Fonction de mise à jour de l'écran (fonction callback fournie par l'IHM)
+    gbScreenImage array;
+    for (std::uint8_t w_i = 0; w_i < GAMEBOY_SCREEN_WIDTH; ++w_i)
+        for (std::uint8_t w_j = 0; w_j < GAMEBOY_SCREEN_HEIGHT; ++w_j)
+            array[w_j + w_i*GAMEBOY_SCREEN_HEIGHT] = w_i;
+    updateScreen(array);
+
+>>>>>>> feature/display-tile
     while (m_isRunning)
     {
         // Exécution de l'opcode à l'adresse de PC

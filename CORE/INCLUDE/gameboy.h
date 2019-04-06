@@ -7,6 +7,15 @@
 #include "cpu.h"
 #include "mpu.h"
 
+<<<<<<< HEAD
+=======
+#define GAMEBOY_SCREEN_WIDTH    160u
+#define GAMEBOY_SCREEN_HEIGHT   144u
+#define GAMEBOY_SCREEN_SIZE     (GAMEBOY_SCREEN_WIDTH*GAMEBOY_SCREEN_HEIGHT)
+
+typedef std::array<std::uint8_t, GAMEBOY_SCREEN_SIZE> gbScreenImage;
+
+>>>>>>> feature/display-tile
 // Enum des status de fonction
 enum te_status
 {
@@ -18,6 +27,11 @@ enum te_status
 class Gameboy
 {
 public:
+<<<<<<< HEAD
+=======
+    typedef std::function<void(const gbScreenImage&)> updateScreenFunction;
+
+>>>>>>> feature/display-tile
     explicit Gameboy();
     ~Gameboy();
 

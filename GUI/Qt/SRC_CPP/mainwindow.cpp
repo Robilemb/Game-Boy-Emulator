@@ -1,20 +1,42 @@
 #include "GUI/Qt/INCLUDE/mainwindow.h"
 #include "ui_mainwindow.h"
 
+Q_DECLARE_METATYPE(gbScreenImage)
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    m_screenImage(this),
+    mp_gameboy(new Gameboy),
+    m_emulationIsRunning(false),
+    mp_debugRegistersWindow(new DebugRegistersWindow(this)),
+    mp_debugMemoryWindow(new DebugMemoryWindow(this))
 {
+    // Fenetre principale
     ui->setupUi(this);
 
     this->setWindowTitle("Game Boy Emulator");
     this->setWindowIcon(QIcon("../IMG/Icon.png"));
+<<<<<<< HEAD
 
     mp_gameboy                  = new Gameboy();
     m_emulationIsRunning        = false;
 
     mp_debugRegistersWindow     = new DebugRegistersWindow(this);
     mp_debugMemoryWindow        = new DebugMemoryWindow(this);
+=======
+    this->setFixedSize(GAMEBOY_SCREEN_WIDTH, (GAMEBOY_SCREEN_HEIGHT + 20u));
+
+    // Initialisation de l'écran
+    ui->screen->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->screen->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->screen->setScene(&m_screenImage);
+
+    // Connection entre le signal de MAJ de l'écran (commandé par mp_gameboy) et le slot de MAJ de l'écran
+    qRegisterMetaType<gbScreenImage>();
+    QObject::connect(this, SIGNAL(setScreenSignal(const gbScreenImage&)),
+                     this, SLOT(setScreen(const gbScreenImage&)));
+>>>>>>> feature/display-tile
 }
 
 MainWindow::~MainWindow()
@@ -40,6 +62,20 @@ Ui::MainWindow* MainWindow::getUi()
     return ui;
 }
 
+<<<<<<< HEAD
+=======
+void MainWindow::setScreen(const gbScreenImage& ai_image)
+{
+    m_screenImage.addPixmap(QPixmap::fromImage(QImage(ai_image.data(), GAMEBOY_SCREEN_WIDTH, GAMEBOY_SCREEN_HEIGHT, QImage::Format_Grayscale8)));
+}
+
+void MainWindow::refreshScreen(const gbScreenImage& ai_image)
+{
+    // Emission du signal commandant la MAJ de l'écran
+    emit setScreenSignal(ai_image);
+}
+
+>>>>>>> feature/display-tile
 void MainWindow::openDebugRegistersWindow()
 {
     mp_debugRegistersWindow->refresh();
