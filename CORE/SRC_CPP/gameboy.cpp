@@ -7,10 +7,10 @@
 // Constructeur
 Gameboy::Gameboy()
 {
-    mp_mpu      = new Mpu();
-    mp_cpu      = new Cpu(mp_mpu);
+    mp_mpu          = new Mpu();
+    mp_cpu          = new Cpu(mp_mpu);
 
-    m_isRunning = false;
+    m_isRunning     = false;
 }
 
 // Destructeur

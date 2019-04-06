@@ -3,8 +3,8 @@
 
 #include <cstdint>
 #include <fstream>
-#include <array>
 #include <functional>
+#include <array>
 
 #include "cpu.h"
 #include "mpu.h"
@@ -47,10 +47,10 @@ public:
     const Mpu* getMpu() const;
 
 private:
-    Cpu* mp_cpu;     // CPU
-    Mpu* mp_mpu;     // MPU
+    Cpu*                    mp_cpu;         // CPU
+    Mpu*                    mp_mpu;         // MPU
 
-    bool m_isRunning;   // Booléen indiquant si l'émulation est en cours d'exécution
+    bool                    m_isRunning;    // Booléen indiquant si l'émulation est en cours d'exécution
 };
 
 #endif // GAMEBOY_H

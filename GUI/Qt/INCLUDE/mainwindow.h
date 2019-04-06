@@ -34,7 +34,6 @@ private slots:
     void openDebugRegistersWindow();
     void openDebugMemoryWindow();
     void selectROMFileName();
-
     void setScreen(const gbScreenImage& ai_image);
 
 signals:

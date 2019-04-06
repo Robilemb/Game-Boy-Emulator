@@ -1,4 +1,4 @@
-#include <functional>
+#include <QMetaType>
 
 #include "GUI/Qt/INCLUDE/mainwindow.h"
 #include "ui_mainwindow.h"
