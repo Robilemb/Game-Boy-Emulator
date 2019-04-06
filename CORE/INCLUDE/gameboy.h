@@ -9,9 +9,11 @@
 #include "cpu.h"
 #include "mpu.h"
 
-#define GAMEBOY_SCREEN_WIDTH    160
-#define GAMEBOY_SCREEN_HEIGHT   144
+#define GAMEBOY_SCREEN_WIDTH    160u
+#define GAMEBOY_SCREEN_HEIGHT   144u
 #define GAMEBOY_SCREEN_SIZE     (GAMEBOY_SCREEN_WIDTH*GAMEBOY_SCREEN_HEIGHT)
+
+typedef std::array<std::uint8_t, GAMEBOY_SCREEN_SIZE> gbScreenImage;
 
 // Enum des status de fonction
 enum te_status
@@ -24,8 +26,7 @@ enum te_status
 class Gameboy
 {
 public:
-    //typedef std::function<void(const std::array<std::uint8_t, GAMEBOY_SCREEN_SIZE>&)> updateScreenFunction;
-    typedef std::function<void(const std::string&)> updateScreenFunction;
+    typedef std::function<void(const gbScreenImage&)> updateScreenFunction;
 
     explicit Gameboy();
     ~Gameboy();

@@ -3,31 +3,33 @@
 #include "GUI/Qt/INCLUDE/mainwindow.h"
 #include "ui_mainwindow.h"
 
+Q_DECLARE_METATYPE(gbScreenImage)
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    m_screenImage(this),
+    mp_gameboy(new Gameboy),
+    m_emulationIsRunning(false),
+    mp_debugRegistersWindow(new DebugRegistersWindow(this)),
+    mp_debugMemoryWindow(new DebugMemoryWindow(this))
 {
+    // Fenetre principale
     ui->setupUi(this);
 
     this->setWindowTitle("Game Boy Emulator");
     this->setWindowIcon(QIcon("../IMG/Icon.png"));
-    this->setFixedSize(160, 164);
+    this->setFixedSize(GAMEBOY_SCREEN_WIDTH, (GAMEBOY_SCREEN_HEIGHT + 20u));
 
-    mp_gameboy                  = new Gameboy();
-    m_emulationIsRunning        = false;
-
-    mp_debugRegistersWindow     = new DebugRegistersWindow(this);
-    mp_debugMemoryWindow        = new DebugMemoryWindow(this);
+    // Initialisation de l'écran
+    ui->screen->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->screen->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->screen->setScene(&m_screenImage);
 
     // Connection entre le signal de MAJ de l'écran (commandé par mp_gameboy) et le slot de MAJ de l'écran
-    //typedef std::array<std::uint8_t, GAMEBOY_SCREEN_SIZE> myArray;
-    //Q_DECLARE_METATYPE(myArray);
-    /*qRegisterMetaType<std::array<std::uint8_t, GAMEBOY_SCREEN_SIZE>>("std::array<std::uint8_t, GAMEBOY_SCREEN_SIZE>");
-    QObject::connect(this, SIGNAL(setScreenSignal(const std::array<std::uint8_t, GAMEBOY_SCREEN_SIZE>&)),
-                     this, SLOT(setScreen(const std::array<std::uint8_t, GAMEBOY_SCREEN_SIZE>&)));*/
-    qRegisterMetaType<std::string>("std::string");
-        QObject::connect(this, SIGNAL(setScreenSignal(const std::string&)),
-                         this, SLOT(setScreen(const std::string&)));
+    qRegisterMetaType<gbScreenImage>();
+    QObject::connect(this, SIGNAL(setScreenSignal(const gbScreenImage&)),
+                     this, SLOT(setScreen(const gbScreenImage&)));
 }
 
 MainWindow::~MainWindow()
@@ -53,25 +55,12 @@ Ui::MainWindow* MainWindow::getUi()
     return ui;
 }
 
-void MainWindow::setScreen(const std::string& ai_image)
+void MainWindow::setScreen(const gbScreenImage& ai_image)
 {
-    std::cout << ai_image << std::endl;
-    QImage image = QImage(160, 144, QImage::Format_Grayscale8);
-    for (int i = 0; i < 160; ++i)
-        for (int j = 0; j < 144; ++j)
-            image.setPixel(i, j, qRgb(0, 0, 0));
-    QGraphicsScene* graphic = new QGraphicsScene(this);
-    graphic->addPixmap(QPixmap::fromImage(image));
-    ui->screen->setScene(graphic);
-    ui->screen->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ui->screen->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    for (int i = 0; i < 160; ++i)
-        for (int j = 0; j < 144; ++j)
-            image.setPixel(i, j, qRgb(i, i, i));
-    graphic->addPixmap(QPixmap::fromImage(image));
+    m_screenImage.addPixmap(QPixmap::fromImage(QImage(ai_image.data(), GAMEBOY_SCREEN_WIDTH, GAMEBOY_SCREEN_HEIGHT, QImage::Format_Grayscale8)));
 }
 
-void MainWindow::refreshScreen(const std::string& ai_image)
+void MainWindow::refreshScreen(const gbScreenImage& ai_image)
 {
     // Emission du signal commandant la MAJ de l'écran
     emit setScreenSignal(ai_image);

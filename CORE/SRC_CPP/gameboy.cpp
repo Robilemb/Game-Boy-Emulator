@@ -86,8 +86,11 @@ te_status Gameboy::start(updateScreenFunction updateScreen)
     m_isRunning = true;
 
     // Fonction de mise à jour de l'écran (fonction callback fournie par l'IHM)
-    std::array<std::uint8_t, GAMEBOY_SCREEN_SIZE> array;
-    updateScreen("Coucou");
+    gbScreenImage array;
+    for (std::uint8_t w_i = 0; w_i < GAMEBOY_SCREEN_WIDTH; ++w_i)
+        for (std::uint8_t w_j = 0; w_j < GAMEBOY_SCREEN_HEIGHT; ++w_j)
+            array[w_j + w_i*GAMEBOY_SCREEN_HEIGHT] = w_i;
+    updateScreen(array);
 
     while (m_isRunning)
     {

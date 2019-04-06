@@ -6,6 +6,7 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QGraphicsScene>
 
 #include "GUI/Qt/INCLUDE/debugregisterswindow.h"
 #include "GUI/Qt/INCLUDE/debugmemorywindow.h"
@@ -27,17 +28,16 @@ public:
     const Gameboy*      getGameBoy() const;
     Ui::MainWindow*     getUi();
 
-    //const std::array<std::uint8_t, GAMEBOY_SCREEN_SIZE>& ai_image
-    void refreshScreen(const std::string& ai_image);
+    void refreshScreen(const gbScreenImage& ai_image);
 
 private slots:
     void openDebugRegistersWindow();
     void openDebugMemoryWindow();
     void selectROMFileName();
-    void setScreen(const std::string& ai_image);
+    void setScreen(const gbScreenImage& ai_image);
 
 signals:
-    void setScreenSignal(const std::string& ai_image);
+    void setScreenSignal(const gbScreenImage& ai_image);
 
 private:
     void closeEvent(QCloseEvent*);
@@ -46,6 +46,8 @@ private:
 
 private:
     Ui::MainWindow*         ui;
+
+    QGraphicsScene          m_screenImage;
 
     Gameboy*                mp_gameboy;
     std::thread             m_gameboyThread;
