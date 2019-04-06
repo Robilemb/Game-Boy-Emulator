@@ -1,3 +1,5 @@
+#include <functional>
+
 #include "GUI/Qt/INCLUDE/mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -17,14 +19,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->setWindowTitle("Game Boy Emulator");
     this->setWindowIcon(QIcon("../IMG/Icon.png"));
-<<<<<<< HEAD
-
-    mp_gameboy                  = new Gameboy();
-    m_emulationIsRunning        = false;
-
-    mp_debugRegistersWindow     = new DebugRegistersWindow(this);
-    mp_debugMemoryWindow        = new DebugMemoryWindow(this);
-=======
     this->setFixedSize(GAMEBOY_SCREEN_WIDTH, (GAMEBOY_SCREEN_HEIGHT + 20u));
 
     // Initialisation de l'écran
@@ -36,7 +30,6 @@ MainWindow::MainWindow(QWidget *parent) :
     qRegisterMetaType<gbScreenImage>();
     QObject::connect(this, SIGNAL(setScreenSignal(const gbScreenImage&)),
                      this, SLOT(setScreen(const gbScreenImage&)));
->>>>>>> feature/display-tile
 }
 
 MainWindow::~MainWindow()
@@ -62,8 +55,6 @@ Ui::MainWindow* MainWindow::getUi()
     return ui;
 }
 
-<<<<<<< HEAD
-=======
 void MainWindow::setScreen(const gbScreenImage& ai_image)
 {
     m_screenImage.addPixmap(QPixmap::fromImage(QImage(ai_image.data(), GAMEBOY_SCREEN_WIDTH, GAMEBOY_SCREEN_HEIGHT, QImage::Format_Grayscale8)));
@@ -75,7 +66,6 @@ void MainWindow::refreshScreen(const gbScreenImage& ai_image)
     emit setScreenSignal(ai_image);
 }
 
->>>>>>> feature/display-tile
 void MainWindow::openDebugRegistersWindow()
 {
     mp_debugRegistersWindow->refresh();
@@ -133,7 +123,7 @@ void MainWindow::_startEmulation()
     _stopEmulation();
 
     // Thread d'exécution de la ROM
-    m_gameboyThread = std::thread(&Gameboy::start, mp_gameboy);
+    m_gameboyThread = std::thread(&Gameboy::start, mp_gameboy, std::bind(&MainWindow::refreshScreen, this, std::placeholders::_1));
     m_gameboyThread.detach();
 
     // Emulation en cours d'exécution

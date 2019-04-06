@@ -28,22 +28,17 @@ public:
     const Gameboy*      getGameBoy() const;
     Ui::MainWindow*     getUi();
 
-<<<<<<< HEAD
-=======
     void refreshScreen(const gbScreenImage& ai_image);
 
->>>>>>> feature/display-tile
 private slots:
     void openDebugRegistersWindow();
     void openDebugMemoryWindow();
     void selectROMFileName();
-<<<<<<< HEAD
-=======
+
     void setScreen(const gbScreenImage& ai_image);
 
 signals:
     void setScreenSignal(const gbScreenImage& ai_image);
->>>>>>> feature/display-tile
 
 private:
     void closeEvent(QCloseEvent*);
