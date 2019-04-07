@@ -51,7 +51,7 @@ union tu_registers
 class Cpu
 {
 public:
-    explicit Cpu(Mpu* ai_mpu);
+    explicit Cpu(Mpu* const aip_mpu);
     ~Cpu();
 
     // Initialisation des registres
@@ -242,6 +242,5 @@ private:
 
     ts_daaTableDesc m_daaTable[CPU_DAA_TABLE_NB];       // Table des données nécessaires à l'exécution de l'instruction DAA
 };
-
 
 #endif // CPU_H
