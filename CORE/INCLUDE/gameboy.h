@@ -6,14 +6,10 @@
 #include <functional>
 #include <array>
 
+#include "shared_data.h"
 #include "cpu.h"
+#include "gpu.h"
 #include "mpu.h"
-
-#define GAMEBOY_SCREEN_WIDTH    160u
-#define GAMEBOY_SCREEN_HEIGHT   144u
-#define GAMEBOY_SCREEN_SIZE     (GAMEBOY_SCREEN_WIDTH*GAMEBOY_SCREEN_HEIGHT)
-
-typedef std::array<std::uint8_t, GAMEBOY_SCREEN_SIZE> gbScreenImage;
 
 // Enum des status de fonction
 enum te_status
@@ -28,14 +24,14 @@ class Gameboy
 public:
     typedef std::function<void(const gbScreenImage&)> updateScreenFunction;
 
-    explicit Gameboy();
+    explicit Gameboy(updateScreenFunction ai_updateScreen);
     ~Gameboy();
 
     // Chargement de la ROM en mémoire
     te_status loadROM(const std::string& ai_ROMFileName);
 
     // Exécution de l'émulation
-    te_status start(updateScreenFunction updateScreen);
+    te_status start();
 
     // Arret de l'émulation
     void stop();
@@ -47,8 +43,12 @@ public:
     const Mpu* getMpu() const;
 
 private:
-    Cpu*                    mp_cpu;         // CPU
     Mpu*                    mp_mpu;         // MPU
+    Cpu*                    mp_cpu;         // CPU
+    Gpu*                    mp_gpu;         // GPU
+
+    gbScreenImage           m_screenImage;  // Image à afficher sur l'écran
+    updateScreenFunction    updateScreen;   // Callback de mise à jour de l'écran
 
     bool                    m_isRunning;    // Booléen indiquant si l'émulation est en cours d'exécution
 };

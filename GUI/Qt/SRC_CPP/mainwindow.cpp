@@ -9,7 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     m_screenImage(this),
-    mp_gameboy(new Gameboy),
+    mp_gameboy(new Gameboy(std::bind(&MainWindow::refreshScreen, this, std::placeholders::_1))),
     m_emulationIsRunning(false),
     mp_debugRegistersWindow(new DebugRegistersWindow(this)),
     mp_debugMemoryWindow(new DebugMemoryWindow(this))
@@ -123,7 +123,7 @@ void MainWindow::_startEmulation()
     _stopEmulation();
 
     // Thread d'exécution de la ROM
-    m_gameboyThread = std::thread(&Gameboy::start, mp_gameboy, std::bind(&MainWindow::refreshScreen, this, std::placeholders::_1));
+    m_gameboyThread = std::thread(&Gameboy::start, mp_gameboy);
     m_gameboyThread.detach();
 
     // Emulation en cours d'exécution

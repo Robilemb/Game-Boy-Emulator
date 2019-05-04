@@ -7,13 +7,13 @@
 // ********************************************************
 
 // Constructeur
-Cpu::Cpu(Mpu* ai_mpu)
+Cpu::Cpu(Mpu* const aip_mpu)
 {
     // Initialisation des données membres
     m_opcodeIdx = 0u;
 
     // Récupération du pointeur vers la mémoire
-    mp_mpu = ai_mpu;
+    mp_mpu = aip_mpu;
 
     // Initialisation des registres
     initRegisters();

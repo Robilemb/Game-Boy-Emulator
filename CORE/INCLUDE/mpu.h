@@ -2,6 +2,7 @@
 #define MPU_H
 
 #include <iostream>
+#include <array>
 
 // Taille de la mémoire = 64ko
 #define MPU_MEMORY_SIZE                 65535u
@@ -27,7 +28,7 @@ public:
 
 
 private:
-    std::uint8_t m_memory[MPU_MEMORY_SIZE];	// Mémoire
+    std::array<std::uint8_t, MPU_MEMORY_SIZE> m_memory;     // Mémoire
 };
 
 #endif // MPU_H
