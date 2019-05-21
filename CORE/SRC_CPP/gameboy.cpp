@@ -57,6 +57,9 @@ te_status Gameboy::loadROM(const std::string& ai_ROMFileName)
 
     if(w_ROMFile)
     {
+        // Execution du bootstrap
+        // ...
+
         // Chargement du contenu de la ROM dans la mémoire BANK0
         while(w_i < MPU_MEMORY_CARD_MBC_0_SIZE)
         {
