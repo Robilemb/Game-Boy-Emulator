@@ -6,6 +6,9 @@
 
 #include "mpu.h"
 
+#define CPU_FREQUENCY           4194304L                       // Fréquence en Hz
+#define CPU_CYCLE_PERIOD_NS     (4000000000L/CPU_FREQUENCY)    // Durée en ns de l'exécution d'un cycle
+
 #define CPU_NB_OPCODES_8_BITS   51u
 #define CPU_NB_OPCODES_16_BITS  8u
 
@@ -231,6 +234,7 @@ private:
 
 private:
     std::uint16_t   m_opcodeIdx;                        // Opcode courant à exécuter
+    std::uint8_t    m_nbCycles;                         // Nombre de cycles de l'opcode courant
 
     ts_opcodesDesc  m_opcodesDesc;                      // Masque et identifiant des opcodes
 
