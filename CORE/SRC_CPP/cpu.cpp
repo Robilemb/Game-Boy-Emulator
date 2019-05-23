@@ -179,13 +179,13 @@ tu_registers Cpu::getRegisters() const
 void Cpu::initRegisters()
 {
     // Initialisation des registres
-    m_registers.s8bits.a    = 0x01;
-    m_registers.s8bits.f    = 0xB0;
-    m_registers.s16bits.bc  = 0x0013;
-    m_registers.s16bits.de  = 0x00D8;
-    m_registers.s16bits.hl  = 0x014D;
-    m_sp                    = 0xFFFE;
-    m_pc                    = 0x100;
+    m_registers.s8bits.a    = 0x00;
+    m_registers.s8bits.f    = 0x00;
+    m_registers.s16bits.bc  = 0x0000;
+    m_registers.s16bits.de  = 0x0000;
+    m_registers.s16bits.hl  = 0x0000;
+    m_sp                    = 0x0000;
+    m_pc                    = 0x0000;
 }
 
 
@@ -560,7 +560,7 @@ void Cpu::_decodeAndRunALU(const std::uint8_t ai_aluMask, const std::uint8_t ai_
             break;
 
         default:
-            std::cout << "Erreur : Opérateur ALU incoonu" << std::endl;
+            std::cout << "Erreur : Opérateur ALU inconnu" << std::endl;
             exit(-1);
     }
 }
@@ -979,7 +979,7 @@ void Cpu::_stop()
 void Cpu::_jr_n()
 {
     // Passage à l'instruction située à l'adresse PC + N
-    m_pc += static_cast<std::int8_t>(mp_mpu->getMemVal(m_opcodeIdx + 1u));
+    m_pc += static_cast<std::int8_t>(mp_mpu->getMemVal(m_opcodeIdx + 1u)) + 2u;
 
     // Mise à jour du nombre de cylces
     m_nbCycles = 3u;
@@ -999,7 +999,7 @@ void Cpu::_jr_f_n()
         m_pc += 2u;
 
         // Mise à jour du nombre de cylces
-        m_nbCycles = 2;
+        m_nbCycles = 2u;
     }
 }
 
@@ -1548,7 +1548,7 @@ void Cpu::_ld_c_a()
     mp_mpu->setMemVal((0xFF00 + m_registers.s8bits.c), m_registers.s8bits.a);
 
     // Mise à jour de PC
-    m_pc += 2u;
+    m_pc += 1u;
 
     // Mise à jour du nombre de cylces
     m_nbCycles = 2u;
