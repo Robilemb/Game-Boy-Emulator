@@ -1,21 +1,31 @@
 #include "CORE/INCLUDE/gameboy.h"
 
+#define GB_REFRESH_SCREEN_PERIOD_MS 16.8
+
 // ********************************************************
 // Constructeur / Destructeur
 // ********************************************************
 
 // Constructeur
-Gameboy::Gameboy()
+Gameboy::Gameboy(updateScreenFunction ai_updateScreen) :
+    mp_mpu(new Mpu()),
+    mp_cpu(new Cpu(mp_mpu)),
+    mp_gpu(new Gpu(mp_mpu)),
+    updateScreen(ai_updateScreen),
+    m_isRunning(false)
 {
-    mp_mpu      = new Mpu();
-    mp_cpu      = new Cpu(mp_mpu);
+    for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
+    {
+        m_romFirstBytes[w_i] = 0u;
+    }
 
-    m_isRunning = false;
+    m_gpuClock = std::chrono::high_resolution_clock::now();
 }
 
 // Destructeur
 Gameboy::~Gameboy()
 {
+    delete mp_gpu;
     delete mp_cpu;
     delete mp_mpu;
 }
@@ -44,7 +54,7 @@ te_status Gameboy::loadROM(const std::string& ai_ROMFileName)
 {
     // Variables locales
     char 				w_caractere;
-    std::uint32_t 		w_i = 0u;
+    std::uint32_t 		w_i             = 0u;
 
     // Réinitialisation de l'émulation
     mp_mpu->initMemory();
@@ -55,12 +65,19 @@ te_status Gameboy::loadROM(const std::string& ai_ROMFileName)
 
     if(w_ROMFile)
     {
-        // Chargement du contenu de la ROM dans la mémoire BANK0
-        while(w_i < MPU_MEMORY_CARD_MBC_0_SIZE)
+        // Enregistrtement des MPU_BOOTSTRAP_SIZE premiers octets
+        while (w_i < MPU_BOOTSTRAP_SIZE)
         {
             w_ROMFile.get(w_caractere);
+            m_romFirstBytes[w_i] = static_cast<std::uint8_t>(w_caractere);
+            w_i++;
+        }
 
-            mp_mpu->setMemVal(MPU_MEMORY_CARD_BANK_0_OFFSET+w_i, static_cast<std::uint8_t>(w_caractere));
+        // Chargement de BANK0 et BANK1 en mémoire
+        while(w_i < (MPU_MEMORY_CARD_BANK_1_OFFSET + MPU_MEMORY_CARD_BANK_SIZE))
+        {
+            w_ROMFile.get(w_caractere);
+            mp_mpu->setMemVal((MPU_MEMORY_CARD_BANK_0_OFFSET + w_i), static_cast<std::uint8_t>(w_caractere));
             w_i++;
         }
 
@@ -85,10 +102,22 @@ te_status Gameboy::start()
     // Démarrage de l'émulation
     m_isRunning = true;
 
+    // Execution du bootstrap
+    _executeBootstrap();
+
+    // Chargement des 256 premiers octets de la ROM (pour remplacer le bootstrap)
+    for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
+    {
+        mp_mpu->setMemVal(w_i, m_romFirstBytes[w_i]);
+    }
+
     while (m_isRunning)
     {
         // Exécution de l'opcode à l'adresse de PC
         mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
+
+        // Mise à jour de l'écran
+        _setScreen();
     }
 
     return E_OK;
@@ -98,4 +127,34 @@ void Gameboy::stop()
 {
     // Fin de l'émulation
     m_isRunning = false;
+}
+
+
+// *****************
+// Fonctions privées
+// *****************
+
+void Gameboy::_executeBootstrap()
+{
+    while (mp_cpu->getRegisterPC() < MPU_BOOTSTRAP_SIZE)
+    {
+        // Exécution des instructions entre 0x000 et 0x100
+        mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
+
+        // Mise à jour de l'écran
+        _setScreen();
+    }
+}
+
+void Gameboy::_setScreen()
+{
+    if (static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - m_gpuClock).count()) >= GB_REFRESH_SCREEN_PERIOD_MS)
+    {
+        // Mise à jour de l'écran
+        mp_gpu->computeScreenImage(m_screenImage);
+        updateScreen(m_screenImage);
+
+        // Mise à jour de l'horloge
+        m_gpuClock = std::chrono::high_resolution_clock::now();
+    }
 }

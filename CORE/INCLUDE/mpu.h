@@ -2,15 +2,19 @@
 #define MPU_H
 
 #include <iostream>
+#include <array>
 
 // Taille de la mémoire = 64ko
 #define MPU_MEMORY_SIZE                 65535u
 
-// Offset mémoire pour accès à la cartouche
-#define MPU_MEMORY_CARD_BANK_0_OFFSET   0u
+// Taille d'une bank
+#define MPU_MEMORY_CARD_BANK_SIZE       0x4000
 
-// MBC (Memory Bank Controller) type 0 : pas de ROM banking, taille max de la ROM = 32ko
-#define MPU_MEMORY_CARD_MBC_0_SIZE      32767u
+// Offsets mémoire pour accès aux différentes banks de la cartouche
+#define MPU_MEMORY_CARD_BANK_0_OFFSET   0x0000
+#define MPU_MEMORY_CARD_BANK_1_OFFSET   0x4000
+
+#define MPU_BOOTSTRAP_SIZE              256u
 
 class Mpu
 {
@@ -27,7 +31,7 @@ public:
 
 
 private:
-    std::uint8_t m_memory[MPU_MEMORY_SIZE];	// Mémoire
+    std::array<std::uint8_t, MPU_MEMORY_SIZE> m_memory;     // Mémoire
 };
 
 #endif // MPU_H

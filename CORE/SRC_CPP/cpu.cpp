@@ -1,4 +1,7 @@
 #include <string>
+#include <chrono>
+#include <thread>
+
 #include "CORE/INCLUDE/cpu.h"
 
 
@@ -7,13 +10,14 @@
 // ********************************************************
 
 // Constructeur
-Cpu::Cpu(Mpu* ai_mpu)
+Cpu::Cpu(Mpu* const aip_mpu)
 {
     // Initialisation des données membres
     m_opcodeIdx = 0u;
+    m_nbCycles  = 0u;
 
     // Récupération du pointeur vers la mémoire
-    mp_mpu = ai_mpu;
+    mp_mpu = aip_mpu;
 
     // Initialisation des registres
     initRegisters();
@@ -34,7 +38,7 @@ Cpu::Cpu(Mpu* ai_mpu)
     m_daaTable[9u]  = {1u, 0u, 0u, 0u, 0x0, 0x9, 0x0, 0x9, 0x00};
     m_daaTable[10u] = {1u, 1u, 0u, 0u, 0x0, 0x8, 0x6, 0xF, 0xFA};
     m_daaTable[11u] = {1u, 0u, 1u, 1u, 0x7, 0xF, 0x0, 0x9, 0xA0};
-    m_daaTable[12u] = {1u, 1u, 1u, 1u, 0x6, 0xF, 0x6, 0xF, 0x9A};
+    m_daaTable[12u] = {1u, 1u, 1u, 1u, 0x6, 0xF, 0x6, 0xF, 0x9A};    
 }
 
 // Destructeur
@@ -175,13 +179,13 @@ tu_registers Cpu::getRegisters() const
 void Cpu::initRegisters()
 {
     // Initialisation des registres
-    m_registers.s8bits.a    = 0x01;
-    m_registers.s8bits.f    = 0xB0;
-    m_registers.s16bits.bc  = 0x0013;
-    m_registers.s16bits.de  = 0x00D8;
-    m_registers.s16bits.hl  = 0x014D;
-    m_sp                    = 0xFFFE;
-    m_pc                    = 0x100;
+    m_registers.s8bits.a    = 0x00;
+    m_registers.s8bits.f    = 0x00;
+    m_registers.s16bits.bc  = 0x0000;
+    m_registers.s16bits.de  = 0x0000;
+    m_registers.s16bits.hl  = 0x0000;
+    m_sp                    = 0x0000;
+    m_pc                    = 0x0000;
 }
 
 
@@ -263,9 +267,14 @@ void Cpu::_initOpcodesDesc()
 void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
 {
     // Variables locales
-    std::uint16_t   w_i       = 0u;
-    std::uint16_t   w_id      = 0u;
-    std::uint8_t    w_opcode  = mp_mpu->getMemVal(ai_opcodeIdx);
+    std::uint16_t                                               w_i       = 0u;
+    std::uint16_t                                               w_id      = 0u;
+    std::uint8_t                                                w_opcode  = mp_mpu->getMemVal(ai_opcodeIdx);
+    std::chrono::nanoseconds                                    w_cyclesDuration;
+    std::chrono::time_point<std::chrono::high_resolution_clock> w_startInstructionDuration, w_stopInstructionDuration;
+
+    // Début du chronomètre d'exécution de l'instruction
+    w_startInstructionDuration = std::chrono::high_resolution_clock::now();
 
     // Sauvegarde de l'opcode courant
     m_opcodeIdx = ai_opcodeIdx;
@@ -290,6 +299,15 @@ void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
         std::cout << "Erreur : opcode inconnu" << std::endl;
         exit(-1);
     }
+
+    // Calcul du temps d'exécution en ns
+    w_stopInstructionDuration = std::chrono::high_resolution_clock::now();
+
+    // Durée d'attente avant l'instruction suivante : (Nombre de cycles x Durée d'un cycle) - Durée d'exécution de l'instruction
+    w_cyclesDuration = std::chrono::nanoseconds((static_cast<std::int64_t>(m_nbCycles)*CPU_CYCLE_PERIOD_NS) - static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(w_stopInstructionDuration - w_startInstructionDuration).count()));
+
+    // Attente de l'instruction suivante
+    std::this_thread::sleep_for(w_cyclesDuration);
 }
 
 
@@ -542,7 +560,7 @@ void Cpu::_decodeAndRunALU(const std::uint8_t ai_aluMask, const std::uint8_t ai_
             break;
 
         default:
-            std::cout << "Erreur : Opérateur ALU incoonu" << std::endl;
+            std::cout << "Erreur : Opérateur ALU inconnu" << std::endl;
             exit(-1);
     }
 }
@@ -556,6 +574,9 @@ void Cpu::_nop()
 {
     // Passage à l'instruction suivante
     m_pc = m_pc + 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 1u;
 }
 
 void Cpu::_ld_n_sp()
@@ -574,6 +595,9 @@ void Cpu::_ld_n_sp()
 
     // Mise à jour de PC
     m_pc += 3u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 5u;
 }
 
 void Cpu::_ld_r_n()
@@ -595,6 +619,9 @@ void Cpu::_ld_r_n()
 
     // Mise à jour de PC
     m_pc += 3u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 3u;
 }
 
 void Cpu::_add_hl_r()
@@ -625,6 +652,9 @@ void Cpu::_add_hl_r()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 2u;
 }
 
 void Cpu::_ld_r_a()
@@ -642,6 +672,9 @@ void Cpu::_ld_r_a()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 2u;
 }
 
 void Cpu::_ld_a_r()
@@ -659,6 +692,9 @@ void Cpu::_ld_a_r()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 2u;
 }
 
 void Cpu::_inc_r()
@@ -676,6 +712,9 @@ void Cpu::_inc_r()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 2u;
 }
 
 void Cpu::_dec_r()
@@ -693,6 +732,9 @@ void Cpu::_dec_r()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 2u;
 }
 
 void Cpu::_inc_d()
@@ -721,6 +763,9 @@ void Cpu::_inc_d()
 
         // Gestion du flag N
         m_registers.sFlags.n = 1u;
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 3u;
     }
     else
     {
@@ -738,6 +783,9 @@ void Cpu::_inc_d()
 
         // Gestion du flag N
         m_registers.sFlags.n = 1u;
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 1u;
     }
 
     // Mise à jour de PC
@@ -770,6 +818,9 @@ void Cpu::_dec_d()
 
         // Gestion du flag N
         m_registers.sFlags.n = 1u;
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 3u;
     }
     else
     {
@@ -787,6 +838,9 @@ void Cpu::_dec_d()
 
         // Gestion du flag N
         m_registers.sFlags.n = 1u;
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 1u;
     }
 
     // Mise à jour de PC
@@ -811,6 +865,9 @@ void Cpu::_ld_d_n()
     {
         // Stockage de la valeur en mémoire à l'adresse contenue par HL
         mp_mpu->setMemVal(m_registers.s16bits.hl, w_data8bits);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 3u;
     }
     else
     {
@@ -819,6 +876,9 @@ void Cpu::_ld_d_n()
 
         // Mise à jour de la valeur du registre
         *wp_register8bits = w_data8bits;
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
 
     // Mise à jour de PC
@@ -859,6 +919,9 @@ void Cpu::_rdca()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 1u;
 }
 
 void Cpu::_rda()
@@ -899,18 +962,27 @@ void Cpu::_rda()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 1u;
 }
 
 void Cpu::_stop()
 {
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 1u;
 }
 
 void Cpu::_jr_n()
 {
     // Passage à l'instruction située à l'adresse PC + N
-    m_pc += static_cast<std::int8_t>(mp_mpu->getMemVal(m_opcodeIdx + 1u));
+    m_pc += static_cast<std::int8_t>(mp_mpu->getMemVal(m_opcodeIdx + 1u)) + 2u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 3u;
 }
 
 void Cpu::_jr_f_n()
@@ -919,12 +991,15 @@ void Cpu::_jr_f_n()
     if (_decodeMnemonic((mp_mpu->getMemVal(m_opcodeIdx) & 0x18) >> 3u))
     {
         // Passage à l'instruction située à l'adresse PC + N
-        m_pc += static_cast<std::int8_t>(mp_mpu->getMemVal(m_opcodeIdx + 1u));
+        _jr_n();
     }
     else
     {
         // Passage à l'instruction suivante
         m_pc += 2u;
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
 }
 
@@ -938,6 +1013,9 @@ void Cpu::_ldi_hl_a()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 2u;
 }
 
 void Cpu::_ldi_a_hl()
@@ -950,6 +1028,9 @@ void Cpu::_ldi_a_hl()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 2u;
 }
 
 void Cpu::_ldd_hl_a()
@@ -962,6 +1043,9 @@ void Cpu::_ldd_hl_a()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 2u;
 }
 
 void Cpu::_ldd_a_hl()
@@ -974,6 +1058,9 @@ void Cpu::_ldd_a_hl()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 2u;
 }
 
 void Cpu::_cpl()
@@ -987,6 +1074,9 @@ void Cpu::_cpl()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 1u;
 }
 
 void Cpu::_daa()
@@ -1025,6 +1115,9 @@ void Cpu::_daa()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 1u;
 }
 
 void Cpu::_scf()
@@ -1034,6 +1127,9 @@ void Cpu::_scf()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 1u;
 }
 
 void Cpu::_ccf()
@@ -1050,6 +1146,9 @@ void Cpu::_ccf()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 1u;
 }
 
 void Cpu::_ld_d_d()
@@ -1074,6 +1173,9 @@ void Cpu::_ld_d_d()
 
         // On stocke le contenu du registre wp_register8bits_2 en mémoire à l'adresse contenue par HL
         mp_mpu->setMemVal(m_registers.s16bits.hl, *wp_register8bits_2);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
     // Sinon si LD X,(HL)
     else if ( (w_registerMask_1 != 6u) && (w_registerMask_2 == 6u) )
@@ -1083,6 +1185,9 @@ void Cpu::_ld_d_d()
 
         // On stocke le contenu de la mémoire à l'adresse contenue par HL dans wp_register8bits_1
         *wp_register8bits_1 = mp_mpu->getMemVal(m_registers.s16bits.hl);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
     // Chargement d'un registre 8 bits dans un autre registre 8 bits
     else if ( (w_registerMask_1 != 6u) && (w_registerMask_2 != 6u) )
@@ -1095,6 +1200,9 @@ void Cpu::_ld_d_d()
 
         // On charge wp_register8bits_2 dans wp_register8bits_1
         *wp_register8bits_1 = *wp_register8bits_2;
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 1u;
     }
 
     // le cas LD (HL),(HL) revient à ne rien faire
@@ -1107,6 +1215,9 @@ void Cpu::_halt()
 {
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 1u;
 }
 
 void Cpu::_alu_a_d()
@@ -1125,6 +1236,9 @@ void Cpu::_alu_a_d()
     {
         // Lecture de la valeur à l'adresse (HL)
         w_data8bits = mp_mpu->getMemVal(m_registers.s16bits.hl);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
     else
     {
@@ -1133,6 +1247,9 @@ void Cpu::_alu_a_d()
 
         // Lecture de la valeur du registre 8b
         w_data8bits = *wp_register8bits;
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 1u;
     }
 
     // Opération ALU
@@ -1153,6 +1270,9 @@ void Cpu::_alu_a_n()
 
     // Mise à jour de PC
     m_pc += 2u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 2u;
 }
 
 void Cpu::_pop_r()
@@ -1173,6 +1293,9 @@ void Cpu::_pop_r()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 3u;
 }
 
 void Cpu::_push_r()
@@ -1196,6 +1319,9 @@ void Cpu::_push_r()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 4u;
 }
 
 void Cpu::_rst_n()
@@ -1214,6 +1340,9 @@ void Cpu::_rst_n()
 
     // Reset de PC en fonction de N
     m_pc = static_cast<std::uint16_t>(w_rstCmd) << 3u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 4u;
 }
 
 void Cpu::_ret_f()
@@ -1221,11 +1350,19 @@ void Cpu::_ret_f()
     // Si la condition F est vraie, sauvegarde dans PC des données contenues aux adresses SP (LSW) et SP + 1 (MSW) ; sinon passage à l'instruction suivante
     if (_decodeMnemonic((mp_mpu->getMemVal(m_opcodeIdx) & 0x18) >> 3u))
     {
+        // Retour de fonction
         _ret();
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 5u;
     }
     else
     {
+        // Mise à jour de PC
         m_pc += 1u;
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
 }
 
@@ -1236,12 +1373,18 @@ void Cpu::_ret()
 
     // SP = SP + 2
     m_sp += 2u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 4u;
 }
 
 void Cpu::_reti()
 {
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 4u;
 }
 
 void Cpu::_jp_f_n()
@@ -1253,7 +1396,11 @@ void Cpu::_jp_f_n()
     }
     else
     {
+        // Mise à jour de PC
         m_pc += 3u;
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 3u;
     }
 }
 
@@ -1261,6 +1408,9 @@ void Cpu::_jp_n()
 {
     // Passage à l'instruction située à l'adresse (N)
     m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) << 8u) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 4u;
 }
 
 void Cpu::_call_f_n()
@@ -1275,6 +1425,9 @@ void Cpu::_call_f_n()
     {
         // Passage à l'instruction suivante
         m_pc += 3u;
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 3u;
     }
 }
 
@@ -1294,6 +1447,9 @@ void Cpu::_call_n()
 
     // Passage à l'instruction située à l'adresse (N)
     _jp_n();
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 6u;
 }
 
 void Cpu::_add_sp_n()
@@ -1321,6 +1477,9 @@ void Cpu::_add_sp_n()
 
     // Mise à jour de PC
     m_pc += 2u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 4u;
 }
 
 void Cpu::_ld_hl_sp_plus_n()
@@ -1348,6 +1507,9 @@ void Cpu::_ld_hl_sp_plus_n()
 
     // Mise à jour de PC
     m_pc += 2u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 3u;
 }
 
 void Cpu::_ld_ff00_plus_n_a()
@@ -1360,6 +1522,9 @@ void Cpu::_ld_ff00_plus_n_a()
 
     // Mise à jour de PC
     m_pc += 2u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 3u;
 }
 
 void Cpu::_ld_a_ff00_plus_n()
@@ -1372,18 +1537,33 @@ void Cpu::_ld_a_ff00_plus_n()
 
     // Mise à jour de PC
     m_pc += 2u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 3u;
 }
 
 void Cpu::_ld_c_a()
 {
-    // Réalise la même opération que LD (FF00+N),A
-    _ld_ff00_plus_n_a();
+    // Stockage du contenu du registre A dans la mémoire à l'adresse $FF00+C
+    mp_mpu->setMemVal((0xFF00 + m_registers.s8bits.c), m_registers.s8bits.a);
+
+    // Mise à jour de PC
+    m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 2u;
 }
 
 void Cpu::_ld_a_c()
 {
-    // Réalise la même opération que LD A,(FF00+N)
-    _ld_a_ff00_plus_n();
+    // Stockage dans A du contenu de la mémoire à l'adresse $FF00+C
+    m_registers.s8bits.a = mp_mpu->getMemVal(0xFF00 + m_registers.s8bits.c);
+
+    // Mise à jour de PC
+    m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 2u;
 }
 
 void Cpu::_ld_n_a()
@@ -1396,6 +1576,9 @@ void Cpu::_ld_n_a()
 
     // Mise à jour de PC
     m_pc += 3u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 4u;
 }
 
 void Cpu::_ld_a_n()
@@ -1408,12 +1591,18 @@ void Cpu::_ld_a_n()
 
     // Mise à jour de PC
     m_pc += 3u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 4u;
 }
 
 void Cpu::_jp_hl()
 {
     // Passage à l'instruction située à l'adresse contenue par HL
     m_pc = m_registers.s16bits.hl;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 1u;
 }
 
 void Cpu::_ld_sp_hl()
@@ -1423,18 +1612,27 @@ void Cpu::_ld_sp_hl()
 
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 2u;
 }
 
 void Cpu::_di()
 {
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 1u;
 }
 
 void Cpu::_ei()
 {
     // Mise à jour de PC
     m_pc += 1u;
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 1u;
 }
 
 void Cpu::_execute16bOpcode()
@@ -1504,6 +1702,9 @@ void Cpu::_rdc_d()
 
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(mp_mpu->getMemVal(m_registers.s16bits.hl) == 0u);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 4u;
     }
     else
     {
@@ -1529,6 +1730,9 @@ void Cpu::_rdc_d()
 
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
 
     // Reset des flags H et N
@@ -1581,6 +1785,9 @@ void Cpu::_rd_d()
 
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(mp_mpu->getMemVal(m_registers.s16bits.hl) == 0u);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 4u;
     }
     else
     {
@@ -1606,6 +1813,9 @@ void Cpu::_rd_d()
 
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
 
     // Reset des flags H et N
@@ -1654,6 +1864,9 @@ void Cpu::_sda_d()
 
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(mp_mpu->getMemVal(m_registers.s16bits.hl) == 0u);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 4u;
     }
     else
     {
@@ -1679,6 +1892,9 @@ void Cpu::_sda_d()
 
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
 
     // Reset des flags H et N
@@ -1713,6 +1929,9 @@ void Cpu::_swap_d()
 
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(mp_mpu->getMemVal(m_registers.s16bits.hl) == 0u);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 4u;
     }
     else
     {
@@ -1727,6 +1946,9 @@ void Cpu::_swap_d()
 
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
 
     // Reset des flags C, H et N
@@ -1761,6 +1983,9 @@ void Cpu::_srl_d()
 
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(mp_mpu->getMemVal(m_registers.s16bits.hl) == 0u);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 4u;
     }
     else
     {
@@ -1775,6 +2000,9 @@ void Cpu::_srl_d()
 
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
 
     // Reset des flags H et N
@@ -1802,6 +2030,9 @@ void Cpu::_bit_n_d()
     {
         // Sauvegarde du complément du bit N de (HL) dans Z
         m_registers.sFlags.z = ~static_cast<std::uint8_t>((mp_mpu->getMemVal(m_registers.s16bits.hl) >> w_bitNumber) & 0x01);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 3u;
     }
     else
     {
@@ -1810,6 +2041,9 @@ void Cpu::_bit_n_d()
 
         // Sauvegarde du complément du bit N de registre 8b dans Z
         m_registers.sFlags.z = ~static_cast<std::uint8_t>((*wp_register8bits >> w_bitNumber) & 0x01);
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
 
     // Reset des flags H et N
@@ -1841,6 +2075,9 @@ void Cpu::_res_n_d()
 
         // Reset du bit N de (HL)
         mp_mpu->setMemVal(m_registers.s16bits.hl, static_cast<std::uint8_t>(w_data8bits & ~(0x01 << w_bitNumber)));
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 4u;
     }
     else
     {
@@ -1849,6 +2086,9 @@ void Cpu::_res_n_d()
 
         // Reset du bit N du registre 8b
         *wp_register8bits = static_cast<std::uint8_t>(*wp_register8bits & ~(0x01 << w_bitNumber));
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
 
     // Mise à jour de PC
@@ -1876,6 +2116,9 @@ void Cpu::_set_n_d()
 
         // Set du bit N de (HL)
         mp_mpu->setMemVal(m_registers.s16bits.hl, static_cast<std::uint8_t>(w_data8bits | (0x01 << w_bitNumber)));
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 4u;
     }
     else
     {
@@ -1884,6 +2127,9 @@ void Cpu::_set_n_d()
 
         // Set du bit N du registre 8b
         *wp_register8bits = static_cast<std::uint8_t>(*wp_register8bits | (0x01 << w_bitNumber));
+
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 2u;
     }
 
     // Mise à jour de PC

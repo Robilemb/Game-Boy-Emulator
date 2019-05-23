@@ -110,6 +110,31 @@
     </item>
     <item>
      <property name="text">
+      <string>LCDC [0xFF40]</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>SCY [0xFF42]</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>SCX [0xFF43]</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>LY [0xFF44]</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>BGP [0xFF47]</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
       <string>HRAM [0xFF80]</string>
      </property>
     </item>
