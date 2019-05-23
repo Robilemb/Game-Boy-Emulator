@@ -93,6 +93,9 @@ void MainWindow::selectROMFileName()
 
     if (!w_ROMFileName.isNull())
     {
+        // Fin du thread en cours d'exécution si rechargement d'une ROM
+        _stopEmulation();
+
         // Chargement de la ROM
         w_status = mp_gameboy->loadROM(w_ROMFileName.toStdString());
 
@@ -119,9 +122,6 @@ void MainWindow::closeEvent(QCloseEvent*)
 
 void MainWindow::_startEmulation()
 {
-    // Fin du thread en cours d'exécution si rechargement d'une ROM
-    _stopEmulation();
-
     // Thread d'exécution de la ROM
     m_gameboyThread = std::thread(&Gameboy::start, mp_gameboy);
     m_gameboyThread.detach();
