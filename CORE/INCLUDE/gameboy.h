@@ -5,6 +5,7 @@
 #include <fstream>
 #include <functional>
 #include <array>
+#include <chrono>
 
 #include "shared_data.h"
 #include "cpu.h"
@@ -43,14 +44,24 @@ public:
     const Mpu* getMpu() const;
 
 private:
-    Mpu*                    mp_mpu;         // MPU
-    Cpu*                    mp_cpu;         // CPU
-    Gpu*                    mp_gpu;         // GPU
+    // Execution du bootstrap
+    void _executeBootstrap();
 
-    gbScreenImage           m_screenImage;  // Image à afficher sur l'écran
-    updateScreenFunction    updateScreen;   // Callback de mise à jour de l'écran
+    // Raffraichissement de l'écran
+    void _setScreen();
 
-    bool                    m_isRunning;    // Booléen indiquant si l'émulation est en cours d'exécution
+private:
+    Mpu*                                            mp_mpu;             // MPU
+    Cpu*                                            mp_cpu;             // CPU
+    Gpu*                                            mp_gpu;             // GPU
+
+    std::chrono::high_resolution_clock::time_point  m_gpuClock;         // Horloge pour le raffraichissement de l'écran
+    gbScreenImage                                   m_screenImage;      // Image à afficher sur l'écran
+    updateScreenFunction                            updateScreen;       // Callback de mise à jour de l'écran
+
+    bool                                            m_isRunning;        // Booléen indiquant si l'émulation est en cours d'exécution
+
+    std::array<std::uint8_t, MPU_BOOTSTRAP_SIZE>    m_romFirstBytes;    // MPU_BOOTSTRAP_SIZE premiers octets de la ROM à recharger après l'exécution du bootstrap
 };
 
 #endif // GAMEBOY_H

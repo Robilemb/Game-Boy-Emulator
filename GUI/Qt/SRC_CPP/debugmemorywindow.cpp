@@ -96,45 +96,69 @@ void DebugMemoryWindow::displayAtDefinedMemoryAddress()
     // Récupération de l'adresse à afficher
     switch(w_index)
     {
-        case 0:
+        case 0u:
             w_address = 0x0;
             break;
 
-        case 1:
+        case 1u:
             w_address = 0x4000;
             break;
 
-        case 2:
+        case 2u:
             w_address = 0x8000;
             break;
 
-        case 3:
+        case 3u:
             w_address = 0xA000;
             break;
 
-        case 4:
+        case 4u:
             w_address = 0xC000;
             break;
 
-        case 5:
+        case 5u:
             w_address = 0xD000;
             break;
 
-        case 6:
+        case 6u:
             w_address = 0xE000;
             break;
 
-        case 7:
+        case 7u:
             w_address = 0xFE00;
             break;
 
-        case 8:
+        case 8u:
             w_address = 0xFF00;
             break;
 
-        case 9:
+        case 9u:
+            w_address = 0xFF40;
+            break;
+
+        case 10u:
+            w_address = 0xFF42;
+            break;
+
+        case 11u:
+            w_address = 0xFF43;
+            break;
+
+        case 12u:
+            w_address = 0xFF44;
+            break;
+
+        case 13u:
+            w_address = 0xFF47;
+            break;
+
+        case 14u:
             w_address = 0xFF80;
             break;
+
+        case 15u:
+            w_address = 0xFFFF;
+        break;
     }
 
     // Mise à jour de la table
