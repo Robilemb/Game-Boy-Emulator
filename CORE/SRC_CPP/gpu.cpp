@@ -5,8 +5,12 @@
 // ********************************************************
 
 // Constructeur
-Gpu::Gpu(Mpu* const aip_mpu) :
-    mp_mpu(aip_mpu)
+Gpu::Gpu(Mpu* const aip_mpu, updateScreenFunction ai_updateScreen) :
+    mp_mpu(aip_mpu),
+    updateScreen(ai_updateScreen),
+    m_mode(E_HBLANK),
+    m_nbCylces(0u),
+    m_curLine(0u)
 {
     // Initialisation du background
     for (std::uint16_t w_i = 0u; w_i < GPU_BACKGROUND_WIDTH; ++w_i)
@@ -28,7 +32,76 @@ Gpu::~Gpu()
 // Calcul de l'image à afficher sur l'écran
 // ****************************************
 
-void Gpu::computeScreenImage(gbScreenImage& ao_screenImage)
+void Gpu::computeScreenImage(const std::uint8_t ai_cpuCycles)
+{
+    // Mise à jour du nombre de cycles du GPU
+    m_nbCylces += ai_cpuCycles;
+
+    // Gestion du mode de fonctionnement
+    switch (m_mode)
+    {
+        case E_HBLANK:
+            if (m_nbCylces >= GPU_COMPUTE_LINE_NB_CYCLES)
+            {
+                // Reset du nombre de cycles
+                m_nbCylces = 0u;
+
+                // Incrémentation du numéro de ligne
+                m_curLine++;
+
+                // Mise à jour du registre LY
+                mp_mpu->setMemVal(GPU_LY_ADDRESS, m_curLine);
+
+                if (m_curLine == (GAMEBOY_SCREEN_HEIGHT - 1u))
+                {
+                    // Passage en VBLANK si l'ensemble des lignes ont été écrites
+                    m_mode = E_VBLANK;
+                }
+            }
+
+            break;
+
+        case E_VBLANK:
+            if (m_nbCylces >= GPU_COMPUTE_LINE_NB_CYCLES)
+            {
+                // Reset du nombre de cycles
+                m_nbCylces = 0u;
+
+                // Incrémentation du numéro de ligne
+                m_curLine++;
+
+                // Mise à jour du registre LY
+                mp_mpu->setMemVal(GPU_LY_ADDRESS, m_curLine);
+
+                if (m_curLine >= (GPU_VBLANK_NB_LINES + GAMEBOY_SCREEN_HEIGHT - 1u))
+                {
+                    // Reset de l'indice de ligne courante
+                    m_curLine = 0u;
+
+                    // Passage en mode HBLANK
+                    m_mode = E_HBLANK;
+
+                    // Calcul de l'image à afficher sur l'écran
+                    _computeScreenImage();
+
+                    // Mise à jour de l'écran
+                    updateScreen(m_screenImage);
+                }
+            }
+
+            break;
+
+        default:
+            std::cout << "Erreur : Mode de fonctionnement du GPU inconnu" << std::endl;
+    }
+}
+
+
+// ****************************************
+// Fonctions privées
+// ****************************************
+
+void Gpu::_computeScreenImage()
 {
     // Variables locales
     std::uint8_t    w_tileData[GPU_TILE_NB_BYTES];
@@ -65,16 +138,13 @@ void Gpu::computeScreenImage(gbScreenImage& ao_screenImage)
     //w_objDisplayEnable              = (mp_mpu->getMemVal(GPU_LCDC_ADDRESS) >> 1u)   & 0x01;
     w_bgDisplay                     = mp_mpu->getMemVal(GPU_LCDC_ADDRESS)           & 0x01;
 
-    // Mise à 0 du registre LY
-    mp_mpu->setMemVal(GPU_LY_ADDRESS, 0u);
-
     if (w_lcdDisplayEnable == 1u)
     {
         // Mise à jour de la palette
         for (std::uint8_t w_i = 0u; w_i < GPU_NB_COLORS; ++w_i)
         {
             // Récupération du niveau de gris de la couleur w_i
-            switch((mp_mpu->getMemVal(GPU_BGP_ADDRESS) >> (2u*w_i)) & 0x03)
+            switch ((mp_mpu->getMemVal(GPU_BGP_ADDRESS) >> (2u*w_i)) & 0x03)
             {
                 case 0u:
                     w_pixelColor = GPU_WHITE;
@@ -91,6 +161,10 @@ void Gpu::computeScreenImage(gbScreenImage& ao_screenImage)
                 case 3u:
                     w_pixelColor = GPU_BLACK;
                     break;
+
+                default:
+                    std::cout << "Erreur : Couleur de pixel inconnue" << std::endl;
+                    exit(-1);
             }
 
             // Sauvegarde dans la palette
@@ -171,12 +245,12 @@ void Gpu::computeScreenImage(gbScreenImage& ao_screenImage)
                 if (w_bgDisplay == 1u)
                 {
                     // Recopie du background
-                    ao_screenImage[w_i + (w_j*GAMEBOY_SCREEN_WIDTH)] = m_background[w_j+w_scrollY][w_i+w_scrollX];
+                    m_screenImage[w_i + (w_j*GAMEBOY_SCREEN_WIDTH)] = m_background[w_j+w_scrollY][w_i+w_scrollX];
                 }
                 else
                 {
                     // Background blanc si affichage OFF
-                    ao_screenImage[w_i + (w_j*GAMEBOY_SCREEN_WIDTH)] = GPU_WHITE;
+                    m_screenImage[w_i + (w_j*GAMEBOY_SCREEN_WIDTH)] = GPU_WHITE;
                 }
             }
         }
@@ -188,11 +262,8 @@ void Gpu::computeScreenImage(gbScreenImage& ao_screenImage)
         {
             for (std::uint8_t w_i = 0; w_i < GAMEBOY_SCREEN_WIDTH; ++w_i)
             {
-                ao_screenImage[w_i + (w_j*GAMEBOY_SCREEN_WIDTH)] = GPU_WHITE;
+                m_screenImage[w_i + (w_j*GAMEBOY_SCREEN_WIDTH)] = GPU_WHITE;
             }
         }
     }
-
-    // Mise à GAMEBOY_SCREEN_HEIGHT du registre LY
-    mp_mpu->setMemVal(GPU_LY_ADDRESS, GAMEBOY_SCREEN_HEIGHT);
 }

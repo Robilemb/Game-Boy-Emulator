@@ -1,5 +1,4 @@
 #include <string>
-#include <chrono>
 #include <thread>
 
 #include "CORE/INCLUDE/cpu.h"
@@ -171,6 +170,12 @@ tu_registers Cpu::getRegisters() const
     return m_registers;
 }
 
+// Accesseur sur le nombre de cycles de l'instruction courante
+std::uint8_t Cpu::getNbCyccles() const
+{
+    return m_nbCycles;
+}
+
 
 // ********************************************************
 // INITIALISATION DES REGISTRES
@@ -270,11 +275,6 @@ void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
     std::uint16_t                                               w_i       = 0u;
     std::uint16_t                                               w_id      = 0u;
     std::uint8_t                                                w_opcode  = mp_mpu->getMemVal(ai_opcodeIdx);
-    std::chrono::nanoseconds                                    w_cyclesDuration;
-    std::chrono::time_point<std::chrono::high_resolution_clock> w_startInstructionDuration, w_stopInstructionDuration;
-
-    // Début du chronomètre d'exécution de l'instruction
-    w_startInstructionDuration = std::chrono::high_resolution_clock::now();
 
     // Sauvegarde de l'opcode courant
     m_opcodeIdx = ai_opcodeIdx;
@@ -299,15 +299,6 @@ void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
         std::cout << "Erreur : opcode inconnu" << std::endl;
         exit(-1);
     }
-
-    // Calcul du temps d'exécution en ns
-    w_stopInstructionDuration = std::chrono::high_resolution_clock::now();
-
-    // Durée d'attente avant l'instruction suivante : (Nombre de cycles x Durée d'un cycle) - Durée d'exécution de l'instruction
-    w_cyclesDuration = std::chrono::nanoseconds((static_cast<std::int64_t>(m_nbCycles)*CPU_CYCLE_PERIOD_NS) - static_cast<int64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(w_stopInstructionDuration - w_startInstructionDuration).count()));
-
-    // Attente de l'instruction suivante
-    std::this_thread::sleep_for(w_cyclesDuration);
 }
 
 

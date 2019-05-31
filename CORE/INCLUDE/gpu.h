@@ -26,6 +26,7 @@
 #define GPU_BG_TILE_MAP_DATA_OFFSET_MODE_0      0x9800
 #define GPU_BG_TILE_MAP_DATA_OFFSET_MODE_1      0x9C00
 
+// Niveaux de gris d'affichage
 #define GPU_NB_COLORS                           4u
 
 #define GPU_WHITE                               255u
@@ -40,17 +41,46 @@
 #define GPU_LY_ADDRESS                          0xFF44
 #define GPU_BGP_ADDRESS                         0xFF47
 
+// Nombre de cycles de différents modes de fonctionnement
+#define GPU_OAM_SEARCH_NB_CYCLES                20u
+#define GPU_PIXEL_TRANSFER_NB_CYCLES            43u
+#define GPU_HBLANK_NB_CYCLES                    51u
+
+#define GPU_VBLANK_NB_LINES                     10u
+#define GPU_COMPUTE_LINE_NB_CYCLES              (GPU_OAM_SEARCH_NB_CYCLES + GPU_PIXEL_TRANSFER_NB_CYCLES + GPU_HBLANK_NB_CYCLES)
+
 class Gpu
 {
 public:
-    explicit Gpu(Mpu* const aip_mpu);
+    explicit Gpu(Mpu* const aip_mpu, updateScreenFunction ai_updateScreen);
     ~Gpu();
 
-    void computeScreenImage(gbScreenImage& ao_screenImage);
+    void computeScreenImage(const std::uint8_t ai_cpuCycles);
 
 private:
-    Mpu*            mp_mpu;                                                     // Pointeur vers la mémoire
-    std::uint8_t    m_background[GPU_BACKGROUND_WIDTH][GPU_BACKGROUND_HEIGHT];  // Background
+    void _computeScreenImage();
+
+private:
+    // Modes de fonctionnement du GPU
+    typedef enum
+    {
+        E_OAM_SEARCH        = 0u,
+        E_PIXEL_TRANSFER,
+        E_HBLANK,
+        E_VBLANK
+    } eModes;
+
+private:
+    Mpu*                    mp_mpu;                                                     // Pointeur vers la mémoire
+
+    gbScreenImage           m_screenImage;                                              // Image à afficher sur l'écran
+    updateScreenFunction    updateScreen;                                               // Callback de mise à jour de l'écran
+
+    eModes                  m_mode;                                                     // Mode courant d'utilisation du GPU
+    std::uint16_t           m_nbCylces;                                                 // Nombre de cylces d'exécution du GPU
+    std::uint8_t            m_curLine;                                                  // Numéro de la dernière ligne écrite
+
+    std::uint8_t            m_background[GPU_BACKGROUND_WIDTH][GPU_BACKGROUND_HEIGHT];  // Background
 };
 
 #endif // GPU_H

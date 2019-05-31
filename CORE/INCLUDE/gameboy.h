@@ -3,9 +3,7 @@
 
 #include <cstdint>
 #include <fstream>
-#include <functional>
 #include <array>
-#include <chrono>
 
 #include "shared_data.h"
 #include "cpu.h"
@@ -23,8 +21,6 @@ enum te_status
 class Gameboy
 {
 public:
-    typedef std::function<void(const gbScreenImage&)> updateScreenFunction;
-
     explicit Gameboy(updateScreenFunction ai_updateScreen);
     ~Gameboy();
 
@@ -47,17 +43,10 @@ private:
     // Execution du bootstrap
     void _executeBootstrap();
 
-    // Raffraichissement de l'écran
-    void _setScreen();
-
 private:
     Mpu*                                            mp_mpu;             // MPU
     Cpu*                                            mp_cpu;             // CPU
     Gpu*                                            mp_gpu;             // GPU
-
-    std::chrono::high_resolution_clock::time_point  m_gpuClock;         // Horloge pour le raffraichissement de l'écran
-    gbScreenImage                                   m_screenImage;      // Image à afficher sur l'écran
-    updateScreenFunction                            updateScreen;       // Callback de mise à jour de l'écran
 
     bool                                            m_isRunning;        // Booléen indiquant si l'émulation est en cours d'exécution
 

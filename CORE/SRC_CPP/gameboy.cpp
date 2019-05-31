@@ -1,7 +1,5 @@
 #include "CORE/INCLUDE/gameboy.h"
 
-#define GB_REFRESH_SCREEN_PERIOD_MS 16.8
-
 // ********************************************************
 // Constructeur / Destructeur
 // ********************************************************
@@ -10,16 +8,13 @@
 Gameboy::Gameboy(updateScreenFunction ai_updateScreen) :
     mp_mpu(new Mpu()),
     mp_cpu(new Cpu(mp_mpu)),
-    mp_gpu(new Gpu(mp_mpu)),
-    updateScreen(ai_updateScreen),
+    mp_gpu(new Gpu(mp_mpu, ai_updateScreen)),
     m_isRunning(false)
 {
     for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
     {
         m_romFirstBytes[w_i] = 0u;
     }
-
-    m_gpuClock = std::chrono::high_resolution_clock::now();
 }
 
 // Destructeur
@@ -117,7 +112,7 @@ te_status Gameboy::start()
         mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
 
         // Mise à jour de l'écran
-        _setScreen();
+        mp_gpu->computeScreenImage(mp_cpu->getNbCyccles());
     }
 
     return E_OK;
@@ -142,19 +137,6 @@ void Gameboy::_executeBootstrap()
         mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
 
         // Mise à jour de l'écran
-        _setScreen();
-    }
-}
-
-void Gameboy::_setScreen()
-{
-    if (static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - m_gpuClock).count()) >= GB_REFRESH_SCREEN_PERIOD_MS)
-    {
-        // Mise à jour de l'écran
-        mp_gpu->computeScreenImage(m_screenImage);
-        updateScreen(m_screenImage);
-
-        // Mise à jour de l'horloge
-        m_gpuClock = std::chrono::high_resolution_clock::now();
+        mp_gpu->computeScreenImage(mp_cpu->getNbCyccles());
     }
 }
