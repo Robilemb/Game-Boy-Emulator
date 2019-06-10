@@ -1,4 +1,5 @@
 #include <QMetaType>
+#include <QGraphicsPixmapItem>
 
 #include "GUI/Qt/INCLUDE/mainwindow.h"
 #include "ui_mainwindow.h"
@@ -8,7 +9,8 @@ Q_DECLARE_METATYPE(gbScreenImage)
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    m_screenImage(this),
+    m_screenScene(this),
+    mp_screenImage(nullptr),
     mp_gameboy(new Gameboy(std::bind(&MainWindow::refreshScreen, this, std::placeholders::_1))),
     m_emulationIsRunning(false),
     mp_debugRegistersWindow(new DebugRegistersWindow(this)),
@@ -24,7 +26,9 @@ MainWindow::MainWindow(QWidget *parent) :
     // Initialisation de l'écran
     ui->screen->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->screen->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    ui->screen->setScene(&m_screenImage);
+    ui->screen->setScene(&m_screenScene);
+
+    mp_screenImage = m_screenScene.addPixmap(QPixmap::fromImage(QImage()));
 
     // Connection entre le signal de MAJ de l'écran (commandé par mp_gameboy) et le slot de MAJ de l'écran
     qRegisterMetaType<gbScreenImage>();
@@ -57,7 +61,7 @@ Ui::MainWindow* MainWindow::getUi()
 
 void MainWindow::setScreen(const gbScreenImage& ai_image)
 {
-    m_screenImage.addPixmap(QPixmap::fromImage(QImage(ai_image.data(), GAMEBOY_SCREEN_WIDTH, GAMEBOY_SCREEN_HEIGHT, QImage::Format_Grayscale8)));
+    mp_screenImage->setPixmap(QPixmap::fromImage(QImage(ai_image.data(), GAMEBOY_SCREEN_WIDTH, GAMEBOY_SCREEN_HEIGHT, QImage::Format_Grayscale8)));
 }
 
 void MainWindow::refreshScreen(const gbScreenImage& ai_image)
@@ -136,6 +140,9 @@ void MainWindow::_stopEmulation()
     if (m_emulationIsRunning)
     {
         mp_gameboy->stop();
+
+        // Temporisation pour attendre proprement la fin de l'émulation
+        std::this_thread::sleep_for(std::chrono::milliseconds(50u));
 
         if (m_gameboyThread.joinable())
         {

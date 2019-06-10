@@ -6,9 +6,6 @@
 
 #include "mpu.h"
 
-#define CPU_FREQUENCY           4194304L                       // Fréquence en Hz
-#define CPU_CYCLE_PERIOD_NS     (4000000000L/CPU_FREQUENCY)    // Durée en ns de l'exécution d'un cycle
-
 #define CPU_NB_OPCODES_8_BITS   51u
 #define CPU_NB_OPCODES_16_BITS  8u
 
@@ -122,6 +119,9 @@ public:
 
     // Accesseur structure registres
     tu_registers getRegisters() const;
+
+    // Accesseur sur le nombre de cycles de l'instruction courante
+    std::uint8_t getNbCyccles() const;
 
 private:
     // Structure des masques et identifiants des opcodes

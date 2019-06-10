@@ -1,7 +1,5 @@
 #include "CORE/INCLUDE/gameboy.h"
 
-#define GB_REFRESH_SCREEN_PERIOD_MS 16.8
-
 // ********************************************************
 // Constructeur / Destructeur
 // ********************************************************
@@ -10,16 +8,13 @@
 Gameboy::Gameboy(updateScreenFunction ai_updateScreen) :
     mp_mpu(new Mpu()),
     mp_cpu(new Cpu(mp_mpu)),
-    mp_gpu(new Gpu(mp_mpu)),
-    updateScreen(ai_updateScreen),
+    mp_gpu(new Gpu(mp_mpu, ai_updateScreen)),
     m_isRunning(false)
 {
     for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
     {
         m_romFirstBytes[w_i] = 0u;
     }
-
-    m_gpuClock = std::chrono::high_resolution_clock::now();
 }
 
 // Destructeur
@@ -105,19 +100,9 @@ te_status Gameboy::start()
     // Execution du bootstrap
     _executeBootstrap();
 
-    // Chargement des 256 premiers octets de la ROM (pour remplacer le bootstrap)
-    for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
-    {
-        mp_mpu->setMemVal(w_i, m_romFirstBytes[w_i]);
-    }
-
     while (m_isRunning)
     {
-        // Exécution de l'opcode à l'adresse de PC
-        mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
-
-        // Mise à jour de l'écran
-        _setScreen();
+        _executeCycle();
     }
 
     return E_OK;
@@ -134,27 +119,28 @@ void Gameboy::stop()
 // Fonctions privées
 // *****************
 
-void Gameboy::_executeBootstrap()
+void Gameboy::_executeCycle()
 {
-    while (mp_cpu->getRegisterPC() < MPU_BOOTSTRAP_SIZE)
-    {
-        // Exécution des instructions entre 0x000 et 0x100
-        mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
+    // Exécution des instructions entre 0x000 et 0x100
+    mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
 
-        // Mise à jour de l'écran
-        _setScreen();
-    }
+    // Mise à jour de l'écran
+    mp_gpu->computeScreenImage(mp_cpu->getNbCyccles());
 }
 
-void Gameboy::_setScreen()
+void Gameboy::_executeBootstrap()
 {
-    if (static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - m_gpuClock).count()) >= GB_REFRESH_SCREEN_PERIOD_MS)
+    while (m_isRunning && (mp_cpu->getRegisterPC() < MPU_BOOTSTRAP_SIZE))
     {
-        // Mise à jour de l'écran
-        mp_gpu->computeScreenImage(m_screenImage);
-        updateScreen(m_screenImage);
+        _executeCycle();
+    }
 
-        // Mise à jour de l'horloge
-        m_gpuClock = std::chrono::high_resolution_clock::now();
+    if (m_isRunning)
+    {
+        // Chargement des 256 premiers octets de la ROM (pour remplacer le bootstrap)
+        for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
+        {
+            mp_mpu->setMemVal(w_i, m_romFirstBytes[w_i]);
+        }
     }
 }
