@@ -40,6 +40,9 @@ public:
     const Mpu* getMpu() const;
 
 private:
+    // Execution d'un cycle d'horloge
+    void _executeCycle();
+
     // Execution du bootstrap
     void _executeBootstrap();
 
@@ -48,7 +51,7 @@ private:
     Cpu*                                            mp_cpu;             // CPU
     Gpu*                                            mp_gpu;             // GPU
 
-    bool                                            m_isRunning;        // Booléen indiquant si l'émulation est en cours d'exécution
+    bool                                            m_isRunning;        // Booléen indiquant si l'émulation est en cours d'exécution    
 
     std::array<std::uint8_t, MPU_BOOTSTRAP_SIZE>    m_romFirstBytes;    // MPU_BOOTSTRAP_SIZE premiers octets de la ROM à recharger après l'exécution du bootstrap
 };

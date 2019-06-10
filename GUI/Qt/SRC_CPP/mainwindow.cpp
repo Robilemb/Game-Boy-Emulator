@@ -141,6 +141,9 @@ void MainWindow::_stopEmulation()
     {
         mp_gameboy->stop();
 
+        // Temporisation pour attendre proprement la fin de l'émulation
+        std::this_thread::sleep_for(std::chrono::milliseconds(50u));
+
         if (m_gameboyThread.joinable())
         {
             m_gameboyThread.join();

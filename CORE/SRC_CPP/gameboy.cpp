@@ -100,19 +100,9 @@ te_status Gameboy::start()
     // Execution du bootstrap
     _executeBootstrap();
 
-    // Chargement des 256 premiers octets de la ROM (pour remplacer le bootstrap)
-    for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
-    {
-        mp_mpu->setMemVal(w_i, m_romFirstBytes[w_i]);
-    }
-
     while (m_isRunning)
     {
-        // Exécution de l'opcode à l'adresse de PC
-        mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
-
-        // Mise à jour de l'écran
-        mp_gpu->computeScreenImage(mp_cpu->getNbCyccles());
+        _executeCycle();
     }
 
     return E_OK;
@@ -129,14 +119,28 @@ void Gameboy::stop()
 // Fonctions privées
 // *****************
 
+void Gameboy::_executeCycle()
+{
+    // Exécution des instructions entre 0x000 et 0x100
+    mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
+
+    // Mise à jour de l'écran
+    mp_gpu->computeScreenImage(mp_cpu->getNbCyccles());
+}
+
 void Gameboy::_executeBootstrap()
 {
-    while (mp_cpu->getRegisterPC() < MPU_BOOTSTRAP_SIZE)
+    while (m_isRunning && (mp_cpu->getRegisterPC() < MPU_BOOTSTRAP_SIZE))
     {
-        // Exécution des instructions entre 0x000 et 0x100
-        mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
+        _executeCycle();
+    }
 
-        // Mise à jour de l'écran
-        mp_gpu->computeScreenImage(mp_cpu->getNbCyccles());
+    if (m_isRunning)
+    {
+        // Chargement des 256 premiers octets de la ROM (pour remplacer le bootstrap)
+        for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
+        {
+            mp_mpu->setMemVal(w_i, m_romFirstBytes[w_i]);
+        }
     }
 }

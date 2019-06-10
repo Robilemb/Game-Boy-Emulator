@@ -1,3 +1,5 @@
+#include <thread>
+
 #include "CORE/INCLUDE/gpu.h"
 
 // ********************************************************
@@ -8,6 +10,7 @@
 Gpu::Gpu(Mpu* const aip_mpu, updateScreenFunction ai_updateScreen) :
     mp_mpu(aip_mpu),
     updateScreen(ai_updateScreen),
+    m_fpsClock(std::chrono::high_resolution_clock::now()),
     m_mode(E_HBLANK),
     m_nbCylces(0u),
     m_curLine(0u)
@@ -75,17 +78,21 @@ void Gpu::computeScreenImage(const std::uint8_t ai_cpuCycles)
 
                 if (m_curLine >= (GPU_VBLANK_NB_LINES + GAMEBOY_SCREEN_HEIGHT - 1u))
                 {
-                    // Reset de l'indice de ligne courante
-                    m_curLine = 0u;
-
-                    // Passage en mode HBLANK
-                    m_mode = E_HBLANK;
-
                     // Calcul de l'image à afficher sur l'écran
                     _computeScreenImage();
 
                     // Mise à jour de l'écran
                     updateScreen(m_screenImage);
+
+                    // Gestion du nombre d'images par seconde
+                    std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int64_t>(GPU_FRAME_PERIOD_MS) - std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - m_fpsClock).count()));
+                    m_fpsClock = std::chrono::high_resolution_clock::now();
+
+                    // Reset de l'indice de ligne courante
+                    m_curLine = 0u;
+
+                    // Passage en mode HBLANK
+                    m_mode = E_HBLANK;
                 }
             }
 
