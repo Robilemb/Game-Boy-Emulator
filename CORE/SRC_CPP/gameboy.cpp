@@ -1,4 +1,8 @@
+#include <thread>
+
 #include "CORE/INCLUDE/gameboy.h"
+
+#define GB_EMULATION_END_DELAY_MS   50u
 
 // ********************************************************
 // Constructeur / Destructeur
@@ -112,6 +116,9 @@ void Gameboy::stop()
 {
     // Fin de l'émulation
     m_isRunning = false;
+
+    // Temporisation pour attendre proprement la fin de l'émulation
+    std::this_thread::sleep_for(std::chrono::milliseconds(GB_EMULATION_END_DELAY_MS));
 }
 
 
