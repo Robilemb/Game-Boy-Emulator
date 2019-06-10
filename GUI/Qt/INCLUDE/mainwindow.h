@@ -47,7 +47,8 @@ private:
 private:
     Ui::MainWindow*         ui;
 
-    QGraphicsScene          m_screenImage;
+    QGraphicsScene          m_screenScene;
+    QGraphicsPixmapItem*    mp_screenImage;
 
     Gameboy*                mp_gameboy;
     std::thread             m_gameboyThread;
