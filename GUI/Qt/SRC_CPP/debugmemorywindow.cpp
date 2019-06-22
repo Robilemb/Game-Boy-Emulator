@@ -133,30 +133,34 @@ void DebugMemoryWindow::displayAtDefinedMemoryAddress()
             break;
 
         case 9u:
-            w_address = 0xFF40;
+            w_address = 0xFF0F;
             break;
 
         case 10u:
-            w_address = 0xFF42;
+            w_address = 0xFF40;
             break;
 
         case 11u:
-            w_address = 0xFF43;
+            w_address = 0xFF42;
             break;
 
         case 12u:
-            w_address = 0xFF44;
+            w_address = 0xFF43;
             break;
 
         case 13u:
-            w_address = 0xFF47;
+            w_address = 0xFF44;
             break;
 
         case 14u:
-            w_address = 0xFF80;
+            w_address = 0xFF47;
             break;
 
         case 15u:
+            w_address = 0xFF80;
+            break;
+
+        case 16u:
             w_address = 0xFFFF;
         break;
     }

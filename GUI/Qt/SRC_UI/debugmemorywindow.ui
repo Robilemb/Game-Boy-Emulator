@@ -110,6 +110,11 @@
     </item>
     <item>
      <property name="text">
+      <string>IF [0xFF0F]</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
       <string>LCDC [0xFF40]</string>
      </property>
     </item>
@@ -140,7 +145,7 @@
     </item>
     <item>
      <property name="text">
-      <string>Registre d'interruption [0xFFFF]</string>
+      <string>IE [0xFFFF]</string>
      </property>
     </item>
    </widget>
@@ -198,7 +203,7 @@
      <number>100</number>
     </attribute>
     <attribute name="verticalHeaderVisible">
-     <bool>true</bool>
+     <bool>false</bool>
     </attribute>
     <attribute name="verticalHeaderDefaultSectionSize">
      <number>26</number>

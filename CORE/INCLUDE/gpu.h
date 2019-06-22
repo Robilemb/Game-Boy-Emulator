@@ -7,6 +7,7 @@
 #include "shared_data.h"
 #include "mpu.h"
 
+// Gestion du background et des tiles
 #define GPU_BACKGROUND_WIDTH                    256u
 #define GPU_BACKGROUND_HEIGHT                   256u
 #define GPU_BACKGROUND_SIZE                     (GPU_BACKGROUND_WIDTH*GPU_BACKGROUND_HEIGHT)
@@ -21,11 +22,22 @@
 
 #define GPU_TILE_NB_BYTES                       16u
 
-#define GPU_BG_WINDOW_TILE_DATA_OFFSET_MODE_0   0x8800
-#define GPU_BG_WINDOW_TILE_DATA_OFFSET_MODE_1   0x8000
+#define GPU_BG_WINDOW_TILE_DATA_ADDRESS_MODE_0  0x8800
+#define GPU_BG_WINDOW_TILE_DATA_ADDRESS_MODE_1  0x8000
 
-#define GPU_BG_TILE_MAP_DATA_OFFSET_MODE_0      0x9800
-#define GPU_BG_TILE_MAP_DATA_OFFSET_MODE_1      0x9C00
+#define GPU_BG_TILE_MAP_DATA_ADDRESS_MODE_0     0x9800
+#define GPU_BG_TILE_MAP_DATA_ADDRESS_MODE_1     0x9C00
+
+// Gestion des sprites
+#define GPU_SPRITES_MAX_NB                      40u
+
+#define GPU_OAM_START_ADDRESS                   0xFE00
+#define GPU_SPRITES_ATTRIBUTE_SIZE_BYTE         4u
+
+#define GPU_SPRITES_HORIZONTAL_OFFSET           8u
+#define GPU_SPRITES_VERTICAL_OFFSET             16u
+
+#define GPU_SPRITES_DATA_START_ADDRESS          0x8000
 
 // Niveaux de gris d'affichage
 #define GPU_NB_COLORS                           4u

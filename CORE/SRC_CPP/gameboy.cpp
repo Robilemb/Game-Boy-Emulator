@@ -133,6 +133,16 @@ void Gameboy::_executeCycle()
 
     // Mise à jour de l'écran
     mp_gpu->computeScreenImage(mp_cpu->getNbCyccles());
+
+    // Gestion des interruptions
+    if (mp_cpu->getRegisterIME() == 1u)
+    {
+        // Interruption VBLANK autorisée et demandée
+        if ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) && GAMEBOY_VBLANK_ENABLE == 1u) && (mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) && GAMEBOY_VBLANK_REQUESTED == 1u))
+        {
+            mp_cpu->executeInterrupt(Cpu::E_VBLANK);
+        }
+    }
 }
 
 void Gameboy::_executeBootstrap()
