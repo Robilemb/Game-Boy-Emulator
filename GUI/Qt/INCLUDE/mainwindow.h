@@ -41,6 +41,9 @@ signals:
 
 private:
     void closeEvent(QCloseEvent*);
+    void keyPressEvent(QKeyEvent* aip_keyPressEvent);
+    void keyReleaseEvent(QKeyEvent* aip_keyReleaseEvent);
+
     void _startEmulation();
     void _stopEmulation();
 

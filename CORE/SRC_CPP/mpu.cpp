@@ -36,14 +36,21 @@ Mpu::~Mpu()
 // ACCESSEURS
 // ********************************************************
 
-std::uint8_t Mpu::getMemVal(std::uint16_t ai_offset) const
+std::uint8_t Mpu::getMemVal(const std::uint16_t ai_offset) const
 {
     return m_memory[ai_offset];
 }
 
-void Mpu::setMemVal(std::uint16_t ai_offset, std::uint8_t ai_val)
+void Mpu::setMemVal(const std::uint16_t ai_offset, const std::uint8_t ai_val)
 {
-    m_memory[ai_offset] = ai_val;
+    if (ai_offset != MPU_JOYPAD_ADDRESS)
+    {
+        m_memory[ai_offset] = ai_val;
+    }
+    else
+    {
+        m_memory[ai_offset] = (m_memory[ai_offset] & (ai_val & 0x30)) | (m_memory[ai_offset] & 0x0F);
+    }
 }
 
 
@@ -67,4 +74,17 @@ void Mpu::initMemory()
     {
         m_memory[w_i] = w_bootstrap[w_i];
     }
+
+    // Registre Joypad
+    m_memory[MPU_JOYPAD_ADDRESS] = 0x3F;
+}
+
+
+// ********************************************************
+// REGISTRE JOYPAD
+// ********************************************************
+
+void Mpu::setJoypad(const std::uint8_t ai_joypad)
+{
+    m_memory[MPU_JOYPAD_ADDRESS] = (m_memory[MPU_JOYPAD_ADDRESS] & 0x30) | (ai_joypad & 0x0F);
 }

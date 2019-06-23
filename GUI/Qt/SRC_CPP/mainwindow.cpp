@@ -1,5 +1,6 @@
 #include <QMetaType>
 #include <QGraphicsPixmapItem>
+#include <QKeyEvent>
 
 #include "GUI/Qt/INCLUDE/mainwindow.h"
 #include "ui_mainwindow.h"
@@ -122,6 +123,62 @@ void MainWindow::selectROMFileName()
 void MainWindow::closeEvent(QCloseEvent*)
 {
     qApp->quit();
+}
+
+void MainWindow::keyPressEvent(QKeyEvent* aip_keyPressEvent)
+{
+    if(aip_keyPressEvent->isAutoRepeat())
+    {
+        aip_keyPressEvent->ignore();
+    }
+    else
+    {
+        // Récupération de la liste des boutons pressés
+        if (aip_keyPressEvent->key() == Qt::Key_Z)
+            mp_gameboy->setPressButton(Gameboy::E_UP);
+        if (aip_keyPressEvent->key() == Qt::Key_S)
+            mp_gameboy->setPressButton(Gameboy::E_DOWN);
+        if (aip_keyPressEvent->key() == Qt::Key_Q)
+            mp_gameboy->setPressButton(Gameboy::E_LEFT);
+        if (aip_keyPressEvent->key() == Qt::Key_D)
+            mp_gameboy->setPressButton(Gameboy::E_RIGHT);
+        if (aip_keyPressEvent->key() == Qt::Key_6)
+            mp_gameboy->setPressButton(Gameboy::E_A);
+        if (aip_keyPressEvent->key() == Qt::Key_5)
+            mp_gameboy->setPressButton(Gameboy::E_B);
+        if (aip_keyPressEvent->key() == Qt::Key_0)
+            mp_gameboy->setPressButton(Gameboy::E_START);
+        if (aip_keyPressEvent->key() == Qt::Key_Period)
+            mp_gameboy->setPressButton(Gameboy::E_SELECT);
+    }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent* aip_keyReleaseEvent)
+{
+    if(aip_keyReleaseEvent->isAutoRepeat())
+    {
+        aip_keyReleaseEvent->ignore();
+    }
+    else
+    {
+        // Récupération de la liste des boutons relachés
+        if (aip_keyReleaseEvent->key() == Qt::Key_Z)
+            mp_gameboy->setReleaseButton(Gameboy::E_UP);
+        if (aip_keyReleaseEvent->key() == Qt::Key_S)
+            mp_gameboy->setReleaseButton(Gameboy::E_DOWN);
+        if (aip_keyReleaseEvent->key() == Qt::Key_Q)
+            mp_gameboy->setReleaseButton(Gameboy::E_LEFT);
+        if (aip_keyReleaseEvent->key() == Qt::Key_D)
+            mp_gameboy->setReleaseButton(Gameboy::E_RIGHT);
+        if (aip_keyReleaseEvent->key() == Qt::Key_6)
+            mp_gameboy->setReleaseButton(Gameboy::E_A);
+        if (aip_keyReleaseEvent->key() == Qt::Key_5)
+            mp_gameboy->setReleaseButton(Gameboy::E_B);
+        if (aip_keyReleaseEvent->key() == Qt::Key_0)
+            mp_gameboy->setReleaseButton(Gameboy::E_START);
+        if (aip_keyReleaseEvent->key() == Qt::Key_Period)
+            mp_gameboy->setReleaseButton(Gameboy::E_SELECT);
+    }
 }
 
 void MainWindow::_startEmulation()
