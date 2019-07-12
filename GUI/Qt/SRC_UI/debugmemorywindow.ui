@@ -203,7 +203,7 @@
      <number>100</number>
     </attribute>
     <attribute name="verticalHeaderVisible">
-     <bool>false</bool>
+     <bool>true</bool>
     </attribute>
     <attribute name="verticalHeaderDefaultSectionSize">
      <number>26</number>
@@ -323,11 +323,6 @@
     <string>Rafraîchir</string>
    </property>
   </widget>
-  <zorder>groupBox</zorder>
-  <zorder>groupBox_2</zorder>
-  <zorder>closeButton</zorder>
-  <zorder>refreshButton</zorder>
-  <zorder>comboBox</zorder>
  </widget>
  <resources/>
  <connections>

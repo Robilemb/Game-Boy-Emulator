@@ -146,11 +146,11 @@ void Gameboy::setPressButton(const te_button ai_button)
             break;
 
         case E_LEFT :
-            m_directionButtons.sButtons.up = 0u;
+            m_directionButtons.sButtons.left = 0u;
             break;
 
         case E_RIGHT :
-            m_directionButtons.sButtons.down = 0u;
+            m_directionButtons.sButtons.right = 0u;
             break;
 
         case E_A :
@@ -185,11 +185,11 @@ void Gameboy::setReleaseButton(const te_button ai_button)
             break;
 
         case E_LEFT :
-            m_directionButtons.sButtons.up = 1u;
+            m_directionButtons.sButtons.left = 1u;
             break;
 
         case E_RIGHT :
-            m_directionButtons.sButtons.down = 1u;
+            m_directionButtons.sButtons.right = 1u;
             break;
 
         case E_A :
