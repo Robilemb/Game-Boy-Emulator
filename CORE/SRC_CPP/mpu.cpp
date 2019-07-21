@@ -43,13 +43,18 @@ std::uint8_t Mpu::getMemVal(const std::uint16_t ai_offset) const
 
 void Mpu::setMemVal(const std::uint16_t ai_offset, const std::uint8_t ai_val)
 {
-    if (ai_offset != MPU_JOYPAD_ADDRESS)
+    switch (ai_offset)
     {
-        m_memory[ai_offset] = ai_val;
-    }
-    else
-    {
-        m_memory[ai_offset] = (m_memory[ai_offset] & (ai_val & 0x30)) | (m_memory[ai_offset] & 0x0F);
+        case MPU_JOYPAD_ADDRESS :
+            m_memory[ai_offset] = (m_memory[ai_offset] & (ai_val & 0x30)) | (m_memory[ai_offset] & 0x0F);
+            break;
+
+        case MPU_DIV_ADDRESS :
+            m_memory[ai_offset] = 0u;
+            break;
+
+        default :
+            m_memory[ai_offset] = ai_val;
     }
 }
 
@@ -87,4 +92,14 @@ void Mpu::initMemory()
 void Mpu::setJoypad(const std::uint8_t ai_joypad)
 {
     m_memory[MPU_JOYPAD_ADDRESS] = (m_memory[MPU_JOYPAD_ADDRESS] & 0x30) | (ai_joypad & 0x0F);
+}
+
+
+// ********************************************************
+// REGISTRE DIV
+// ********************************************************
+
+void Mpu::setDivider(const std::uint8_t ai_divider)
+{
+    m_memory[MPU_DIV_ADDRESS] = ai_divider;
 }

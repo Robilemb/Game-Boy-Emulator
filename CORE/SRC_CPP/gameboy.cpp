@@ -15,6 +15,7 @@ Gameboy::Gameboy(updateScreenFunction ai_updateScreen) :
     mp_mpu(new Mpu()),
     mp_cpu(new Cpu(mp_mpu)),
     mp_gpu(new Gpu(mp_mpu, ai_updateScreen)),
+    mp_timers(new Timers(mp_mpu)),
     m_isRunning(false)
 {
     for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
@@ -235,6 +236,9 @@ void Gameboy::_executeCycle()
             mp_cpu->executeInterrupt(Cpu::E_VBLANK);
         }
     }
+
+    // Mise à jour des timers
+    mp_timers->update();
 }
 
 void Gameboy::_executeBootstrap()

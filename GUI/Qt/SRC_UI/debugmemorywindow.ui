@@ -110,6 +110,26 @@
     </item>
     <item>
      <property name="text">
+      <string>DIV [0xFF04]</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>TIMA [0xFF05]</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>TMA [0xFF06]</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>TAC [0xFF07]</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
       <string>IF [0xFF0F]</string>
      </property>
     </item>

@@ -9,6 +9,7 @@
 #include "cpu.h"
 #include "gpu.h"
 #include "mpu.h"
+#include "timers.h"
 
 // Enum des status de fonction
 enum te_status
@@ -102,6 +103,7 @@ private:
     Mpu*                                            mp_mpu;             // MPU
     Cpu*                                            mp_cpu;             // CPU
     Gpu*                                            mp_gpu;             // GPU
+    Timers*                                         mp_timers;          // Timers
 
     bool                                            m_isRunning;        // Booléen indiquant si l'émulation est en cours d'exécution    
 

@@ -14,8 +14,14 @@
 #define MPU_MEMORY_CARD_BANK_0_OFFSET   0x0000
 #define MPU_MEMORY_CARD_BANK_1_OFFSET   0x4000
 
-// Adresses mémoires particulières
+// Registre du Joypad
 #define MPU_JOYPAD_ADDRESS              0xFF00
+
+// Registres des timers
+#define MPU_DIV_ADDRESS                 0xFF04
+#define MPU_TIMA_ADDRESS                0xFF05
+#define MPU_TMA_ADDRESS                 0xFF06
+#define MPU_TAC_ADDRESS                 0xFF07
 
 #define MPU_BOOTSTRAP_SIZE              256u
 
@@ -34,6 +40,9 @@ public:
 
     // Set du registre Joypad
     void setJoypad(const std::uint8_t ai_joypad);
+
+    // Set du registre Divider
+    void setDivider(const std::uint8_t ai_divider);
 
 
 private:
