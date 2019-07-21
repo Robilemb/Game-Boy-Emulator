@@ -55,6 +55,9 @@
     </property>
    </widget>
    <widget class="QComboBox" name="comboBox">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -156,6 +159,16 @@
     <item>
      <property name="text">
       <string>BGP [0xFF47]</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>WY [0xFF4A]</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>WX [0xFF4B]</string>
      </property>
     </item>
     <item>

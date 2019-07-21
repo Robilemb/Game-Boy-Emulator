@@ -7,64 +7,70 @@
 #include "shared_data.h"
 #include "mpu.h"
 
-// Gestion du background et des tiles
-#define GPU_BACKGROUND_WIDTH                    256u
-#define GPU_BACKGROUND_HEIGHT                   256u
-#define GPU_BACKGROUND_SIZE                     (GPU_BACKGROUND_WIDTH*GPU_BACKGROUND_HEIGHT)
+// Gestion du background
+#define GPU_BACKGROUND_WIDTH                        256u
+#define GPU_BACKGROUND_HEIGHT                       256u
+#define GPU_BACKGROUND_SIZE                         (GPU_BACKGROUND_WIDTH*GPU_BACKGROUND_HEIGHT)
 
-#define GPU_BACKGROUND_TILE_WIDTH               32u
-#define GPU_BACKGROUND_TILE_HEIGHT              32u
-#define GPU_BACKGROUND_TILE_SIZE                (GPU_BACKGROUND_TILE_WIDTH*GPU_BACKGROUND_TILE_HEIGHT)
+#define GPU_BACKGROUND_TILE_WIDTH                   32u
+#define GPU_BACKGROUND_TILE_HEIGHT                  32u
+#define GPU_BACKGROUND_TILE_SIZE                    (GPU_BACKGROUND_TILE_WIDTH*GPU_BACKGROUND_TILE_HEIGHT)
 
-#define GPU_TILE_WIDTH                          8u
-#define GPU_TILE_HEIGHT                         8u
-#define GPU_TILE_SIZE                           (GPU_TILE_WIDTH*GPU_TILE_HEIGHT)
+// Gestion de la window
+#define GPU_WINDOW_HORIZONTAL_OFFSET                7u
 
-#define GPU_TILE_NB_BYTES                       16u
+// Gestion des tiles
+#define GPU_TILE_WIDTH                              8u
+#define GPU_TILE_HEIGHT                             8u
+#define GPU_TILE_SIZE                               (GPU_TILE_WIDTH*GPU_TILE_HEIGHT)
 
-#define GPU_BG_WINDOW_TILE_DATA_ADDRESS_MODE_0  0x8800
-#define GPU_BG_WINDOW_TILE_DATA_ADDRESS_MODE_1  0x8000
+#define GPU_TILE_NB_BYTES                           16u
 
-#define GPU_BG_TILE_MAP_DATA_ADDRESS_MODE_0     0x9800
-#define GPU_BG_TILE_MAP_DATA_ADDRESS_MODE_1     0x9C00
+#define GPU_BG_WINDOW_TILE_DATA_ADDRESS_MODE_0      0x8800
+#define GPU_BG_WINDOW_TILE_DATA_ADDRESS_MODE_1      0x8000
+
+#define GPU_BG_WINDOW_TILE_MAP_DATA_ADDRESS_MODE_0  0x9800
+#define GPU_BG_WINDOW_TILE_MAP_DATA_ADDRESS_MODE_1  0x9C00
 
 // Gestion des sprites
-#define GPU_SPRITES_MAX_NB                      40u
+#define GPU_SPRITES_MAX_NB                          40u
 
-#define GPU_OAM_START_ADDRESS                   0xFE00
-#define GPU_SPRITES_ATTRIBUTE_SIZE_BYTE         4u
+#define GPU_OAM_START_ADDRESS                       0xFE00
+#define GPU_SPRITES_ATTRIBUTE_SIZE_BYTE             4u
 
-#define GPU_SPRITES_HORIZONTAL_OFFSET           8u
-#define GPU_SPRITES_VERTICAL_OFFSET             16u
+#define GPU_SPRITES_HORIZONTAL_OFFSET               8u
+#define GPU_SPRITES_VERTICAL_OFFSET                 16u
 
-#define GPU_SPRITES_DATA_START_ADDRESS          0x8000
+#define GPU_SPRITES_DATA_START_ADDRESS              0x8000
 
 // Niveaux de gris d'affichage
-#define GPU_NB_COLORS                           4u
+#define GPU_NB_COLORS                               4u
 
-#define GPU_WHITE                               255u
-#define GPU_LIGHT_GRAY                          170u
-#define GPU_DARK_GRAY                           85u
-#define GPU_BLACK                               0u
+#define GPU_WHITE                                   255u
+#define GPU_LIGHT_GRAY                              170u
+#define GPU_DARK_GRAY                               85u
+#define GPU_BLACK                                   0u
 
 // Adresse des registres GPU
-#define GPU_LCDC_ADDRESS                        0xFF40
-#define GPU_SCY_ADDRESS                         0xFF42
-#define GPU_SCX_ADDRESS                         0xFF43
-#define GPU_LY_ADDRESS                          0xFF44
-#define GPU_BGP_ADDRESS                         0xFF47
+#define GPU_LCDC_ADDRESS                            0xFF40
+#define GPU_SCY_ADDRESS                             0xFF42
+#define GPU_SCX_ADDRESS                             0xFF43
+#define GPU_LY_ADDRESS                              0xFF44
+#define GPU_BGP_ADDRESS                             0xFF47
+#define GPU_WY_ADDRESS                              0xFF4A
+#define GPU_WX_ADDRESS                              0xFF4B
 
 // Nombre de cycles de différents modes de fonctionnement
-#define GPU_OAM_SEARCH_NB_CYCLES                20u
-#define GPU_PIXEL_TRANSFER_NB_CYCLES            43u
-#define GPU_HBLANK_NB_CYCLES                    51u
+#define GPU_OAM_SEARCH_NB_CYCLES                    20u
+#define GPU_PIXEL_TRANSFER_NB_CYCLES                43u
+#define GPU_HBLANK_NB_CYCLES                        51u
 
-#define GPU_VBLANK_NB_LINES                     10u
-#define GPU_COMPUTE_LINE_NB_CYCLES              (GPU_OAM_SEARCH_NB_CYCLES + GPU_PIXEL_TRANSFER_NB_CYCLES + GPU_HBLANK_NB_CYCLES)
+#define GPU_VBLANK_NB_LINES                         10u
+#define GPU_COMPUTE_LINE_NB_CYCLES                  (GPU_OAM_SEARCH_NB_CYCLES + GPU_PIXEL_TRANSFER_NB_CYCLES + GPU_HBLANK_NB_CYCLES)
 
 // Nombre d'images par seconde
-#define GPU_FRAME_PER_SECONDS                   59.7f
-#define GPU_FRAME_PERIOD_MS                     (1000.0f/GPU_FRAME_PER_SECONDS)
+#define GPU_FRAME_PER_SECONDS                       59.7f
+#define GPU_FRAME_PERIOD_MS                         (1000.0f/GPU_FRAME_PER_SECONDS)
 
 class Gpu
 {
