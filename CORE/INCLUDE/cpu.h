@@ -4,12 +4,16 @@
 #include <iostream>
 #include <cstdint>
 
+#include "shared_data.h"
 #include "mpu.h"
 
 #define CPU_NB_OPCODES_8_BITS   51u
 #define CPU_NB_OPCODES_16_BITS  8u
 
 #define CPU_DAA_TABLE_NB        13u
+
+// Adresse des interruptions
+#define CPU_VBLANK_ADDRESS      0x0040
 
 // Union codant les différents registres de la gameboy
 union tu_registers
@@ -51,6 +55,17 @@ union tu_registers
 class Cpu
 {
 public:
+    // Enumération des différentes interruptions
+    enum te_interupts
+    {
+        E_VBLANK    = 0u,
+        E_LCD_STAT,
+        E_TIMER,
+        E_SERIAL,
+        E_JOYPAD
+    };
+
+public:
     explicit Cpu(Mpu* const aip_mpu);
     ~Cpu();
 
@@ -59,6 +74,9 @@ public:
 
     // Exécution d'un opcode
     void executeOpcode(const std::uint16_t ai_opcodeIdx);
+
+    // Exécution d'une interruption
+    void executeInterrupt(const te_interupts ai_interrupt);
 
     // Accesseur registre A
     std::uint8_t getRegisterA() const;
@@ -122,6 +140,9 @@ public:
 
     // Accesseur sur le nombre de cycles de l'instruction courante
     std::uint8_t getNbCyccles() const;
+
+    // Accesseur sur le flag d'activation des interruptions
+    std::uint8_t getRegisterIME() const;
 
 private:
     // Structure des masques et identifiants des opcodes
@@ -241,6 +262,7 @@ private:
     tu_registers 	m_registers;                        // Registres 8-16 bits
     std::uint16_t	m_pc;                               // Program Counter
     std::uint16_t	m_sp;                               // Stack Pointer
+    std::uint8_t    m_ime;                              // Interrupt Master Enable flag
 
     Mpu*            mp_mpu;                             // Pointeur vers la mémoire
 

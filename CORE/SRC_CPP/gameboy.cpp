@@ -2,7 +2,9 @@
 
 #include "CORE/INCLUDE/gameboy.h"
 
+// Durée en ms du délai d'attente avant la fin effective de l'émulation
 #define GB_EMULATION_END_DELAY_MS   50u
+
 
 // ********************************************************
 // Constructeur / Destructeur
@@ -13,12 +15,17 @@ Gameboy::Gameboy(updateScreenFunction ai_updateScreen) :
     mp_mpu(new Mpu()),
     mp_cpu(new Cpu(mp_mpu)),
     mp_gpu(new Gpu(mp_mpu, ai_updateScreen)),
+    mp_timers(new Timers(mp_mpu)),
     m_isRunning(false)
 {
     for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
     {
         m_romFirstBytes[w_i] = 0u;
     }
+
+    // Initialisation des boutons
+    m_directionButtons.joypadP14    = 0xF;
+    m_utilityButtons.joypadP15      = 0xF;
 }
 
 // Destructeur
@@ -122,6 +129,89 @@ void Gameboy::stop()
 }
 
 
+// ********************************************************
+// GESTION DES BOUTONS
+// ********************************************************
+
+void Gameboy::setPressButton(const te_button ai_button)
+{
+    // Parcours de la liste des boutons
+    switch (ai_button)
+    {
+        case E_UP :
+            m_directionButtons.sButtons.up = 0u;
+            break;
+
+        case E_DOWN :
+            m_directionButtons.sButtons.down = 0u;
+            break;
+
+        case E_LEFT :
+            m_directionButtons.sButtons.left = 0u;
+            break;
+
+        case E_RIGHT :
+            m_directionButtons.sButtons.right = 0u;
+            break;
+
+        case E_A :
+            m_utilityButtons.sButtons.a = 0u;
+            break;
+
+        case E_B :
+            m_utilityButtons.sButtons.b = 0u;
+            break;
+
+        case E_START :
+            m_utilityButtons.sButtons.start = 0u;
+            break;
+
+        case E_SELECT :
+            m_utilityButtons.sButtons.select = 0u;
+            break;
+    }
+}
+
+void Gameboy::setReleaseButton(const te_button ai_button)
+{
+    // Parcours de la liste des boutons
+    switch (ai_button)
+    {
+        case E_UP :
+            m_directionButtons.sButtons.up = 1u;
+            break;
+
+        case E_DOWN :
+            m_directionButtons.sButtons.down = 1u;
+            break;
+
+        case E_LEFT :
+            m_directionButtons.sButtons.left = 1u;
+            break;
+
+        case E_RIGHT :
+            m_directionButtons.sButtons.right = 1u;
+            break;
+
+        case E_A :
+            m_utilityButtons.sButtons.a = 1u;
+            break;
+
+        case E_B :
+            m_utilityButtons.sButtons.b = 1u;
+            break;
+
+        case E_START :
+            m_utilityButtons.sButtons.start = 1u;
+            break;
+
+        case E_SELECT :
+            m_utilityButtons.sButtons.select = 1u;
+            break;
+    }
+}
+
+
 // *****************
 // Fonctions privées
 // *****************
@@ -133,6 +223,22 @@ void Gameboy::_executeCycle()
 
     // Mise à jour de l'écran
     mp_gpu->computeScreenImage(mp_cpu->getNbCyccles());
+
+    // Gestion des boutons
+    _setButtons();
+
+    // Gestion des interruptions
+    if (mp_cpu->getRegisterIME() == 1u)
+    {
+        // Interruption VBLANK autorisée et demandée
+        if ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) && GAMEBOY_VBLANK_ENABLE == 1u) && (mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) && GAMEBOY_VBLANK_REQUESTED == 1u))
+        {
+            mp_cpu->executeInterrupt(Cpu::E_VBLANK);
+        }
+    }
+
+    // Mise à jour des timers
+    mp_timers->update();
 }
 
 void Gameboy::_executeBootstrap()
@@ -149,5 +255,25 @@ void Gameboy::_executeBootstrap()
         {
             mp_mpu->setMemVal(w_i, m_romFirstBytes[w_i]);
         }
+    }
+}
+
+void Gameboy::_setButtons()
+{
+    // Récupération du type de boutons
+    std::uint8_t w_buttonType = (mp_mpu->getMemVal(MPU_JOYPAD_ADDRESS) >> 4u) & 0x03;
+
+    // Mise à jour du registre Joypad
+    switch (w_buttonType)
+    {
+        case 1u :
+            // Touches directionnelles
+            mp_mpu->setJoypad(m_utilityButtons.joypadP15);
+            break;
+
+        case 2u :
+            // Touches utilitaires
+            mp_mpu->setJoypad(m_directionButtons.joypadP14);
+            break;
     }
 }

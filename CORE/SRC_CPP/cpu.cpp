@@ -9,20 +9,16 @@
 // ********************************************************
 
 // Constructeur
-Cpu::Cpu(Mpu* const aip_mpu)
+Cpu::Cpu(Mpu* const aip_mpu) :
+    m_opcodeIdx(0u),
+    m_nbCycles(0u),
+    mp_mpu(aip_mpu)
 {
-    // Initialisation des données membres
-    m_opcodeIdx = 0u;
-    m_nbCycles  = 0u;
-
-    // Récupération du pointeur vers la mémoire
-    mp_mpu = aip_mpu;
+    // Initialisation des masques et identifiants des opcodes
+    _initOpcodesDesc();
 
     // Initialisation des registres
     initRegisters();
-
-    // Initialisation des masques et identifiants des opcodes
-    _initOpcodesDesc();
 
     // Initialisation de la table des données d'exécution de l'instruction DAA
     m_daaTable[0u]  = {0u, 0u, 0u, 0u, 0x0, 0x9, 0x0, 0x9, 0x00};
@@ -176,6 +172,12 @@ std::uint8_t Cpu::getNbCyccles() const
     return m_nbCycles;
 }
 
+// Accesseur sur le flag d'activation des interruptions
+std::uint8_t Cpu::getRegisterIME() const
+{
+    return m_ime;
+}
+
 
 // ********************************************************
 // INITIALISATION DES REGISTRES
@@ -191,6 +193,7 @@ void Cpu::initRegisters()
     m_registers.s16bits.hl  = 0x0000;
     m_sp                    = 0x0000;
     m_pc                    = 0x0000;
+    m_ime                   = 0x00;
 }
 
 
@@ -299,6 +302,48 @@ void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
         std::cout << "Erreur : opcode inconnu" << std::endl;
         exit(-1);
     }
+}
+
+// ********************************************************
+// EXECUTION D'UNE INTERRUPTION
+// ********************************************************
+
+void Cpu::executeInterrupt(const te_interupts ai_interrupt)
+{
+    // Valeur du registre IF
+    std::uint8_t w_ifRegister = mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG);
+
+    // Désactivation des interruptions
+    m_ime = 0u;
+
+    // Sauvegarde du MSW de PC à l'adresse mémoire de SP - 1
+    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 1u), static_cast<std::uint8_t>((m_pc & 0xFF00) >> 8u));
+
+    // Sauvegarde du LSW de PC à l'adresse mémoire de SP - 2
+    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 2u), static_cast<std::uint8_t>(m_pc & 0x00FF));
+
+    // SP = SP - 2
+    m_sp -= 2u;
+
+    // Exécution de l'interruption demandée
+    switch (ai_interrupt)
+    {
+        case E_VBLANK :
+            // Requete prise en compte
+            mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister & ~GAMEBOY_VBLANK_REQUESTED));
+
+            // Mise à jour de PC à l'addresse du code l'interuption
+            m_pc = CPU_VBLANK_ADDRESS;
+
+            break;
+
+        default :
+            std::cout << "Erreur : interruption inconnue" << std::endl;
+            exit(-1);
+    }
+
+    // Mise à jour du nombre de cylces
+    m_nbCycles = 6u;
 }
 
 
@@ -1371,11 +1416,11 @@ void Cpu::_ret()
 
 void Cpu::_reti()
 {
-    // Mise à jour de PC
-    m_pc += 1u;
+    // Interruptions réactivées
+    m_ime = 1u;
 
-    // Mise à jour du nombre de cylces
-    m_nbCycles = 4u;
+    // Sortie de l'interruption
+    _ret();
 }
 
 void Cpu::_jp_f_n()
@@ -1610,6 +1655,9 @@ void Cpu::_ld_sp_hl()
 
 void Cpu::_di()
 {
+    // Interruptions désactivées
+    m_ime = 0u;
+
     // Mise à jour de PC
     m_pc += 1u;
 
@@ -1619,6 +1667,9 @@ void Cpu::_di()
 
 void Cpu::_ei()
 {
+    // Interruptions activées
+    m_ime = 1u;
+
     // Mise à jour de PC
     m_pc += 1u;
 
