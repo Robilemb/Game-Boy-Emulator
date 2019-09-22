@@ -20,7 +20,9 @@ Gpu::Gpu(Mpu* const aip_mpu, updateScreenFunction ai_updateScreen) :
     {
         for (std::uint16_t w_j = 0u; w_j < GPU_BACKGROUND_HEIGHT; ++w_j)
         {
-            m_background[w_i][w_j] = 0u;
+            m_background[w_i][w_j]  = 0u;
+            m_window[w_i][w_j]      = 0u;
+            m_sprites[w_i][w_j]     = 0u;
         }
     }
 }
@@ -120,7 +122,10 @@ void Gpu::_computeScreenImage()
     std::uint8_t    w_tileData[GPU_TILE_NB_BYTES];
     std::uint8_t    w_bgp[GPU_NB_COLORS];
 
-    std::uint8_t    w_tileNumber                    = 0u;
+    std::int16_t    w_tileNumber                    = 0;
+    std::int8_t     w_tileNumberMode0               = 0;
+    std::uint8_t    w_tileNumberMode1               = 0u;
+    std::uint8_t    w_tileNumerOffset               = 0u;
     std::uint8_t    w_pixelLsb                      = 0u;
     std::uint8_t    w_pixelMsb                      = 0u;
     std::uint8_t    w_pixelValue                    = 0u;
@@ -147,6 +152,9 @@ void Gpu::_computeScreenImage()
 
     std::int16_t w_spriteX                          = 0u;
     std::int16_t w_spriteY                          = 0u;
+
+    std::uint8_t w_bgLoadX                          = 0u;
+    std::uint8_t w_bgLoadY                          = 0u;
 
     // Décodage du registre LDCD
     w_lcdDisplayEnable              = (mp_mpu->getMemVal(GPU_LCDC_ADDRESS) >> 7u)   & 0x01;
@@ -195,10 +203,12 @@ void Gpu::_computeScreenImage()
         if (w_bgAndWindowTileDataSelect == 0u)
         {
             w_bgAndWindowTileDataOffset = GPU_BG_WINDOW_TILE_DATA_ADDRESS_MODE_0;
+            w_tileNumerOffset           = 128u;
         }
         else
         {
             w_bgAndWindowTileDataOffset = GPU_BG_WINDOW_TILE_DATA_ADDRESS_MODE_1;
+            w_tileNumerOffset           = 0u;
         }
 
         if (w_bgTileMapDisplaySelect == 0u)
@@ -223,23 +233,11 @@ void Gpu::_computeScreenImage()
         w_scrollX = mp_mpu->getMemVal(GPU_SCX_ADDRESS);
         w_scrollY = mp_mpu->getMemVal(GPU_SCY_ADDRESS);
 
-        // Correction des offsets X si sortie du background
-        if ((w_scrollX + GAMEBOY_SCREEN_WIDTH) > GPU_BACKGROUND_WIDTH)
-        {
-            w_scrollX = GPU_BACKGROUND_WIDTH - GAMEBOY_SCREEN_WIDTH;
-        }
-
-        // Correction des offsets Y si sortie du background
-        if ((w_scrollY + GAMEBOY_SCREEN_HEIGHT) > GPU_BACKGROUND_HEIGHT)
-        {
-            w_scrollY = GPU_BACKGROUND_HEIGHT - GAMEBOY_SCREEN_HEIGHT;
-        }
-
         // Offsets X/Y de la window
         w_windowX = mp_mpu->getMemVal(GPU_WX_ADDRESS);
         w_windowY = mp_mpu->getMemVal(GPU_WY_ADDRESS);
 
-        // Gestion des bornes
+        // Gestion des bornes de la window
         if (w_windowX < GPU_WINDOW_HORIZONTAL_OFFSET)
         {
             w_windowX = GPU_WINDOW_HORIZONTAL_OFFSET;
@@ -258,18 +256,27 @@ void Gpu::_computeScreenImage()
         // Prise en compte de l'offset X de la window
         w_windowX -= GPU_WINDOW_HORIZONTAL_OFFSET;
 
-        // Chargement des tiles correspondantes dans m_background
+        // Chargement des tiles du background
         for (std::uint16_t w_i = 0u; w_i < GPU_BACKGROUND_TILE_WIDTH; ++w_i)
         {
             for (std::uint8_t w_j = 0u; w_j < GPU_BACKGROUND_TILE_HEIGHT; ++w_j)
             {
                 // Numéro de tile à charger
-                w_tileNumber = mp_mpu->getMemVal(w_bgTileMapDataOffset + w_j + (w_i*GPU_BACKGROUND_TILE_HEIGHT));
+                if (w_bgAndWindowTileDataSelect == 0u)
+                {
+                    w_tileNumberMode0   = static_cast<int8_t>(mp_mpu->getMemVal(w_bgTileMapDataOffset + w_j + (w_i*GPU_BACKGROUND_TILE_HEIGHT)));
+                    w_tileNumber        = static_cast<int16_t>(w_tileNumberMode0) + static_cast<int16_t>(w_tileNumerOffset);
+                }
+                else
+                {
+                    w_tileNumberMode1   = static_cast<uint8_t>(mp_mpu->getMemVal(w_bgTileMapDataOffset + w_j + (w_i*GPU_BACKGROUND_TILE_HEIGHT)));
+                    w_tileNumber        = static_cast<int16_t>(w_tileNumberMode1) + static_cast<int16_t>(w_tileNumerOffset);
+                }
 
                 for (std::uint8_t w_k = 0u; w_k < GPU_TILE_NB_BYTES; ++w_k)
                 {
                     // Récupération des octets de représentation de la tile
-                    w_tileData[w_k] = mp_mpu->getMemVal(w_bgAndWindowTileDataOffset + (GPU_TILE_NB_BYTES*w_tileNumber) + w_k);
+                    w_tileData[w_k] = mp_mpu->getMemVal(static_cast<uint16_t>(static_cast<int16_t>(w_bgAndWindowTileDataOffset) + (static_cast<int16_t>(GPU_TILE_NB_BYTES)*w_tileNumber) + static_cast<int16_t>(w_k)));
                 }
 
                 // Conversion en couleur
@@ -289,13 +296,22 @@ void Gpu::_computeScreenImage()
             }
         }
 
-        // Chargement de la window
+        // Chargement des tiles de la window
         for (std::uint16_t w_i = 0u; w_i < GPU_BACKGROUND_TILE_WIDTH; ++w_i)
         {
             for (std::uint8_t w_j = 0u; w_j < GPU_BACKGROUND_TILE_HEIGHT; ++w_j)
             {
                 // Numéro de tile à charger
-                w_tileNumber = mp_mpu->getMemVal(w_windowTileMapDataOffset + w_j + (w_i*GPU_BACKGROUND_TILE_HEIGHT));
+                if (w_bgAndWindowTileDataSelect == 0u)
+                {
+                    w_tileNumberMode0   = static_cast<int8_t>(mp_mpu->getMemVal(w_windowTileMapDataOffset + w_j + (w_i*GPU_BACKGROUND_TILE_HEIGHT)));
+                    w_tileNumber        = static_cast<int16_t>(w_tileNumberMode0) + static_cast<int16_t>(w_tileNumerOffset);
+                }
+                else
+                {
+                    w_tileNumberMode1   = static_cast<uint8_t>(mp_mpu->getMemVal(w_windowTileMapDataOffset + w_j + (w_i*GPU_BACKGROUND_TILE_HEIGHT)));
+                    w_tileNumber        = static_cast<int16_t>(w_tileNumberMode1) + static_cast<int16_t>(w_tileNumerOffset);
+                }
 
                 for (std::uint8_t w_k = 0u; w_k < GPU_TILE_NB_BYTES; ++w_k)
                 {
@@ -313,19 +329,23 @@ void Gpu::_computeScreenImage()
                         w_pixelLsb      = (w_tileData[2u*w_y] & (1u << (GPU_TILE_WIDTH-w_x-1u))) >> (GPU_TILE_WIDTH-w_x-1u);
                         w_pixelValue    = (w_pixelMsb << 1u) + w_pixelLsb;
 
-                        // Vérification si le pixel est bien contenu dans l'image et que l'affichage de la widnow est autorisé
-                        if (    ((w_windowX + (GPU_TILE_HEIGHT*w_j) + w_x) < GAMEBOY_SCREEN_WIDTH)
-                            &&  ((w_windowY + ((GPU_TILE_WIDTH*w_i) + w_y)) < GAMEBOY_SCREEN_HEIGHT)
-                            &&  (w_windowDisplayEnable == 1u)   )
-                        {
-                            m_background[w_scrollY + w_windowY + ((GPU_TILE_WIDTH*w_i) + w_y)][w_scrollX + w_windowX + ((GPU_TILE_HEIGHT*w_j) + w_x)] = w_bgp[w_pixelValue];
-                        }
+                        // Sauvegarde du pixel dans la window
+                        m_window[(GPU_TILE_WIDTH*w_i) + w_y][(GPU_TILE_HEIGHT*w_j) + w_x] = w_bgp[w_pixelValue];
                     }
                 }
             }
         }
 
-        // Chargement des sprites dans le background
+        // Reset des sprites
+        for (std::uint16_t w_i = 0u; w_i < GPU_BACKGROUND_WIDTH; ++w_i)
+        {
+            for (std::uint16_t w_j = 0u; w_j < GPU_BACKGROUND_HEIGHT; ++w_j)
+            {
+                m_sprites[w_i][w_j] = w_bgp[0u];
+            }
+        }
+
+        // Chargement des sprites
         for (std::uint8_t w_spriteNumber = 0u; w_spriteNumber < GPU_SPRITES_MAX_NB; ++w_spriteNumber)
         {
             w_tileNumber    = mp_mpu->getMemVal(GPU_OAM_START_ADDRESS + (w_spriteNumber*GPU_SPRITES_ATTRIBUTE_SIZE_BYTE) + 2u);
@@ -348,18 +368,13 @@ void Gpu::_computeScreenImage()
                     w_pixelLsb      = (w_tileData[2u*w_y] & (1u << (GPU_TILE_WIDTH-w_x-1u))) >> (GPU_TILE_WIDTH-w_x-1u);
                     w_pixelValue    = (w_pixelMsb << 1u) + w_pixelLsb;
 
-                    // Sauvegarde du pixel dans le background (Pour les sprites, la couleur blanche est invisible, on ne la prend pas en compte)
-                    if (w_bgp[w_pixelValue] != GPU_WHITE)
+                    // Sauvegarde de la sprite si le pixel est bien contenu dans le background
+                    if (    (w_spriteX + static_cast<std::int16_t>(w_x) >= 0)
+                        &&  (w_spriteX + static_cast<std::int16_t>(w_x) < static_cast<std::int16_t>(GPU_BACKGROUND_WIDTH))
+                        &&  (w_spriteY + static_cast<std::int16_t>(w_y) >= 0)
+                        &&  (w_spriteY + static_cast<std::int16_t>(w_y) < static_cast<std::int16_t>(GPU_BACKGROUND_HEIGHT)) )
                     {
-                        // Vérification si le pixel est bien contenu dans le background et que l'affichage des sprites est autorisé
-                        if (    (w_spriteDisplayEnable == 1u)
-                            &&  (w_spriteX + static_cast<std::int16_t>(w_x) >= 0)
-                            &&  (w_spriteX + static_cast<std::int16_t>(w_x) < static_cast<std::int16_t>(GPU_BACKGROUND_WIDTH))
-                            &&  (w_spriteY + static_cast<std::int16_t>(w_y) >= 0)
-                            &&  (w_spriteY + static_cast<std::int16_t>(w_y) < static_cast<std::int16_t>(GPU_BACKGROUND_HEIGHT)) )
-                        {
-                            m_background[w_spriteY + w_y][w_spriteX + w_x] = w_bgp[w_pixelValue];
-                        }
+                        m_sprites[w_spriteY + w_y][w_spriteX + w_x] = w_bgp[w_pixelValue];
                     }
                 }
             }
@@ -370,10 +385,44 @@ void Gpu::_computeScreenImage()
         {
             for (std::uint8_t w_i = 0; w_i < GAMEBOY_SCREEN_WIDTH; ++w_i)
             {
-                if (w_bgDisplay == 1u)
+                // Priorité 1 : chargement des sprites
+                if ( (w_spriteDisplayEnable == 1u) && (m_sprites[w_j+w_scrollY][w_i+w_scrollX] != w_bgp[0u]) )
                 {
-                    // Recopie du background
-                    m_screenImage[w_i + (w_j*GAMEBOY_SCREEN_WIDTH)] = m_background[w_j+w_scrollY][w_i+w_scrollX];
+                    m_screenImage[w_i + (w_j*GAMEBOY_SCREEN_WIDTH)] = m_sprites[w_j+w_scrollY][w_i+w_scrollX];
+                }
+                // Priorité 2 : chargement de la window
+                else if (   (w_windowDisplayEnable == 1u)
+                         && (w_i >= w_windowX)
+                         && (w_j >= w_windowY)
+                         && ((static_cast<std::uint16_t>(w_i) + static_cast<std::uint16_t>(w_windowX)) < static_cast<std::uint16_t>(GPU_BACKGROUND_WIDTH))
+                         && ((static_cast<std::uint16_t>(w_j) + static_cast<std::uint16_t>(w_windowY)) < static_cast<std::uint16_t>(GPU_BACKGROUND_HEIGHT)))
+                {
+                    m_screenImage[w_i + (w_j*GAMEBOY_SCREEN_WIDTH)] = m_window[w_j-w_windowY][w_i-w_windowX];
+                }
+                // Priorité 3 : chargement du background
+                else if (w_bgDisplay == 1u)
+                {
+                    // Gestion des dépassements en X
+                    if (static_cast<std::uint16_t>(w_i) + static_cast<std::uint16_t>(w_scrollX) >= static_cast<std::uint16_t>(GPU_BACKGROUND_WIDTH))
+                    {
+                        w_bgLoadX = static_cast<std::uint8_t>(static_cast<std::uint16_t>(w_i) + static_cast<std::uint16_t>(w_scrollX) - static_cast<std::uint16_t>(GPU_BACKGROUND_WIDTH));
+                    }
+                    else
+                    {
+                        w_bgLoadX = w_i + w_scrollX;
+                    }
+
+                    // Gestion des dépassements en Y
+                    if (static_cast<std::uint16_t>(w_j) + static_cast<std::uint16_t>(w_scrollY) >= static_cast<std::uint16_t>(GPU_BACKGROUND_HEIGHT))
+                    {
+                        w_bgLoadY = static_cast<std::uint8_t>(static_cast<std::uint16_t>(w_j) + static_cast<std::uint16_t>(w_scrollY) - static_cast<std::uint16_t>(GPU_BACKGROUND_HEIGHT));
+                    }
+                    else
+                    {
+                        w_bgLoadY = w_j + w_scrollY;
+                    }
+
+                    m_screenImage[w_i + (w_j*GAMEBOY_SCREEN_WIDTH)] = m_background[w_bgLoadY][w_bgLoadX];
                 }
                 else
                 {

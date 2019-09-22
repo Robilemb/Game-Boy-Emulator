@@ -5,7 +5,7 @@
 #include <array>
 
 // Taille de la mémoire = 64ko
-#define MPU_MEMORY_SIZE                 65535u
+#define MPU_MEMORY_SIZE                 65536u
 
 // Taille d'une bank
 #define MPU_MEMORY_CARD_BANK_SIZE       0x4000

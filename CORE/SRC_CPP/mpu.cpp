@@ -69,7 +69,7 @@ void Mpu::initMemory()
     std::uint8_t w_bootstrap[MPU_BOOTSTRAP_SIZE] = BOOTSTRAP;
 
     // Initialisation de la mémoire
-    for (std::uint16_t w_i = 0u; w_i < MPU_MEMORY_SIZE; ++w_i)
+    for (std::uint32_t w_i = 0u; w_i < MPU_MEMORY_SIZE; ++w_i)
     {
         m_memory[w_i] = 0u;
     }

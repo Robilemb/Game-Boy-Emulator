@@ -798,7 +798,7 @@ void Cpu::_inc_d()
         m_registers.sFlags.z = static_cast<std::uint8_t>(w_valueAtHL == 0u);
 
         // Gestion du flag N
-        m_registers.sFlags.n = 1u;
+        m_registers.sFlags.n = 0u;
 
         // Mise à jour du nombre de cylces
         m_nbCycles = 3u;
@@ -818,7 +818,7 @@ void Cpu::_inc_d()
         m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
 
         // Gestion du flag N
-        m_registers.sFlags.n = 1u;
+        m_registers.sFlags.n = 0u;
 
         // Mise à jour du nombre de cylces
         m_nbCycles = 1u;

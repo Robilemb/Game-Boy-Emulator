@@ -42,7 +42,7 @@ void DebugMemoryWindow::refreshUpDebugMemoryWindow()
     // Gestion des bords
     if (w_idxAddress - 1 < 0)
     {
-        w_idxAddress = MPU_MEMORY_SIZE;
+        w_idxAddress = (static_cast<std::int32_t>(MPU_MEMORY_SIZE) - 1);
     }
     else
     {
@@ -59,9 +59,9 @@ void DebugMemoryWindow::refreshDownDebugMemoryWindow()
     std::int32_t w_idxAddress = getIdxInFirstRow();
 
     // Gestion des bords
-    if (w_idxAddress + 1u > MPU_MEMORY_SIZE)
+    if (w_idxAddress + 1 > (static_cast<std::int32_t>(MPU_MEMORY_SIZE) - 1))
     {
-        w_idxAddress = 0u;
+        w_idxAddress = 0;
     }
     else
     {
@@ -208,9 +208,9 @@ void DebugMemoryWindow::refresh(std::uint16_t ai_idx)
     {
         // Adresse à afficher
         w_idxAddress = ai_idx + w_i;
-        if (w_idxAddress > MPU_MEMORY_SIZE)
+        if (w_idxAddress > (static_cast<std::int32_t>(MPU_MEMORY_SIZE) - 1))
         {
-            w_idxAddress -= (MPU_MEMORY_SIZE + 1);
+            w_idxAddress -= static_cast<std::int32_t>(MPU_MEMORY_SIZE);
         }
 
         w_addressList << "0x" + QString::number(w_idxAddress, 16).toUpper();
