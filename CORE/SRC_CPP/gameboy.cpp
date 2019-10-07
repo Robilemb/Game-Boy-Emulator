@@ -218,7 +218,7 @@ void Gameboy::setReleaseButton(const te_button ai_button)
 
 void Gameboy::_executeCycle()
 {
-    // Exécution des instructions entre 0x000 et 0x100
+    // Exécution d'une instruction CPU
     mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
 
     // Mise à jour de l'écran

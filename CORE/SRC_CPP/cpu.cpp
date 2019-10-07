@@ -302,6 +302,10 @@ void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
         std::cout << "Erreur : opcode inconnu" << std::endl;
         exit(-1);
     }
+
+    // Le flag res ne peut être que reset
+    if (m_registers.sFlags.res != 0u)
+        m_registers.sFlags.res = 0u;
 }
 
 // ********************************************************
@@ -1122,26 +1126,38 @@ void Cpu::_daa()
     std::uint8_t w_AMsw = (m_registers.s8bits.a & 0xF0) >> 4u;
     std::uint8_t w_ALsw = m_registers.s8bits.a & 0x0F;
 
+    std::uint8_t w_possibilities[CPU_DAA_TABLE_NB] = {0u};
+    std::uint8_t w_max      = 0u;
+    std::uint8_t w_maxIdx   = 0u;
+
     // Recherche de la configuration à exécuter
     for (w_idx = 0u; w_idx < CPU_DAA_TABLE_NB; ++w_idx)
     {
         if (    (m_registers.sFlags.n == m_daaTable[w_idx].flagN)
-             && (m_registers.sFlags.h == m_daaTable[w_idx].flagH)
-             && (m_registers.sFlags.c == m_daaTable[w_idx].flagCCur)
-             && (w_AMsw >= m_daaTable[w_idx].minAMsw)
-             && (w_AMsw <= m_daaTable[w_idx].maxAMsw)
-             && (w_ALsw >= m_daaTable[w_idx].minALsw)
-             && (w_ALsw <= m_daaTable[w_idx].maxALsw)   )
+            &&  (m_registers.sFlags.h == m_daaTable[w_idx].flagH)
+            &&  (m_registers.sFlags.c == m_daaTable[w_idx].flagCCur))
         {
-            // Ajoute à A la valeur correspondante à la configuration courante
-            m_registers.s8bits.a = static_cast<std::uint8_t>((static_cast<std::uint16_t>(m_registers.s8bits.a) + static_cast<std::uint16_t>(m_daaTable[w_idx].addValue)) & 0xFF);
-
-            // Gestion du flag C
-            m_registers.sFlags.c = m_daaTable[w_idx].flagCNew;
-
-            break;
+            if (w_AMsw >= m_daaTable[w_idx].minAMsw) w_possibilities[w_idx]++;
+            if (w_AMsw <= m_daaTable[w_idx].maxAMsw) w_possibilities[w_idx]++;
+            if (w_ALsw >= m_daaTable[w_idx].minALsw) w_possibilities[w_idx]++;
+            if (w_ALsw <= m_daaTable[w_idx].maxALsw) w_possibilities[w_idx]++;
         }
     }
+
+    for (w_idx = 0u; w_idx < CPU_DAA_TABLE_NB; ++w_idx)
+    {
+        if (w_possibilities[w_idx] > w_max)
+        {
+            w_max       = w_possibilities[w_idx];
+            w_maxIdx    = w_idx;
+        }
+    }
+
+    // Ajoute à A la valeur correspondante à la configuration courante
+    m_registers.s8bits.a = static_cast<std::uint8_t>((static_cast<std::uint16_t>(m_registers.s8bits.a) + static_cast<std::uint16_t>(m_daaTable[w_maxIdx].addValue)) & 0xFF);
+
+    // Gestion du flag C
+    m_registers.sFlags.c = m_daaTable[w_maxIdx].flagCNew;
 
     // Gestion du flag Z
     m_registers.sFlags.z = static_cast<std::uint8_t>(m_registers.s8bits.a == 0u);
