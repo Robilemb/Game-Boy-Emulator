@@ -135,6 +135,9 @@ void Gameboy::stop()
 
 void Gameboy::setPressButton(const te_button ai_button)
 {
+    // Valeur du registre IF
+    std::uint8_t w_ifRegister = mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG);
+
     // Parcours de la liste des boutons
     switch (ai_button)
     {
@@ -170,6 +173,9 @@ void Gameboy::setPressButton(const te_button ai_button)
             m_utilityButtons.sButtons.select = 0u;
             break;
     }
+
+    // Demande d'interruption JOYPAD
+    mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister | GAMEBOY_JOYPAD_REQUESTED));
 }
 
 void Gameboy::setReleaseButton(const te_button ai_button)
@@ -231,14 +237,38 @@ void Gameboy::_executeCycle()
     if (mp_cpu->getRegisterIME() == 1u)
     {
         // Interruption VBLANK autorisée et demandée
-        if ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) && GAMEBOY_VBLANK_ENABLE == 1u) && (mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) && GAMEBOY_VBLANK_REQUESTED == 1u))
+        if (((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) & GAMEBOY_VBLANK_ENABLE) == GAMEBOY_VBLANK_ENABLE) && ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) & GAMEBOY_VBLANK_REQUESTED) == GAMEBOY_VBLANK_REQUESTED))
         {
             mp_cpu->executeInterrupt(Cpu::E_VBLANK);
+        }
+
+        // Interruption LCD_STAT autorisée et demandée
+        if (((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) & GAMEBOY_LCD_STAT_ENABLE) == GAMEBOY_LCD_STAT_ENABLE) && ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) & GAMEBOY_LCD_STAT_REQUESTED) == GAMEBOY_LCD_STAT_REQUESTED))
+        {
+            mp_cpu->executeInterrupt(Cpu::E_LCD_STAT);
+        }
+
+        // Interruption TIMER autorisée et demandée
+        if (((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) & GAMEBOY_TIMER_ENABLE) == GAMEBOY_TIMER_ENABLE) && ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) & GAMEBOY_TIMER_REQUESTED) == GAMEBOY_TIMER_REQUESTED))
+        {
+            mp_cpu->executeInterrupt(Cpu::E_TIMER);
+        }
+
+        // Interruption SERIAL autorisée et demandée
+        if (((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) & GAMEBOY_SERIAL_ENABLE) == GAMEBOY_SERIAL_ENABLE) && ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) & GAMEBOY_SERIAL_REQUESTED) == GAMEBOY_SERIAL_REQUESTED))
+        {
+            mp_cpu->executeInterrupt(Cpu::E_SERIAL);
+        }
+
+        // Interruption JOYPAD autorisée et demandée
+        if (((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) & GAMEBOY_JOYPAD_ENABLE) == GAMEBOY_JOYPAD_ENABLE) && ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) & GAMEBOY_JOYPAD_REQUESTED) == GAMEBOY_JOYPAD_REQUESTED))
+        {
+            mp_cpu->executeInterrupt(Cpu::E_JOYPAD);
         }
     }
 
     // Mise à jour des timers
-    mp_timers->update();
+    mp_timers->update(mp_cpu->getNbCyccles());
 }
 
 void Gameboy::_executeBootstrap()

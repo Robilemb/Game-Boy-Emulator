@@ -12,7 +12,8 @@
 Cpu::Cpu(Mpu* const aip_mpu) :
     m_opcodeIdx(0u),
     m_nbCycles(0u),
-    mp_mpu(aip_mpu)
+    mp_mpu(aip_mpu),
+    m_isHalted(false)
 {
     // Initialisation des masques et identifiants des opcodes
     _initOpcodesDesc();
@@ -178,6 +179,11 @@ std::uint8_t Cpu::getRegisterIME() const
     return m_ime;
 }
 
+bool Cpu::getIsHalted() const
+{
+    return m_isHalted;
+}
+
 
 // ********************************************************
 // INITIALISATION DES REGISTRES
@@ -279,33 +285,36 @@ void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
     std::uint16_t                                               w_id      = 0u;
     std::uint8_t                                                w_opcode  = mp_mpu->getMemVal(ai_opcodeIdx);
 
-    // Sauvegarde de l'opcode courant
-    m_opcodeIdx = ai_opcodeIdx;
-
-    // Récupération de l'ID de l'opcode à executer
-    for (w_i = 0u; w_i < CPU_NB_OPCODES_8_BITS; ++w_i)
+    if (m_isHalted == false)
     {
-        // Recherche de l'ID correspondant à l'opcode 8 bits
-        w_id = (m_opcodesDesc.masque8bits[w_i] & w_opcode);
+        // Sauvegarde de l'opcode courant
+        m_opcodeIdx = ai_opcodeIdx;
 
-        if (w_id == m_opcodesDesc.id8bits[w_i])
+        // Récupération de l'ID de l'opcode à executer
+        for (w_i = 0u; w_i < CPU_NB_OPCODES_8_BITS; ++w_i)
         {
-            // Exécution de l'opcode
-            (this->*m_opcodesDesc.execute8bits[w_i])();
-            break;
+            // Recherche de l'ID correspondant à l'opcode 8 bits
+            w_id = (m_opcodesDesc.masque8bits[w_i] & w_opcode);
+
+            if (w_id == m_opcodesDesc.id8bits[w_i])
+            {
+                // Exécution de l'opcode
+                (this->*m_opcodesDesc.execute8bits[w_i])();
+                break;
+            }
         }
-    }
 
-    // Gestion opcode inconnu
-    if (w_i == CPU_NB_OPCODES_8_BITS)
-    {
-        std::cout << "Erreur : opcode inconnu" << std::endl;
-        exit(-1);
-    }
+        // Gestion opcode inconnu
+        if (w_i == CPU_NB_OPCODES_8_BITS)
+        {
+            std::cout << "Erreur : opcode inconnu" << std::endl;
+            exit(-1);
+        }
 
-    // Le flag res ne peut être que reset
-    if (m_registers.sFlags.res != 0u)
-        m_registers.sFlags.res = 0u;
+        // Le flag res ne peut être que reset
+        if (m_registers.sFlags.res != 0u)
+            m_registers.sFlags.res = 0u;
+    }
 }
 
 // ********************************************************
@@ -329,6 +338,9 @@ void Cpu::executeInterrupt(const te_interupts ai_interrupt)
     // SP = SP - 2
     m_sp -= 2u;
 
+    // Sortie de pause si besoin
+    m_isHalted = false;
+
     // Exécution de l'interruption demandée
     switch (ai_interrupt)
     {
@@ -338,6 +350,42 @@ void Cpu::executeInterrupt(const te_interupts ai_interrupt)
 
             // Mise à jour de PC à l'addresse du code l'interuption
             m_pc = CPU_VBLANK_ADDRESS;
+
+            break;
+
+        case E_LCD_STAT :
+            // Requete prise en compte
+            mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister & ~GAMEBOY_LCD_STAT_REQUESTED));
+
+            // Mise à jour de PC à l'addresse du code l'interuption
+            m_pc = CPU_LCD_STAT_ADDRESS;
+
+            break;
+
+        case E_TIMER :
+            // Requete prise en compte
+            mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister & ~GAMEBOY_TIMER_REQUESTED));
+
+            // Mise à jour de PC à l'addresse du code l'interuption
+            m_pc = CPU_TIMER_ADDRESS;
+
+            break;
+
+        case E_SERIAL :
+            // Requete prise en compte
+            mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister & ~GAMEBOY_SERIAL_REQUESTED));
+
+            // Mise à jour de PC à l'addresse du code l'interuption
+            m_pc = CPU_SERIAL_ADDRESS;
+
+            break;
+
+        case E_JOYPAD :
+            // Requete prise en compte
+            mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister & ~GAMEBOY_JOYPAD_REQUESTED));
+
+            // Mise à jour de PC à l'addresse du code l'interuption
+            m_pc = CPU_JOYPAD_ADDRESS;
 
             break;
 
@@ -1265,6 +1313,9 @@ void Cpu::_ld_d_d()
 
 void Cpu::_halt()
 {
+    // Pause du CPU
+    m_isHalted = true;
+
     // Mise à jour de PC
     m_pc += 1u;
 
@@ -1381,11 +1432,14 @@ void Cpu::_rst_n()
     // Récupération de la commande de reset
     std::uint8_t w_rstCmd = ((mp_mpu->getMemVal(m_opcodeIdx) & 0x38)) >> 3u;
 
+    // Adresse de l'instruction suivante
+    std::uint16_t w_nextInstruction = m_pc + 1u;
+
     // Sauvegarde du MSW de PC à l'adresse mémoire de SP - 1
-    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 1u), static_cast<std::uint8_t>((m_pc & 0xFF00) >> 8u));
+    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 1u), static_cast<std::uint8_t>((w_nextInstruction & 0xFF00) >> 8u));
 
     // Sauvegarde du LSW de PC à l'adresse mémoire de SP - 2
-    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 2u), static_cast<std::uint8_t>(m_pc & 0x00FF));
+    mp_mpu->setMemVal(static_cast<std::uint16_t>(m_sp - 2u), static_cast<std::uint8_t>(w_nextInstruction & 0x00FF));
 
     // SP = SP - 2
     m_sp -= 2u;

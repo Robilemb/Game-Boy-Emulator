@@ -14,6 +14,10 @@
 
 // Adresse des interruptions
 #define CPU_VBLANK_ADDRESS      0x0040
+#define CPU_LCD_STAT_ADDRESS    0x0048
+#define CPU_TIMER_ADDRESS       0x0050
+#define CPU_SERIAL_ADDRESS      0x0058
+#define CPU_JOYPAD_ADDRESS      0x0060
 
 // Union codant les différents registres de la gameboy
 union tu_registers
@@ -144,6 +148,9 @@ public:
     // Accesseur sur le flag d'activation des interruptions
     std::uint8_t getRegisterIME() const;
 
+    // Accesseur sur l'état de pause du CPU
+    bool getIsHalted() const;
+
 private:
     // Structure des masques et identifiants des opcodes
     struct ts_opcodesDesc
@@ -265,6 +272,8 @@ private:
     std::uint8_t    m_ime;                              // Interrupt Master Enable flag
 
     Mpu*            mp_mpu;                             // Pointeur vers la mémoire
+
+    bool            m_isHalted;                         // VRAI si l'instruction HALT a été exécutée
 
     ts_daaTableDesc m_daaTable[CPU_DAA_TABLE_NB];       // Table des données nécessaires à l'exécution de l'instruction DAA
 };
