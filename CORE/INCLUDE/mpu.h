@@ -23,6 +23,9 @@
 #define MPU_TMA_ADDRESS                 0xFF06
 #define MPU_TAC_ADDRESS                 0xFF07
 
+// Registre DMA
+#define MPU_DMA_ADDRESS                 0xFF46
+
 #define MPU_BOOTSTRAP_SIZE              256u
 
 class Mpu
@@ -43,6 +46,11 @@ public:
 
     // Set du registre Divider
     void setDivider(const std::uint8_t ai_divider);
+
+
+private:
+    // Déclenche un transfert DMA
+    void _dma_transfert(const std::uint8_t ai_startAddress);
 
 
 private:

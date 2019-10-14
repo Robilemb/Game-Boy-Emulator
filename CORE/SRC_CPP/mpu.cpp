@@ -53,6 +53,9 @@ void Mpu::setMemVal(const std::uint16_t ai_offset, const std::uint8_t ai_val)
             m_memory[ai_offset] = 0u;
             break;
 
+        case MPU_DMA_ADDRESS :
+            _dma_transfert(ai_val);
+
         default :
             m_memory[ai_offset] = ai_val;
     }
@@ -102,4 +105,19 @@ void Mpu::setJoypad(const std::uint8_t ai_joypad)
 void Mpu::setDivider(const std::uint8_t ai_divider)
 {
     m_memory[MPU_DIV_ADDRESS] = ai_divider;
+}
+
+
+// ********************************************************
+// TRANSFERT DMA
+// ********************************************************
+
+void Mpu::_dma_transfert(const std::uint8_t ai_startAddress)
+{
+    // Adresse de transfert de départ
+    std::uint16_t w_startAddress = static_cast<std::uint16_t>(ai_startAddress) * 0x100;
+
+    // Copie des données vers l'OAM
+    for (std::uint8_t w_i = 0u; w_i < 0xA0; ++w_i)
+        m_memory[0xFE00 + w_i] = m_memory[w_startAddress + w_i];
 }
