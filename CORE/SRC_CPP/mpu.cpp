@@ -118,6 +118,6 @@ void Mpu::_dma_transfert(const std::uint8_t ai_startAddress)
     std::uint16_t w_startAddress = static_cast<std::uint16_t>(ai_startAddress) * 0x100;
 
     // Copie des données vers l'OAM
-    for (std::uint8_t w_i = 0u; w_i < 0xA0; ++w_i)
-        m_memory[0xFE00 + w_i] = m_memory[w_startAddress + w_i];
+    for (std::uint8_t w_i = 0u; w_i < MPU_OAM_SIZE; ++w_i)
+        m_memory[MPU_OAM_START_ADDRESS + w_i] = m_memory[w_startAddress + w_i];
 }

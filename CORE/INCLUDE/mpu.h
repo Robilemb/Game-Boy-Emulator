@@ -14,6 +14,10 @@
 #define MPU_MEMORY_CARD_BANK_0_OFFSET   0x0000
 #define MPU_MEMORY_CARD_BANK_1_OFFSET   0x4000
 
+// OAM
+#define MPU_OAM_START_ADDRESS           0xFE00
+#define MPU_OAM_SIZE                    0xA0
+
 // Registre du Joypad
 #define MPU_JOYPAD_ADDRESS              0xFF00
 

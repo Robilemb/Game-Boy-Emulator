@@ -296,6 +296,7 @@ void Gameboy::_setButtons()
     // Mise à jour du registre Joypad
     switch (w_buttonType)
     {
+        case 0u :
         case 1u :
             // Touches directionnelles
             mp_mpu->setJoypad(m_utilityButtons.joypadP15);
