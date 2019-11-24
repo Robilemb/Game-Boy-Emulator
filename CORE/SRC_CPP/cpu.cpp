@@ -841,7 +841,7 @@ void Cpu::_inc_d()
         w_valueAtHL = mp_mpu->getMemVal(m_registers.s16bits.hl);
 
         // Gestion du flag H
-        m_registers.sFlags.h = static_cast<std::uint8_t>((w_valueAtHL & 0x0F) == 0x0F);
+        m_registers.sFlags.h = static_cast<std::uint8_t>((((w_valueAtHL & 0x0F) + 1u) & 0x10) == 0x10);
 
         // Incrémentation de la valeur à l'adresse contenue par HL
         mp_mpu->setMemVal(m_registers.s16bits.hl, ++w_valueAtHL);
@@ -861,7 +861,7 @@ void Cpu::_inc_d()
         _decodeRegister8Bits(w_registerMask, wp_register8bits);
 
         // Gestion du flag H
-        m_registers.sFlags.h = static_cast<std::uint8_t>((*wp_register8bits & 0x0F) == 0x0F);
+        m_registers.sFlags.h = static_cast<std::uint8_t>((((*wp_register8bits & 0x0F) + 1u) & 0x10) == 0x10);
 
         // Décrémentation du registre 8 bits
         ++(*wp_register8bits);
@@ -896,7 +896,7 @@ void Cpu::_dec_d()
         w_valueAtHL = mp_mpu->getMemVal(m_registers.s16bits.hl);
 
         // Gestion du flag H
-        m_registers.sFlags.h = static_cast<std::uint8_t>(w_valueAtHL == 0u);
+        m_registers.sFlags.h = static_cast<std::uint8_t>((((w_valueAtHL & 0x0F) - 1u) & 0x10) == 0x10);
 
         // Décrémentation de la valeur à l'adresse contenue par HL
         mp_mpu->setMemVal(m_registers.s16bits.hl, --w_valueAtHL);
@@ -916,7 +916,7 @@ void Cpu::_dec_d()
         _decodeRegister8Bits(w_registerMask, wp_register8bits);
 
         // Gestion du flag H
-        m_registers.sFlags.h = static_cast<std::uint8_t>(*wp_register8bits == 0u);
+        m_registers.sFlags.h = static_cast<std::uint8_t>((((*wp_register8bits & 0x0F) - 1u) & 0x10) == 0x10);
 
         // Décrémentation du registre 8 bits
         --(*wp_register8bits);
