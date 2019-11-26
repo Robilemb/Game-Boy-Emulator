@@ -53,7 +53,7 @@ std::uint8_t Mpu::getMemVal(const std::uint16_t ai_offset) const
 
 void Mpu::setMemVal(const std::uint16_t ai_offset, const std::uint8_t ai_val)
 {
-    if (!((0u <= ai_offset) && (ai_offset <= 0x7FFF)))
+    if (!(ai_offset <= 0x7FFF))
     {
         switch (ai_offset)
         {
