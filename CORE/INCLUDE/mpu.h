@@ -30,6 +30,10 @@
 // Registre DMA
 #define MPU_DMA_ADDRESS                 0xFF46
 
+// Registres de controle des interruptions
+#define MPU_IF_ADDRESS                  0xFF0F
+#define MPU_IE_ADDRESS                  0xFFFF
+
 #define MPU_BOOTSTRAP_SIZE              256u
 
 class Mpu
@@ -40,6 +44,9 @@ public:
 
     // Initialisation de la mémoire
     void initMemory();
+
+    // Chargement d'une ROM
+    void setROMData(const std::uint16_t ai_offset, const std::uint8_t ai_val);
 
     // Accesseurs sur la mémoire
     std::uint8_t getMemVal(const std::uint16_t ai_offset) const;

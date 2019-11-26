@@ -43,7 +43,7 @@ void Gpu::computeScreenImage(const std::uint8_t ai_cpuCycles)
     m_nbCylces += ai_cpuCycles;
 
     // Valeur du registre IF
-    std::uint8_t w_ifRegister = mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG);
+    std::uint8_t w_ifRegister = mp_mpu->getMemVal(MPU_IF_ADDRESS);
 
     // Gestion du mode de fonctionnement
     switch (m_mode)
@@ -66,7 +66,7 @@ void Gpu::computeScreenImage(const std::uint8_t ai_cpuCycles)
                     m_mode = E_VBLANK;
 
                     // Demande d'interruption VBLANK
-                    mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister | GAMEBOY_VBLANK_REQUESTED));
+                    mp_mpu->setMemVal(MPU_IF_ADDRESS, (w_ifRegister | GAMEBOY_VBLANK_REQUESTED));
                 }
             }
 

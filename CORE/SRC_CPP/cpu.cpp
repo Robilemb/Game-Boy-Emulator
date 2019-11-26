@@ -234,33 +234,32 @@ void Cpu::_initOpcodesDesc()
     m_opcodesDesc.masque8bits[21] = 0xFF; m_opcodesDesc.id8bits[21] = 0x2F; m_opcodesDesc.execute8bits[21]  = &Cpu::_cpl;                 // CPL
     m_opcodesDesc.masque8bits[22] = 0xFF; m_opcodesDesc.id8bits[22] = 0x37; m_opcodesDesc.execute8bits[22]  = &Cpu::_scf;                 // SCF
     m_opcodesDesc.masque8bits[23] = 0xFF; m_opcodesDesc.id8bits[23] = 0x3F; m_opcodesDesc.execute8bits[23]  = &Cpu::_ccf;                 // CCF
-    m_opcodesDesc.masque8bits[24] = 0xC0; m_opcodesDesc.id8bits[24] = 0x40; m_opcodesDesc.execute8bits[24]  = &Cpu::_ld_d_d;              // LD D,D
-    m_opcodesDesc.masque8bits[25] = 0xFF; m_opcodesDesc.id8bits[25] = 0x76; m_opcodesDesc.execute8bits[25]  = &Cpu::_halt;                // HALT
-    m_opcodesDesc.masque8bits[26] = 0xC0; m_opcodesDesc.id8bits[26] = 0x80; m_opcodesDesc.execute8bits[26]  = &Cpu::_alu_a_d;             // ALU A,D
-    m_opcodesDesc.masque8bits[27] = 0xC7; m_opcodesDesc.id8bits[27] = 0xC6; m_opcodesDesc.execute8bits[27]  = &Cpu::_alu_a_n;             // ALU A,N
-    m_opcodesDesc.masque8bits[28] = 0xCF; m_opcodesDesc.id8bits[28] = 0xC1; m_opcodesDesc.execute8bits[28]  = &Cpu::_pop_r;               // POP R
-    m_opcodesDesc.masque8bits[29] = 0xCF; m_opcodesDesc.id8bits[29] = 0xC5; m_opcodesDesc.execute8bits[29]  = &Cpu::_push_r;              // PUSH R
-    m_opcodesDesc.masque8bits[30] = 0xC7; m_opcodesDesc.id8bits[30] = 0xC7; m_opcodesDesc.execute8bits[30]  = &Cpu::_rst_n;               // RST N
-    m_opcodesDesc.masque8bits[31] = 0xE7; m_opcodesDesc.id8bits[31] = 0xC0; m_opcodesDesc.execute8bits[31]  = &Cpu::_ret_f;               // RET F
-    m_opcodesDesc.masque8bits[32] = 0xFF; m_opcodesDesc.id8bits[32] = 0xC9; m_opcodesDesc.execute8bits[32]  = &Cpu::_ret;                 // RET
-    m_opcodesDesc.masque8bits[33] = 0xFF; m_opcodesDesc.id8bits[33] = 0xD9; m_opcodesDesc.execute8bits[33]  = &Cpu::_reti;                // RETI
-    m_opcodesDesc.masque8bits[34] = 0xE7; m_opcodesDesc.id8bits[34] = 0xC2; m_opcodesDesc.execute8bits[34]  = &Cpu::_jp_f_n;              // JP F,N
-    m_opcodesDesc.masque8bits[35] = 0xFF; m_opcodesDesc.id8bits[35] = 0xC3; m_opcodesDesc.execute8bits[35]  = &Cpu::_jp_n;                // JP N
-    m_opcodesDesc.masque8bits[36] = 0xE7; m_opcodesDesc.id8bits[36] = 0xC4; m_opcodesDesc.execute8bits[36]  = &Cpu::_call_f_n;            // CALL F,N
-    m_opcodesDesc.masque8bits[37] = 0xFF; m_opcodesDesc.id8bits[37] = 0xCD; m_opcodesDesc.execute8bits[37]  = &Cpu::_call_n;              // CALL N
-    m_opcodesDesc.masque8bits[38] = 0xFF; m_opcodesDesc.id8bits[38] = 0xE8; m_opcodesDesc.execute8bits[38]  = &Cpu::_add_sp_n;            // ADD SP,N
-    m_opcodesDesc.masque8bits[39] = 0xFF; m_opcodesDesc.id8bits[39] = 0xF8; m_opcodesDesc.execute8bits[39]  = &Cpu::_ld_hl_sp_plus_n;     // LD HL,SP+N
-    m_opcodesDesc.masque8bits[40] = 0xFF; m_opcodesDesc.id8bits[40] = 0xE0; m_opcodesDesc.execute8bits[40]  = &Cpu::_ld_ff00_plus_n_a;    // LD (FF00+N),A
-    m_opcodesDesc.masque8bits[41] = 0xFF; m_opcodesDesc.id8bits[41] = 0xF0; m_opcodesDesc.execute8bits[41]  = &Cpu::_ld_a_ff00_plus_n;    // LD A,(FF00+N)
-    m_opcodesDesc.masque8bits[42] = 0xFF; m_opcodesDesc.id8bits[42] = 0xE2; m_opcodesDesc.execute8bits[42]  = &Cpu::_ld_c_a;              // LD (C),A
-    m_opcodesDesc.masque8bits[43] = 0xFF; m_opcodesDesc.id8bits[43] = 0xF2; m_opcodesDesc.execute8bits[43]  = &Cpu::_ld_a_c;              // LD A,(C)
-    m_opcodesDesc.masque8bits[44] = 0xFF; m_opcodesDesc.id8bits[44] = 0xEA; m_opcodesDesc.execute8bits[44]  = &Cpu::_ld_n_a;              // LD (N),A
-    m_opcodesDesc.masque8bits[45] = 0xFF; m_opcodesDesc.id8bits[45] = 0xFA; m_opcodesDesc.execute8bits[45]  = &Cpu::_ld_a_n;              // LD A,(N)
-    m_opcodesDesc.masque8bits[46] = 0xFF; m_opcodesDesc.id8bits[46] = 0xE9; m_opcodesDesc.execute8bits[46]  = &Cpu::_jp_hl;               // JP HL
-    m_opcodesDesc.masque8bits[47] = 0xFF; m_opcodesDesc.id8bits[47] = 0xF9; m_opcodesDesc.execute8bits[47]  = &Cpu::_ld_sp_hl;            // LD SP,HL
-    m_opcodesDesc.masque8bits[48] = 0xFF; m_opcodesDesc.id8bits[48] = 0xF3; m_opcodesDesc.execute8bits[48]  = &Cpu::_di;                  // DI
-    m_opcodesDesc.masque8bits[49] = 0xFF; m_opcodesDesc.id8bits[49] = 0xFB; m_opcodesDesc.execute8bits[49]  = &Cpu::_ei;                  // EI
-    m_opcodesDesc.masque8bits[50] = 0xFF; m_opcodesDesc.id8bits[50] = 0xCB; m_opcodesDesc.execute8bits[50]  = &Cpu::_execute16bOpcode;    // 16b opcode
+    m_opcodesDesc.masque8bits[24] = 0xC0; m_opcodesDesc.id8bits[24] = 0x40; m_opcodesDesc.execute8bits[24]  = &Cpu::_ld_d_d;              // LD D,D / HALT
+    m_opcodesDesc.masque8bits[25] = 0xC0; m_opcodesDesc.id8bits[25] = 0x80; m_opcodesDesc.execute8bits[25]  = &Cpu::_alu_a_d;             // ALU A,D
+    m_opcodesDesc.masque8bits[26] = 0xC7; m_opcodesDesc.id8bits[26] = 0xC6; m_opcodesDesc.execute8bits[26]  = &Cpu::_alu_a_n;             // ALU A,N
+    m_opcodesDesc.masque8bits[27] = 0xCF; m_opcodesDesc.id8bits[27] = 0xC1; m_opcodesDesc.execute8bits[27]  = &Cpu::_pop_r;               // POP R
+    m_opcodesDesc.masque8bits[28] = 0xCF; m_opcodesDesc.id8bits[28] = 0xC5; m_opcodesDesc.execute8bits[28]  = &Cpu::_push_r;              // PUSH R
+    m_opcodesDesc.masque8bits[29] = 0xC7; m_opcodesDesc.id8bits[29] = 0xC7; m_opcodesDesc.execute8bits[29]  = &Cpu::_rst_n;               // RST N
+    m_opcodesDesc.masque8bits[30] = 0xE7; m_opcodesDesc.id8bits[30] = 0xC0; m_opcodesDesc.execute8bits[30]  = &Cpu::_ret_f;               // RET F
+    m_opcodesDesc.masque8bits[31] = 0xFF; m_opcodesDesc.id8bits[31] = 0xC9; m_opcodesDesc.execute8bits[31]  = &Cpu::_ret;                 // RET
+    m_opcodesDesc.masque8bits[32] = 0xFF; m_opcodesDesc.id8bits[32] = 0xD9; m_opcodesDesc.execute8bits[32]  = &Cpu::_reti;                // RETI
+    m_opcodesDesc.masque8bits[33] = 0xE7; m_opcodesDesc.id8bits[33] = 0xC2; m_opcodesDesc.execute8bits[33]  = &Cpu::_jp_f_n;              // JP F,N
+    m_opcodesDesc.masque8bits[34] = 0xFF; m_opcodesDesc.id8bits[34] = 0xC3; m_opcodesDesc.execute8bits[34]  = &Cpu::_jp_n;                // JP N
+    m_opcodesDesc.masque8bits[35] = 0xE7; m_opcodesDesc.id8bits[35] = 0xC4; m_opcodesDesc.execute8bits[35]  = &Cpu::_call_f_n;            // CALL F,N
+    m_opcodesDesc.masque8bits[36] = 0xFF; m_opcodesDesc.id8bits[36] = 0xCD; m_opcodesDesc.execute8bits[36]  = &Cpu::_call_n;              // CALL N
+    m_opcodesDesc.masque8bits[37] = 0xFF; m_opcodesDesc.id8bits[37] = 0xE8; m_opcodesDesc.execute8bits[37]  = &Cpu::_add_sp_n;            // ADD SP,N
+    m_opcodesDesc.masque8bits[38] = 0xFF; m_opcodesDesc.id8bits[38] = 0xF8; m_opcodesDesc.execute8bits[38]  = &Cpu::_ld_hl_sp_plus_n;     // LD HL,SP+N
+    m_opcodesDesc.masque8bits[39] = 0xFF; m_opcodesDesc.id8bits[39] = 0xE0; m_opcodesDesc.execute8bits[39]  = &Cpu::_ld_ff00_plus_n_a;    // LD (FF00+N),A
+    m_opcodesDesc.masque8bits[40] = 0xFF; m_opcodesDesc.id8bits[40] = 0xF0; m_opcodesDesc.execute8bits[40]  = &Cpu::_ld_a_ff00_plus_n;    // LD A,(FF00+N)
+    m_opcodesDesc.masque8bits[41] = 0xFF; m_opcodesDesc.id8bits[41] = 0xE2; m_opcodesDesc.execute8bits[41]  = &Cpu::_ld_c_a;              // LD (C),A
+    m_opcodesDesc.masque8bits[42] = 0xFF; m_opcodesDesc.id8bits[42] = 0xF2; m_opcodesDesc.execute8bits[42]  = &Cpu::_ld_a_c;              // LD A,(C)
+    m_opcodesDesc.masque8bits[43] = 0xFF; m_opcodesDesc.id8bits[43] = 0xEA; m_opcodesDesc.execute8bits[43]  = &Cpu::_ld_n_a;              // LD (N),A
+    m_opcodesDesc.masque8bits[44] = 0xFF; m_opcodesDesc.id8bits[44] = 0xFA; m_opcodesDesc.execute8bits[44]  = &Cpu::_ld_a_n;              // LD A,(N)
+    m_opcodesDesc.masque8bits[45] = 0xFF; m_opcodesDesc.id8bits[45] = 0xE9; m_opcodesDesc.execute8bits[45]  = &Cpu::_jp_hl;               // JP HL
+    m_opcodesDesc.masque8bits[46] = 0xFF; m_opcodesDesc.id8bits[46] = 0xF9; m_opcodesDesc.execute8bits[46]  = &Cpu::_ld_sp_hl;            // LD SP,HL
+    m_opcodesDesc.masque8bits[47] = 0xFF; m_opcodesDesc.id8bits[47] = 0xF3; m_opcodesDesc.execute8bits[47]  = &Cpu::_di;                  // DI
+    m_opcodesDesc.masque8bits[48] = 0xFF; m_opcodesDesc.id8bits[48] = 0xFB; m_opcodesDesc.execute8bits[48]  = &Cpu::_ei;                  // EI
+    m_opcodesDesc.masque8bits[49] = 0xFF; m_opcodesDesc.id8bits[49] = 0xCB; m_opcodesDesc.execute8bits[49]  = &Cpu::_execute16bOpcode;    // 16b opcode
 
     // Initialisation des masques et identifiants des LSW des opcodes 16 bits
     m_opcodesDesc.masque16bitsLSW[0] = 0xF0; m_opcodesDesc.id16bitsLSW[0] = 0x00; m_opcodesDesc.execute16bits[0] = &Cpu::_rdc_d;          // RdC D
@@ -324,7 +323,7 @@ void Cpu::executeOpcode(const std::uint16_t ai_opcodeIdx)
 void Cpu::executeInterrupt(const te_interupts ai_interrupt)
 {
     // Valeur du registre IF
-    std::uint8_t w_ifRegister = mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG);
+    std::uint8_t w_ifRegister = mp_mpu->getMemVal(MPU_IF_ADDRESS);
 
     // Désactivation des interruptions
     m_ime = 0u;
@@ -346,7 +345,7 @@ void Cpu::executeInterrupt(const te_interupts ai_interrupt)
     {
         case E_VBLANK :
             // Requete prise en compte
-            mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister & ~GAMEBOY_VBLANK_REQUESTED));
+            mp_mpu->setMemVal(MPU_IF_ADDRESS, (w_ifRegister & ~GAMEBOY_VBLANK_REQUESTED));
 
             // Mise à jour de PC à l'addresse du code l'interuption
             m_pc = CPU_VBLANK_ADDRESS;
@@ -355,7 +354,7 @@ void Cpu::executeInterrupt(const te_interupts ai_interrupt)
 
         case E_LCD_STAT :
             // Requete prise en compte
-            mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister & ~GAMEBOY_LCD_STAT_REQUESTED));
+            mp_mpu->setMemVal(MPU_IF_ADDRESS, (w_ifRegister & ~GAMEBOY_LCD_STAT_REQUESTED));
 
             // Mise à jour de PC à l'addresse du code l'interuption
             m_pc = CPU_LCD_STAT_ADDRESS;
@@ -364,7 +363,7 @@ void Cpu::executeInterrupt(const te_interupts ai_interrupt)
 
         case E_TIMER :
             // Requete prise en compte
-            mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister & ~GAMEBOY_TIMER_REQUESTED));
+            mp_mpu->setMemVal(MPU_IF_ADDRESS, (w_ifRegister & ~GAMEBOY_TIMER_REQUESTED));
 
             // Mise à jour de PC à l'addresse du code l'interuption
             m_pc = CPU_TIMER_ADDRESS;
@@ -373,7 +372,7 @@ void Cpu::executeInterrupt(const te_interupts ai_interrupt)
 
         case E_SERIAL :
             // Requete prise en compte
-            mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister & ~GAMEBOY_SERIAL_REQUESTED));
+            mp_mpu->setMemVal(MPU_IF_ADDRESS, (w_ifRegister & ~GAMEBOY_SERIAL_REQUESTED));
 
             // Mise à jour de PC à l'addresse du code l'interuption
             m_pc = CPU_SERIAL_ADDRESS;
@@ -382,7 +381,7 @@ void Cpu::executeInterrupt(const te_interupts ai_interrupt)
 
         case E_JOYPAD :
             // Requete prise en compte
-            mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister & ~GAMEBOY_JOYPAD_REQUESTED));
+            mp_mpu->setMemVal(MPU_IF_ADDRESS, (w_ifRegister & ~GAMEBOY_JOYPAD_REQUESTED));
 
             // Mise à jour de PC à l'addresse du code l'interuption
             m_pc = CPU_JOYPAD_ADDRESS;
@@ -1308,23 +1307,25 @@ void Cpu::_ld_d_d()
         // Mise à jour du nombre de cylces
         m_nbCycles = 1u;
     }
+    else    // le cas LD (HL),(HL) correspond à l'instruction HALT
+    {
+        if (m_ime == 1u)
+        {
+            // Pause du CPU
+            m_isHalted = true;
+        }
+        else
+        {
+            // L'instruction suivante ne sera pas exécutée
+            m_pc += 1u;
+        }
 
-    // le cas LD (HL),(HL) revient à ne rien faire
+        // Mise à jour du nombre de cylces
+        m_nbCycles = 1u;
+    }
 
     // Mise à jour de PC
     m_pc += 1u;
-}
-
-void Cpu::_halt()
-{
-    // Pause du CPU
-    m_isHalted = true;
-
-    // Mise à jour de PC
-    m_pc += 1u;
-
-    // Mise à jour du nombre de cylces
-    m_nbCycles = 1u;
 }
 
 void Cpu::_alu_a_d()

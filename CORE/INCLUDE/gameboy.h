@@ -60,6 +60,9 @@ public:
     // Accesseur sur la MPU
     const Mpu* getMpu() const;
 
+    // Gestion des traces de debug
+    void setDebug();
+
 private:
     // Union contenant l'état des boutons de direction (0 = pressé ; 1 sinon)
     union tu_directionButtons
@@ -111,6 +114,8 @@ private:
 
     tu_directionButtons                             m_directionButtons; // Etat des boutons de direction (0 = pressé ; 1 sinon)
     tu_utilityButtons                               m_utilityButtons;   // Etat des boutons de utilitaire (0 = pressé ; 1 sinon)
+
+    bool                                            m_debug;            // Activation des traces de debug
 };
 
 #endif // GAMEBOY_H

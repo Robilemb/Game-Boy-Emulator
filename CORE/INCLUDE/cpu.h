@@ -7,7 +7,7 @@
 #include "shared_data.h"
 #include "mpu.h"
 
-#define CPU_NB_OPCODES_8_BITS   51u
+#define CPU_NB_OPCODES_8_BITS   50u
 #define CPU_NB_OPCODES_16_BITS  8u
 
 #define CPU_DAA_TABLE_NB        13u

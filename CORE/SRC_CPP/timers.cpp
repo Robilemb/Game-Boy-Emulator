@@ -2,10 +2,10 @@
 
 #define TIMERS_DIV_INC_MOD          16u     // 16KHz
 
-#define TIMERS_TAC_CLOCK_0_INC_MOD  256u    // 4KHz
-#define TIMERS_TAC_CLOCK_1_INC_MOD  4u      // 256KHz
-#define TIMERS_TAC_CLOCK_2_INC_MOD  16u     // 64KHz
-#define TIMERS_TAC_CLOCK_3_INC_MOD  64u     // 16KHz
+#define TIMERS_TAC_CLOCK_0_INC_MOD  64u     // 256u    // 4KHz
+#define TIMERS_TAC_CLOCK_1_INC_MOD  1u      // 4u      // 256KHz
+#define TIMERS_TAC_CLOCK_2_INC_MOD  4u      // 16u     // 64KHz
+#define TIMERS_TAC_CLOCK_3_INC_MOD  16u     // 64u     // 16KHz
 
 
 // ********************************************************
@@ -43,7 +43,7 @@ void Timers::update(const std::uint8_t ai_cpuCycles)
     std::uint16_t w_modulo = 0u;
 
     // Valeur du registre IF
-    std::uint8_t w_ifRegister = mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG);
+    std::uint8_t w_ifRegister = mp_mpu->getMemVal(MPU_IF_ADDRESS);
 
     // Mise à jour du compteur de DIV
     m_divCounter += ai_cpuCycles;
@@ -98,7 +98,7 @@ void Timers::update(const std::uint8_t ai_cpuCycles)
                 m_tima = mp_mpu->getMemVal(MPU_TMA_ADDRESS);
 
                 // Demande d'interruption TIMER
-                mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister | GAMEBOY_TIMER_REQUESTED));
+                mp_mpu->setMemVal(MPU_IF_ADDRESS, (w_ifRegister | GAMEBOY_TIMER_REQUESTED));
             }
             else
             {

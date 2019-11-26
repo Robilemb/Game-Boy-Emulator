@@ -16,7 +16,8 @@ Gameboy::Gameboy(updateScreenFunction ai_updateScreen) :
     mp_cpu(new Cpu(mp_mpu)),
     mp_gpu(new Gpu(mp_mpu, ai_updateScreen)),
     mp_timers(new Timers(mp_mpu)),
-    m_isRunning(false)
+    m_isRunning(false),
+    m_debug(false)
 {
     for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
     {
@@ -83,7 +84,7 @@ te_status Gameboy::loadROM(const std::string& ai_ROMFileName)
         while(w_i < (MPU_MEMORY_CARD_BANK_1_OFFSET + MPU_MEMORY_CARD_BANK_SIZE))
         {
             w_ROMFile.get(w_caractere);
-            mp_mpu->setMemVal((MPU_MEMORY_CARD_BANK_0_OFFSET + w_i), static_cast<std::uint8_t>(w_caractere));
+            mp_mpu->setROMData((MPU_MEMORY_CARD_BANK_0_OFFSET + w_i), static_cast<std::uint8_t>(w_caractere));
             w_i++;
         }
 
@@ -136,7 +137,7 @@ void Gameboy::stop()
 void Gameboy::setPressButton(const te_button ai_button)
 {
     // Valeur du registre IF
-    std::uint8_t w_ifRegister = mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG);
+    std::uint8_t w_ifRegister = mp_mpu->getMemVal(MPU_IF_ADDRESS);
 
     // Parcours de la liste des boutons
     switch (ai_button)
@@ -175,7 +176,7 @@ void Gameboy::setPressButton(const te_button ai_button)
     }
 
     // Demande d'interruption JOYPAD
-    mp_mpu->setMemVal(GAMEBOY_INTERRUPT_FLAG, (w_ifRegister | GAMEBOY_JOYPAD_REQUESTED));
+    mp_mpu->setMemVal(MPU_IF_ADDRESS, (w_ifRegister | GAMEBOY_JOYPAD_REQUESTED));
 }
 
 void Gameboy::setReleaseButton(const te_button ai_button)
@@ -237,31 +238,31 @@ void Gameboy::_executeCycle()
     if (mp_cpu->getRegisterIME() == 1u)
     {
         // Interruption VBLANK autorisée et demandée
-        if (((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) & GAMEBOY_VBLANK_ENABLE) == GAMEBOY_VBLANK_ENABLE) && ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) & GAMEBOY_VBLANK_REQUESTED) == GAMEBOY_VBLANK_REQUESTED))
+        if (((mp_mpu->getMemVal(MPU_IE_ADDRESS) & GAMEBOY_VBLANK_ENABLE) == GAMEBOY_VBLANK_ENABLE) && ((mp_mpu->getMemVal(MPU_IF_ADDRESS) & GAMEBOY_VBLANK_REQUESTED) == GAMEBOY_VBLANK_REQUESTED))
         {
             mp_cpu->executeInterrupt(Cpu::E_VBLANK);
         }
 
         // Interruption LCD_STAT autorisée et demandée
-        if (((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) & GAMEBOY_LCD_STAT_ENABLE) == GAMEBOY_LCD_STAT_ENABLE) && ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) & GAMEBOY_LCD_STAT_REQUESTED) == GAMEBOY_LCD_STAT_REQUESTED))
+        if (((mp_mpu->getMemVal(MPU_IE_ADDRESS) & GAMEBOY_LCD_STAT_ENABLE) == GAMEBOY_LCD_STAT_ENABLE) && ((mp_mpu->getMemVal(MPU_IF_ADDRESS) & GAMEBOY_LCD_STAT_REQUESTED) == GAMEBOY_LCD_STAT_REQUESTED))
         {
             mp_cpu->executeInterrupt(Cpu::E_LCD_STAT);
         }
 
         // Interruption TIMER autorisée et demandée
-        if (((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) & GAMEBOY_TIMER_ENABLE) == GAMEBOY_TIMER_ENABLE) && ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) & GAMEBOY_TIMER_REQUESTED) == GAMEBOY_TIMER_REQUESTED))
+        if (((mp_mpu->getMemVal(MPU_IE_ADDRESS) & GAMEBOY_TIMER_ENABLE) == GAMEBOY_TIMER_ENABLE) && ((mp_mpu->getMemVal(MPU_IF_ADDRESS) & GAMEBOY_TIMER_REQUESTED) == GAMEBOY_TIMER_REQUESTED))
         {
             mp_cpu->executeInterrupt(Cpu::E_TIMER);
         }
 
         // Interruption SERIAL autorisée et demandée
-        if (((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) & GAMEBOY_SERIAL_ENABLE) == GAMEBOY_SERIAL_ENABLE) && ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) & GAMEBOY_SERIAL_REQUESTED) == GAMEBOY_SERIAL_REQUESTED))
+        if (((mp_mpu->getMemVal(MPU_IE_ADDRESS) & GAMEBOY_SERIAL_ENABLE) == GAMEBOY_SERIAL_ENABLE) && ((mp_mpu->getMemVal(MPU_IF_ADDRESS) & GAMEBOY_SERIAL_REQUESTED) == GAMEBOY_SERIAL_REQUESTED))
         {
             mp_cpu->executeInterrupt(Cpu::E_SERIAL);
         }
 
         // Interruption JOYPAD autorisée et demandée
-        if (((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) & GAMEBOY_JOYPAD_ENABLE) == GAMEBOY_JOYPAD_ENABLE) && ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) & GAMEBOY_JOYPAD_REQUESTED) == GAMEBOY_JOYPAD_REQUESTED))
+        if (((mp_mpu->getMemVal(MPU_IE_ADDRESS) & GAMEBOY_JOYPAD_ENABLE) == GAMEBOY_JOYPAD_ENABLE) && ((mp_mpu->getMemVal(MPU_IF_ADDRESS) & GAMEBOY_JOYPAD_REQUESTED) == GAMEBOY_JOYPAD_REQUESTED))
         {
             mp_cpu->executeInterrupt(Cpu::E_JOYPAD);
         }
@@ -283,7 +284,7 @@ void Gameboy::_executeBootstrap()
         // Chargement des 256 premiers octets de la ROM (pour remplacer le bootstrap)
         for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
         {
-            mp_mpu->setMemVal(w_i, m_romFirstBytes[w_i]);
+            mp_mpu->setROMData(w_i, m_romFirstBytes[w_i]);
         }
     }
 }
@@ -307,4 +308,10 @@ void Gameboy::_setButtons()
             mp_mpu->setJoypad(m_directionButtons.joypadP14);
             break;
     }
+}
+
+void Gameboy::setDebug()
+{
+    if (m_debug == true) m_debug = false;
+    else m_debug = true;
 }

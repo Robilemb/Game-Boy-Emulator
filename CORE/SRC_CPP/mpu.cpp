@@ -33,6 +33,16 @@ Mpu::~Mpu()
 
 
 // ********************************************************
+// CHARGEMENT D'UNE ROM
+// ********************************************************
+
+void Mpu::setROMData(const std::uint16_t ai_offset, const std::uint8_t ai_val)
+{
+    m_memory[ai_offset] = ai_val;
+}
+
+
+// ********************************************************
 // ACCESSEURS
 // ********************************************************
 
@@ -43,21 +53,28 @@ std::uint8_t Mpu::getMemVal(const std::uint16_t ai_offset) const
 
 void Mpu::setMemVal(const std::uint16_t ai_offset, const std::uint8_t ai_val)
 {
-    switch (ai_offset)
+    if (!((0u <= ai_offset) && (ai_offset <= 0x7FFF)))
     {
-        case MPU_JOYPAD_ADDRESS :
-            m_memory[ai_offset] = (m_memory[ai_offset] & (ai_val & 0x30)) | (m_memory[ai_offset] & 0x0F);
-            break;
+        switch (ai_offset)
+        {
+            case MPU_JOYPAD_ADDRESS :
+                m_memory[ai_offset] = (m_memory[ai_offset] & (ai_val & 0x30)) | (m_memory[ai_offset] & 0x0F);
+                break;
 
-        case MPU_DIV_ADDRESS :
-            m_memory[ai_offset] = 0u;
-            break;
+            case MPU_DIV_ADDRESS :
+                m_memory[ai_offset] = 0u;
+                break;
 
-        case MPU_DMA_ADDRESS :
-            _dma_transfert(ai_val);
+            case MPU_IF_ADDRESS :
+                m_memory[ai_offset] = ai_val | 0xE0;
+                break;
 
-        default :
-            m_memory[ai_offset] = ai_val;
+            case MPU_DMA_ADDRESS :
+                _dma_transfert(ai_val);
+
+            default :
+                m_memory[ai_offset] = ai_val;
+        }
     }
 }
 
@@ -85,6 +102,9 @@ void Mpu::initMemory()
 
     // Registre Joypad
     m_memory[MPU_JOYPAD_ADDRESS] = 0x3F;
+
+    // Registre IF
+    m_memory[MPU_IF_ADDRESS] = 0xE0;
 }
 
 
