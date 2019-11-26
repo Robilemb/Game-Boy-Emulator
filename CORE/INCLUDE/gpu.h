@@ -106,6 +106,8 @@ private:
     std::uint8_t                                    m_curLine;                                                  // Numéro de la dernière ligne écrite
 
     std::uint8_t                                    m_background[GPU_BACKGROUND_WIDTH][GPU_BACKGROUND_HEIGHT];  // Background
+    std::uint8_t                                    m_window[GPU_BACKGROUND_WIDTH][GPU_BACKGROUND_HEIGHT];      // Window
+    std::uint8_t                                    m_sprites[GPU_BACKGROUND_WIDTH][GPU_BACKGROUND_HEIGHT];     // Sprites
 };
 
 #endif // GPU_H

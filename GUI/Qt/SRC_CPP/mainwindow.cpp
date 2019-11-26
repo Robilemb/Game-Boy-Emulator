@@ -150,6 +150,8 @@ void MainWindow::keyPressEvent(QKeyEvent* aip_keyPressEvent)
             mp_gameboy->setPressButton(Gameboy::E_START);
         if (aip_keyPressEvent->key() == Qt::Key_Period)
             mp_gameboy->setPressButton(Gameboy::E_SELECT);
+        if (aip_keyPressEvent->key() == Qt::Key_P)
+            mp_gameboy->setDebug();
     }
 }
 
