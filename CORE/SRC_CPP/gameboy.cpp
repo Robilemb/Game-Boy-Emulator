@@ -23,10 +23,6 @@ Gameboy::Gameboy(updateScreenFunction ai_updateScreen) :
     {
         m_romFirstBytes[w_i] = 0u;
     }
-
-    // Initialisation des boutons
-    m_directionButtons.joypadP14    = 0xF;
-    m_utilityButtons.joypadP15      = 0xF;
 }
 
 // Destructeur
@@ -143,35 +139,35 @@ void Gameboy::setPressButton(const te_button ai_button)
     switch (ai_button)
     {
         case E_UP :
-            m_directionButtons.sButtons.up = 0u;
+            mp_mpu->setJoypadUp(true);
             break;
 
         case E_DOWN :
-            m_directionButtons.sButtons.down = 0u;
+            mp_mpu->setJoypadDown(true);
             break;
 
         case E_LEFT :
-            m_directionButtons.sButtons.left = 0u;
+            mp_mpu->setJoypadLeft(true);
             break;
 
         case E_RIGHT :
-            m_directionButtons.sButtons.right = 0u;
+            mp_mpu->setJoypadRight(true);
             break;
 
         case E_A :
-            m_utilityButtons.sButtons.a = 0u;
+            mp_mpu->setJoypadA(true);
             break;
 
         case E_B :
-            m_utilityButtons.sButtons.b = 0u;
+            mp_mpu->setJoypadB(true);
             break;
 
         case E_START :
-            m_utilityButtons.sButtons.start = 0u;
+            mp_mpu->setJoypadStart(true);
             break;
 
         case E_SELECT :
-            m_utilityButtons.sButtons.select = 0u;
+            mp_mpu->setJoypadSelect(true);
             break;
     }
 
@@ -185,35 +181,35 @@ void Gameboy::setReleaseButton(const te_button ai_button)
     switch (ai_button)
     {
         case E_UP :
-            m_directionButtons.sButtons.up = 1u;
+            mp_mpu->setJoypadUp(false);
             break;
 
         case E_DOWN :
-            m_directionButtons.sButtons.down = 1u;
+            mp_mpu->setJoypadDown(false);
             break;
 
         case E_LEFT :
-            m_directionButtons.sButtons.left = 1u;
+            mp_mpu->setJoypadLeft(false);
             break;
 
         case E_RIGHT :
-            m_directionButtons.sButtons.right = 1u;
+            mp_mpu->setJoypadRight(false);
             break;
 
         case E_A :
-            m_utilityButtons.sButtons.a = 1u;
+            mp_mpu->setJoypadA(false);
             break;
 
         case E_B :
-            m_utilityButtons.sButtons.b = 1u;
+            mp_mpu->setJoypadB(false);
             break;
 
         case E_START :
-            m_utilityButtons.sButtons.start = 1u;
+            mp_mpu->setJoypadStart(false);
             break;
 
         case E_SELECT :
-            m_utilityButtons.sButtons.select = 1u;
+            mp_mpu->setJoypadSelect(false);
             break;
     }
 }
@@ -230,9 +226,6 @@ void Gameboy::_executeCycle()
 
     // Mise à jour de l'écran
     mp_gpu->computeScreenImage(mp_cpu->getNbCyccles());
-
-    // Gestion des boutons
-    _setButtons();
 
     // Gestion des interruptions
     if (mp_cpu->getRegisterIME() == 1u)
@@ -286,27 +279,6 @@ void Gameboy::_executeBootstrap()
         {
             mp_mpu->setROMData(w_i, m_romFirstBytes[w_i]);
         }
-    }
-}
-
-void Gameboy::_setButtons()
-{
-    // Récupération du type de boutons
-    std::uint8_t w_buttonType = (mp_mpu->getMemVal(MPU_JOYPAD_ADDRESS) >> 4u) & 0x03;
-
-    // Mise à jour du registre Joypad
-    switch (w_buttonType)
-    {
-        case 0u :
-        case 1u :
-            // Touches directionnelles
-            mp_mpu->setJoypad(m_utilityButtons.joypadP15);
-            break;
-
-        case 2u :
-            // Touches utilitaires
-            mp_mpu->setJoypad(m_directionButtons.joypadP14);
-            break;
     }
 }
 
