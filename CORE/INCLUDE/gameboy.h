@@ -60,34 +60,8 @@ public:
     // Accesseur sur la MPU
     const Mpu* getMpu() const;
 
-private:
-    // Union contenant l'état des boutons de direction (0 = pressé ; 1 sinon)
-    union tu_directionButtons
-    {
-        struct ts_buttons
-        {
-            std::uint8_t    right:1u,
-                            left:1u,
-                            up:1u,
-                            down:1u;
-        } sButtons;
-
-        std::uint8_t joypadP14;
-    };
-
-    // Union contenant l'état des boutons utilitaires (0 = pressé ; 1 sinon)
-    union tu_utilityButtons
-    {
-        struct ts_buttons
-        {
-            std::uint8_t    a:1u,
-                            b:1u,
-                            select:1u,
-                            start:1u;
-        } sButtons;
-
-        std::uint8_t joypadP15;
-    };
+    // Gestion des traces de debug
+    void setDebug();
 
 private:
     // Execution d'un cycle d'horloge
@@ -96,21 +70,17 @@ private:
     // Execution du bootstrap
     void _executeBootstrap();
 
-    // Gestion des boutons
-    void _setButtons();
-
 private:
-    Mpu*                                            mp_mpu;             // MPU
-    Cpu*                                            mp_cpu;             // CPU
-    Gpu*                                            mp_gpu;             // GPU
-    Timers*                                         mp_timers;          // Timers
+    Mpu*                                            mp_mpu;                         // MPU
+    Cpu*                                            mp_cpu;                         // CPU
+    Gpu*                                            mp_gpu;                         // GPU
+    Timers*                                         mp_timers;                      // Timers
 
-    bool                                            m_isRunning;        // Booléen indiquant si l'émulation est en cours d'exécution    
+    bool                                            m_isRunning;                    // Booléen indiquant si l'émulation est en cours d'exécution
 
-    std::array<std::uint8_t, MPU_BOOTSTRAP_SIZE>    m_romFirstBytes;    // MPU_BOOTSTRAP_SIZE premiers octets de la ROM à recharger après l'exécution du bootstrap
+    std::array<std::uint8_t, MPU_BOOTSTRAP_SIZE>    m_romFirstBytes;                // MPU_BOOTSTRAP_SIZE premiers octets de la ROM à recharger après l'exécution du bootstrap
 
-    tu_directionButtons                             m_directionButtons; // Etat des boutons de direction (0 = pressé ; 1 sinon)
-    tu_utilityButtons                               m_utilityButtons;   // Etat des boutons de utilitaire (0 = pressé ; 1 sinon)
+    bool                                            m_debug;                        // Activation des traces de debug
 };
 
 #endif // GAMEBOY_H

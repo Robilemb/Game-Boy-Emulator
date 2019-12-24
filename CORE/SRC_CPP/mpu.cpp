@@ -25,10 +25,26 @@ Mpu::Mpu()
 {
     // Initialisation de la mémoire
     initMemory();
+
+    // Initialisation des boutons
+    m_directionButtons.joypadP14    = 0xF;
+    m_utilityButtons.joypadP15      = 0xF;
+    m_isDirectionButtonsSelected    = false;
+    m_isUtilityButtonsSelected      = false;
 }
 
 Mpu::~Mpu()
 {
+}
+
+
+// ********************************************************
+// CHARGEMENT D'UNE ROM
+// ********************************************************
+
+void Mpu::setROMData(const std::uint16_t ai_offset, const std::uint8_t ai_val)
+{
+    m_memory[ai_offset] = ai_val;
 }
 
 
@@ -38,23 +54,59 @@ Mpu::~Mpu()
 
 std::uint8_t Mpu::getMemVal(const std::uint16_t ai_offset) const
 {
-    return m_memory[ai_offset];
+    std::uint8_t w_memValue = 0u;
+
+    switch (ai_offset)
+    {
+        case MPU_JOYPAD_ADDRESS :
+            if (m_isDirectionButtonsSelected == true)
+            {
+                w_memValue = m_directionButtons.joypadP14;
+                w_memValue |= 0x10;
+            }
+            else w_memValue &= 0xEF;
+
+            if (m_isUtilityButtonsSelected == true)
+            {
+                w_memValue = m_utilityButtons.joypadP15;
+                w_memValue |= 0x20;
+            }
+            else w_memValue &= 0xDF;
+
+            break;
+
+        default :
+            w_memValue = m_memory[ai_offset];
+    }
+
+    return w_memValue;
 }
 
 void Mpu::setMemVal(const std::uint16_t ai_offset, const std::uint8_t ai_val)
 {
-    switch (ai_offset)
+    if (!(ai_offset <= 0x7FFF))
     {
-        case MPU_JOYPAD_ADDRESS :
-            m_memory[ai_offset] = (m_memory[ai_offset] & (ai_val & 0x30)) | (m_memory[ai_offset] & 0x0F);
-            break;
+        switch (ai_offset)
+        {
+            case MPU_JOYPAD_ADDRESS :
+                m_isDirectionButtonsSelected = (((ai_val & 0x10) >> 4u) == 0u);
+                m_isUtilityButtonsSelected = (((ai_val & 0x20) >> 4u) == 0u);
+                break;
 
-        case MPU_DIV_ADDRESS :
-            m_memory[ai_offset] = 0u;
-            break;
+            case MPU_DIV_ADDRESS :
+                m_memory[ai_offset] = 0u;
+                break;
 
-        default :
-            m_memory[ai_offset] = ai_val;
+            case MPU_IF_ADDRESS :
+                m_memory[ai_offset] = ai_val | 0xE0;
+                break;
+
+            case MPU_DMA_ADDRESS :
+                _dma_transfert(ai_val);
+
+            default :
+                m_memory[ai_offset] = ai_val;
+        }
     }
 }
 
@@ -69,7 +121,7 @@ void Mpu::initMemory()
     std::uint8_t w_bootstrap[MPU_BOOTSTRAP_SIZE] = BOOTSTRAP;
 
     // Initialisation de la mémoire
-    for (std::uint16_t w_i = 0u; w_i < MPU_MEMORY_SIZE; ++w_i)
+    for (std::uint32_t w_i = 0u; w_i < MPU_MEMORY_SIZE; ++w_i)
     {
         m_memory[w_i] = 0u;
     }
@@ -82,17 +134,89 @@ void Mpu::initMemory()
 
     // Registre Joypad
     m_memory[MPU_JOYPAD_ADDRESS] = 0x3F;
+
+    // Registre IF
+    m_memory[MPU_IF_ADDRESS] = 0xE0;
 }
 
 
 // ********************************************************
-// REGISTRE JOYPAD
+// GESTION DU JOYPAD
 // ********************************************************
 
-void Mpu::setJoypad(const std::uint8_t ai_joypad)
+void Mpu::setJoypadUp(const bool ai_isPressed)
 {
-    m_memory[MPU_JOYPAD_ADDRESS] = (m_memory[MPU_JOYPAD_ADDRESS] & 0x30) | (ai_joypad & 0x0F);
+    if (ai_isPressed == true)   m_directionButtons.sButtons.up = 0u;
+    else                        m_directionButtons.sButtons.up = 1u;
 }
+
+void Mpu::setJoypadDown(const bool ai_isPressed)
+{
+    if (ai_isPressed == true)   m_directionButtons.sButtons.down = 0u;
+    else                        m_directionButtons.sButtons.down = 1u;
+}
+
+void Mpu::setJoypadLeft(const bool ai_isPressed)
+{
+    if (ai_isPressed == true)   m_directionButtons.sButtons.left = 0u;
+    else                        m_directionButtons.sButtons.left = 1u;
+}
+
+void Mpu::setJoypadRight(const bool ai_isPressed)
+{
+    if (ai_isPressed == true)   m_directionButtons.sButtons.right = 0u;
+    else                        m_directionButtons.sButtons.right = 1u;
+}
+
+void Mpu::setJoypadA(const bool ai_isPressed)
+{
+    if (ai_isPressed == true)   m_utilityButtons.sButtons.a = 0u;
+    else                        m_utilityButtons.sButtons.a = 1u;
+}
+
+void Mpu::setJoypadB(const bool ai_isPressed)
+{
+    if (ai_isPressed == true)   m_utilityButtons.sButtons.b = 0u;
+    else                        m_utilityButtons.sButtons.b = 1u;
+}
+
+void Mpu::setJoypadStart(const bool ai_isPressed)
+{
+    if (ai_isPressed == true)   m_utilityButtons.sButtons.start = 0u;
+    else                        m_utilityButtons.sButtons.start = 1u;
+}
+
+void Mpu::setJoypadSelect(const bool ai_isPressed)
+{
+    if (ai_isPressed == true)   m_utilityButtons.sButtons.select = 0u;
+    else                        m_utilityButtons.sButtons.select = 1u;
+}
+
+/*void Mpu::setJoypad(const std::uint8_t ai_joypad)
+{
+    void Gameboy::_setButtons()
+    {
+        // Récupération du type de boutons
+        std::uint8_t w_buttonType = (mp_mpu->getMemVal(MPU_JOYPAD_ADDRESS) >> 4u) & 0x03;
+
+        // Mise à jour du registre Joypad
+        switch (w_buttonType)
+        {
+            case 0u :
+            case 1u :
+                // Touches directionnelles
+                mp_mpu->setJoypad(m_utilityButtons.joypadP15);
+                break;
+
+            case 2u :
+                // Touches utilitaires
+                mp_mpu->setJoypad(m_directionButtons.joypadP14);
+                break;
+        }
+    }
+
+    m_memory[MPU_JOYPAD_ADDRESS] = (m_memory[MPU_JOYPAD_ADDRESS] & 0x30) | (ai_joypad & 0x0F);
+}*/
 
 
 // ********************************************************
@@ -102,4 +226,19 @@ void Mpu::setJoypad(const std::uint8_t ai_joypad)
 void Mpu::setDivider(const std::uint8_t ai_divider)
 {
     m_memory[MPU_DIV_ADDRESS] = ai_divider;
+}
+
+
+// ********************************************************
+// TRANSFERT DMA
+// ********************************************************
+
+void Mpu::_dma_transfert(const std::uint8_t ai_startAddress)
+{
+    // Adresse de transfert de départ
+    std::uint16_t w_startAddress = static_cast<std::uint16_t>(ai_startAddress) * 0x100;
+
+    // Copie des données vers l'OAM
+    for (std::uint8_t w_i = 0u; w_i < MPU_OAM_SIZE; ++w_i)
+        m_memory[MPU_OAM_START_ADDRESS + w_i] = m_memory[w_startAddress + w_i];
 }

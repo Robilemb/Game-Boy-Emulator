@@ -16,16 +16,13 @@ Gameboy::Gameboy(updateScreenFunction ai_updateScreen) :
     mp_cpu(new Cpu(mp_mpu)),
     mp_gpu(new Gpu(mp_mpu, ai_updateScreen)),
     mp_timers(new Timers(mp_mpu)),
-    m_isRunning(false)
+    m_isRunning(false),
+    m_debug(false)
 {
     for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
     {
         m_romFirstBytes[w_i] = 0u;
     }
-
-    // Initialisation des boutons
-    m_directionButtons.joypadP14    = 0xF;
-    m_utilityButtons.joypadP15      = 0xF;
 }
 
 // Destructeur
@@ -83,7 +80,7 @@ te_status Gameboy::loadROM(const std::string& ai_ROMFileName)
         while(w_i < (MPU_MEMORY_CARD_BANK_1_OFFSET + MPU_MEMORY_CARD_BANK_SIZE))
         {
             w_ROMFile.get(w_caractere);
-            mp_mpu->setMemVal((MPU_MEMORY_CARD_BANK_0_OFFSET + w_i), static_cast<std::uint8_t>(w_caractere));
+            mp_mpu->setROMData((MPU_MEMORY_CARD_BANK_0_OFFSET + w_i), static_cast<std::uint8_t>(w_caractere));
             w_i++;
         }
 
@@ -135,41 +132,47 @@ void Gameboy::stop()
 
 void Gameboy::setPressButton(const te_button ai_button)
 {
+    // Valeur du registre IF
+    std::uint8_t w_ifRegister = mp_mpu->getMemVal(MPU_IF_ADDRESS);
+
     // Parcours de la liste des boutons
     switch (ai_button)
     {
         case E_UP :
-            m_directionButtons.sButtons.up = 0u;
+            mp_mpu->setJoypadUp(true);
             break;
 
         case E_DOWN :
-            m_directionButtons.sButtons.down = 0u;
+            mp_mpu->setJoypadDown(true);
             break;
 
         case E_LEFT :
-            m_directionButtons.sButtons.left = 0u;
+            mp_mpu->setJoypadLeft(true);
             break;
 
         case E_RIGHT :
-            m_directionButtons.sButtons.right = 0u;
+            mp_mpu->setJoypadRight(true);
             break;
 
         case E_A :
-            m_utilityButtons.sButtons.a = 0u;
+            mp_mpu->setJoypadA(true);
             break;
 
         case E_B :
-            m_utilityButtons.sButtons.b = 0u;
+            mp_mpu->setJoypadB(true);
             break;
 
         case E_START :
-            m_utilityButtons.sButtons.start = 0u;
+            mp_mpu->setJoypadStart(true);
             break;
 
         case E_SELECT :
-            m_utilityButtons.sButtons.select = 0u;
+            mp_mpu->setJoypadSelect(true);
             break;
     }
+
+    // Demande d'interruption JOYPAD
+    mp_mpu->setMemVal(MPU_IF_ADDRESS, (w_ifRegister | GAMEBOY_JOYPAD_REQUESTED));
 }
 
 void Gameboy::setReleaseButton(const te_button ai_button)
@@ -178,35 +181,35 @@ void Gameboy::setReleaseButton(const te_button ai_button)
     switch (ai_button)
     {
         case E_UP :
-            m_directionButtons.sButtons.up = 1u;
+            mp_mpu->setJoypadUp(false);
             break;
 
         case E_DOWN :
-            m_directionButtons.sButtons.down = 1u;
+            mp_mpu->setJoypadDown(false);
             break;
 
         case E_LEFT :
-            m_directionButtons.sButtons.left = 1u;
+            mp_mpu->setJoypadLeft(false);
             break;
 
         case E_RIGHT :
-            m_directionButtons.sButtons.right = 1u;
+            mp_mpu->setJoypadRight(false);
             break;
 
         case E_A :
-            m_utilityButtons.sButtons.a = 1u;
+            mp_mpu->setJoypadA(false);
             break;
 
         case E_B :
-            m_utilityButtons.sButtons.b = 1u;
+            mp_mpu->setJoypadB(false);
             break;
 
         case E_START :
-            m_utilityButtons.sButtons.start = 1u;
+            mp_mpu->setJoypadStart(false);
             break;
 
         case E_SELECT :
-            m_utilityButtons.sButtons.select = 1u;
+            mp_mpu->setJoypadSelect(false);
             break;
     }
 }
@@ -218,27 +221,48 @@ void Gameboy::setReleaseButton(const te_button ai_button)
 
 void Gameboy::_executeCycle()
 {
-    // Exécution des instructions entre 0x000 et 0x100
+    // Exécution d'une instruction CPU
     mp_cpu->executeOpcode(mp_cpu->getRegisterPC());
 
     // Mise à jour de l'écran
     mp_gpu->computeScreenImage(mp_cpu->getNbCyccles());
 
-    // Gestion des boutons
-    _setButtons();
-
     // Gestion des interruptions
     if (mp_cpu->getRegisterIME() == 1u)
     {
         // Interruption VBLANK autorisée et demandée
-        if ((mp_mpu->getMemVal(GAMEBOY_INTERRUPT_ENABLE) && GAMEBOY_VBLANK_ENABLE == 1u) && (mp_mpu->getMemVal(GAMEBOY_INTERRUPT_FLAG) && GAMEBOY_VBLANK_REQUESTED == 1u))
+        if (((mp_mpu->getMemVal(MPU_IE_ADDRESS) & GAMEBOY_VBLANK_ENABLE) == GAMEBOY_VBLANK_ENABLE) && ((mp_mpu->getMemVal(MPU_IF_ADDRESS) & GAMEBOY_VBLANK_REQUESTED) == GAMEBOY_VBLANK_REQUESTED))
         {
             mp_cpu->executeInterrupt(Cpu::E_VBLANK);
+        }
+
+        // Interruption LCD_STAT autorisée et demandée
+        if (((mp_mpu->getMemVal(MPU_IE_ADDRESS) & GAMEBOY_LCD_STAT_ENABLE) == GAMEBOY_LCD_STAT_ENABLE) && ((mp_mpu->getMemVal(MPU_IF_ADDRESS) & GAMEBOY_LCD_STAT_REQUESTED) == GAMEBOY_LCD_STAT_REQUESTED))
+        {
+            mp_cpu->executeInterrupt(Cpu::E_LCD_STAT);
+        }
+
+        // Interruption TIMER autorisée et demandée
+        if (((mp_mpu->getMemVal(MPU_IE_ADDRESS) & GAMEBOY_TIMER_ENABLE) == GAMEBOY_TIMER_ENABLE) && ((mp_mpu->getMemVal(MPU_IF_ADDRESS) & GAMEBOY_TIMER_REQUESTED) == GAMEBOY_TIMER_REQUESTED))
+        {
+            mp_cpu->executeInterrupt(Cpu::E_TIMER);
+        }
+
+        // Interruption SERIAL autorisée et demandée
+        if (((mp_mpu->getMemVal(MPU_IE_ADDRESS) & GAMEBOY_SERIAL_ENABLE) == GAMEBOY_SERIAL_ENABLE) && ((mp_mpu->getMemVal(MPU_IF_ADDRESS) & GAMEBOY_SERIAL_REQUESTED) == GAMEBOY_SERIAL_REQUESTED))
+        {
+            mp_cpu->executeInterrupt(Cpu::E_SERIAL);
+        }
+
+        // Interruption JOYPAD autorisée et demandée
+        if (((mp_mpu->getMemVal(MPU_IE_ADDRESS) & GAMEBOY_JOYPAD_ENABLE) == GAMEBOY_JOYPAD_ENABLE) && ((mp_mpu->getMemVal(MPU_IF_ADDRESS) & GAMEBOY_JOYPAD_REQUESTED) == GAMEBOY_JOYPAD_REQUESTED))
+        {
+            mp_cpu->executeInterrupt(Cpu::E_JOYPAD);
         }
     }
 
     // Mise à jour des timers
-    mp_timers->update();
+    mp_timers->update(mp_cpu->getNbCyccles());
 }
 
 void Gameboy::_executeBootstrap()
@@ -253,27 +277,13 @@ void Gameboy::_executeBootstrap()
         // Chargement des 256 premiers octets de la ROM (pour remplacer le bootstrap)
         for (std::uint16_t w_i = 0u; w_i < MPU_BOOTSTRAP_SIZE; ++w_i)
         {
-            mp_mpu->setMemVal(w_i, m_romFirstBytes[w_i]);
+            mp_mpu->setROMData(w_i, m_romFirstBytes[w_i]);
         }
     }
 }
 
-void Gameboy::_setButtons()
+void Gameboy::setDebug()
 {
-    // Récupération du type de boutons
-    std::uint8_t w_buttonType = (mp_mpu->getMemVal(MPU_JOYPAD_ADDRESS) >> 4u) & 0x03;
-
-    // Mise à jour du registre Joypad
-    switch (w_buttonType)
-    {
-        case 1u :
-            // Touches directionnelles
-            mp_mpu->setJoypad(m_utilityButtons.joypadP15);
-            break;
-
-        case 2u :
-            // Touches utilitaires
-            mp_mpu->setJoypad(m_directionButtons.joypadP14);
-            break;
-    }
+    if (m_debug == true) m_debug = false;
+    else m_debug = true;
 }
