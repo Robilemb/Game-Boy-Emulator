@@ -393,7 +393,7 @@ void Cpu::executeInterrupt(const te_interupts ai_interrupt)
             exit(-1);
     }
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 6u;
 }
 
@@ -662,7 +662,7 @@ void Cpu::_nop()
     // Passage à l'instruction suivante
     m_pc = m_pc + 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 1u;
 }
 
@@ -683,7 +683,7 @@ void Cpu::_ld_n_sp()
     // Mise à jour de PC
     m_pc += 3u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 5u;
 }
 
@@ -707,7 +707,7 @@ void Cpu::_ld_r_n()
     // Mise à jour de PC
     m_pc += 3u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 3u;
 }
 
@@ -740,7 +740,7 @@ void Cpu::_add_hl_r()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 2u;
 }
 
@@ -760,7 +760,7 @@ void Cpu::_ld_r_a()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 2u;
 }
 
@@ -780,7 +780,7 @@ void Cpu::_ld_a_r()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 2u;
 }
 
@@ -800,7 +800,7 @@ void Cpu::_inc_r()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 2u;
 }
 
@@ -820,7 +820,7 @@ void Cpu::_dec_r()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 2u;
 }
 
@@ -851,7 +851,7 @@ void Cpu::_inc_d()
         // Gestion du flag N
         m_registers.sFlags.n = 0u;
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 3u;
     }
     else
@@ -871,7 +871,7 @@ void Cpu::_inc_d()
         // Gestion du flag N
         m_registers.sFlags.n = 0u;
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 1u;
     }
 
@@ -906,7 +906,7 @@ void Cpu::_dec_d()
         // Gestion du flag N
         m_registers.sFlags.n = 1u;
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 3u;
     }
     else
@@ -926,7 +926,7 @@ void Cpu::_dec_d()
         // Gestion du flag N
         m_registers.sFlags.n = 1u;
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 1u;
     }
 
@@ -953,7 +953,7 @@ void Cpu::_ld_d_n()
         // Stockage de la valeur en mémoire à l'adresse contenue par HL
         mp_mpu->setMemVal(m_registers.s16bits.hl, w_data8bits);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 3u;
     }
     else
@@ -964,7 +964,7 @@ void Cpu::_ld_d_n()
         // Mise à jour de la valeur du registre
         *wp_register8bits = w_data8bits;
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
 
@@ -1005,7 +1005,7 @@ void Cpu::_rdca()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 1u;
 }
 
@@ -1046,7 +1046,7 @@ void Cpu::_rda()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 1u;
 }
 
@@ -1055,7 +1055,7 @@ void Cpu::_stop()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 1u;
 }
 
@@ -1064,7 +1064,7 @@ void Cpu::_jr_n()
     // Passage à l'instruction située à l'adresse PC + N
     m_pc += static_cast<std::int8_t>(mp_mpu->getMemVal(m_opcodeIdx + 1u)) + 2u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 3u;
 }
 
@@ -1081,7 +1081,7 @@ void Cpu::_jr_f_n()
         // Passage à l'instruction suivante
         m_pc += 2u;
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
 }
@@ -1097,7 +1097,7 @@ void Cpu::_ldi_hl_a()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 2u;
 }
 
@@ -1112,7 +1112,7 @@ void Cpu::_ldi_a_hl()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 2u;
 }
 
@@ -1127,7 +1127,7 @@ void Cpu::_ldd_hl_a()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 2u;
 }
 
@@ -1142,7 +1142,7 @@ void Cpu::_ldd_a_hl()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 2u;
 }
 
@@ -1158,7 +1158,7 @@ void Cpu::_cpl()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 1u;
 }
 
@@ -1211,7 +1211,7 @@ void Cpu::_daa()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 1u;
 }
 
@@ -1227,7 +1227,7 @@ void Cpu::_scf()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 1u;
 }
 
@@ -1250,7 +1250,7 @@ void Cpu::_ccf()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 1u;
 }
 
@@ -1277,7 +1277,7 @@ void Cpu::_ld_d_d()
         // On stocke le contenu du registre wp_register8bits_2 en mémoire à l'adresse contenue par HL
         mp_mpu->setMemVal(m_registers.s16bits.hl, *wp_register8bits_2);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
     // Sinon si LD X,(HL)
@@ -1289,7 +1289,7 @@ void Cpu::_ld_d_d()
         // On stocke le contenu de la mémoire à l'adresse contenue par HL dans wp_register8bits_1
         *wp_register8bits_1 = mp_mpu->getMemVal(m_registers.s16bits.hl);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
     // Chargement d'un registre 8 bits dans un autre registre 8 bits
@@ -1304,7 +1304,7 @@ void Cpu::_ld_d_d()
         // On charge wp_register8bits_2 dans wp_register8bits_1
         *wp_register8bits_1 = *wp_register8bits_2;
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 1u;
     }
     else    // le cas LD (HL),(HL) correspond à l'instruction HALT
@@ -1320,7 +1320,7 @@ void Cpu::_ld_d_d()
             m_pc += 1u;
         }
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 1u;
     }
 
@@ -1345,7 +1345,7 @@ void Cpu::_alu_a_d()
         // Lecture de la valeur à l'adresse (HL)
         w_data8bits = mp_mpu->getMemVal(m_registers.s16bits.hl);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
     else
@@ -1356,7 +1356,7 @@ void Cpu::_alu_a_d()
         // Lecture de la valeur du registre 8b
         w_data8bits = *wp_register8bits;
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 1u;
     }
 
@@ -1379,7 +1379,7 @@ void Cpu::_alu_a_n()
     // Mise à jour de PC
     m_pc += 2u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 2u;
 }
 
@@ -1402,7 +1402,7 @@ void Cpu::_pop_r()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 3u;
 }
 
@@ -1428,7 +1428,7 @@ void Cpu::_push_r()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 4u;
 }
 
@@ -1452,7 +1452,7 @@ void Cpu::_rst_n()
     // Reset de PC en fonction de N
     m_pc = static_cast<std::uint16_t>(w_rstCmd) << 3u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 4u;
 }
 
@@ -1464,7 +1464,7 @@ void Cpu::_ret_f()
         // Retour de fonction
         _ret();
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 5u;
     }
     else
@@ -1472,7 +1472,7 @@ void Cpu::_ret_f()
         // Mise à jour de PC
         m_pc += 1u;
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
 }
@@ -1485,7 +1485,7 @@ void Cpu::_ret()
     // SP = SP + 2
     m_sp += 2u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 4u;
 }
 
@@ -1510,7 +1510,7 @@ void Cpu::_jp_f_n()
         // Mise à jour de PC
         m_pc += 3u;
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 3u;
     }
 }
@@ -1520,7 +1520,7 @@ void Cpu::_jp_n()
     // Passage à l'instruction située à l'adresse (N)
     m_pc = (mp_mpu->getMemVal(m_opcodeIdx + 2u) << 8u) + mp_mpu->getMemVal(m_opcodeIdx + 1u);
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 4u;
 }
 
@@ -1537,7 +1537,7 @@ void Cpu::_call_f_n()
         // Passage à l'instruction suivante
         m_pc += 3u;
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 3u;
     }
 }
@@ -1559,7 +1559,7 @@ void Cpu::_call_n()
     // Passage à l'instruction située à l'adresse (N)
     _jp_n();
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 6u;
 }
 
@@ -1589,7 +1589,7 @@ void Cpu::_add_sp_n()
     // Mise à jour de PC
     m_pc += 2u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 4u;
 }
 
@@ -1619,7 +1619,7 @@ void Cpu::_ld_hl_sp_plus_n()
     // Mise à jour de PC
     m_pc += 2u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 3u;
 }
 
@@ -1634,7 +1634,7 @@ void Cpu::_ld_ff00_plus_n_a()
     // Mise à jour de PC
     m_pc += 2u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 3u;
 }
 
@@ -1649,7 +1649,7 @@ void Cpu::_ld_a_ff00_plus_n()
     // Mise à jour de PC
     m_pc += 2u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 3u;
 }
 
@@ -1661,7 +1661,7 @@ void Cpu::_ld_c_a()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 2u;
 }
 
@@ -1673,7 +1673,7 @@ void Cpu::_ld_a_c()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 2u;
 }
 
@@ -1688,7 +1688,7 @@ void Cpu::_ld_n_a()
     // Mise à jour de PC
     m_pc += 3u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 4u;
 }
 
@@ -1703,7 +1703,7 @@ void Cpu::_ld_a_n()
     // Mise à jour de PC
     m_pc += 3u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 4u;
 }
 
@@ -1712,7 +1712,7 @@ void Cpu::_jp_hl()
     // Passage à l'instruction située à l'adresse contenue par HL
     m_pc = m_registers.s16bits.hl;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 1u;
 }
 
@@ -1724,7 +1724,7 @@ void Cpu::_ld_sp_hl()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 2u;
 }
 
@@ -1736,7 +1736,7 @@ void Cpu::_di()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 1u;
 }
 
@@ -1748,7 +1748,7 @@ void Cpu::_ei()
     // Mise à jour de PC
     m_pc += 1u;
 
-    // Mise à jour du nombre de cylces
+    // Mise à jour du nombre de cycles
     m_nbCycles = 1u;
 }
 
@@ -1820,7 +1820,7 @@ void Cpu::_rdc_d()
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(mp_mpu->getMemVal(m_registers.s16bits.hl) == 0u);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 4u;
     }
     else
@@ -1848,7 +1848,7 @@ void Cpu::_rdc_d()
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
 
@@ -1903,7 +1903,7 @@ void Cpu::_rd_d()
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(mp_mpu->getMemVal(m_registers.s16bits.hl) == 0u);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 4u;
     }
     else
@@ -1931,7 +1931,7 @@ void Cpu::_rd_d()
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
 
@@ -1982,7 +1982,7 @@ void Cpu::_sda_d()
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(mp_mpu->getMemVal(m_registers.s16bits.hl) == 0u);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 4u;
     }
     else
@@ -2010,7 +2010,7 @@ void Cpu::_sda_d()
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
 
@@ -2047,7 +2047,7 @@ void Cpu::_swap_d()
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(mp_mpu->getMemVal(m_registers.s16bits.hl) == 0u);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 4u;
     }
     else
@@ -2064,7 +2064,7 @@ void Cpu::_swap_d()
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
 
@@ -2101,7 +2101,7 @@ void Cpu::_srl_d()
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(mp_mpu->getMemVal(m_registers.s16bits.hl) == 0u);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 4u;
     }
     else
@@ -2118,7 +2118,7 @@ void Cpu::_srl_d()
         // Gestion du flag Z
         m_registers.sFlags.z = static_cast<std::uint8_t>(*wp_register8bits == 0u);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
 
@@ -2148,7 +2148,7 @@ void Cpu::_bit_n_d()
         // Sauvegarde du complément du bit N de (HL) dans Z
         m_registers.sFlags.z = ~static_cast<std::uint8_t>((mp_mpu->getMemVal(m_registers.s16bits.hl) >> w_bitNumber) & 0x01);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 3u;
     }
     else
@@ -2159,7 +2159,7 @@ void Cpu::_bit_n_d()
         // Sauvegarde du complément du bit N de registre 8b dans Z
         m_registers.sFlags.z = ~static_cast<std::uint8_t>((*wp_register8bits >> w_bitNumber) & 0x01);
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
 
@@ -2193,7 +2193,7 @@ void Cpu::_res_n_d()
         // Reset du bit N de (HL)
         mp_mpu->setMemVal(m_registers.s16bits.hl, static_cast<std::uint8_t>(w_data8bits & ~(0x01 << w_bitNumber)));
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 4u;
     }
     else
@@ -2204,7 +2204,7 @@ void Cpu::_res_n_d()
         // Reset du bit N du registre 8b
         *wp_register8bits = static_cast<std::uint8_t>(*wp_register8bits & ~(0x01 << w_bitNumber));
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
 
@@ -2234,7 +2234,7 @@ void Cpu::_set_n_d()
         // Set du bit N de (HL)
         mp_mpu->setMemVal(m_registers.s16bits.hl, static_cast<std::uint8_t>(w_data8bits | (0x01 << w_bitNumber)));
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 4u;
     }
     else
@@ -2245,7 +2245,7 @@ void Cpu::_set_n_d()
         // Set du bit N du registre 8b
         *wp_register8bits = static_cast<std::uint8_t>(*wp_register8bits | (0x01 << w_bitNumber));
 
-        // Mise à jour du nombre de cylces
+        // Mise à jour du nombre de cycles
         m_nbCycles = 2u;
     }
 

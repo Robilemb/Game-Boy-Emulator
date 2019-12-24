@@ -102,7 +102,7 @@ private:
     std::chrono::high_resolution_clock::time_point  m_fpsClock;                                                 // Horloge de mesure du nombre d'images par seconde
 
     eModes                                          m_mode;                                                     // Mode courant d'utilisation du GPU
-    std::uint16_t                                   m_nbCylces;                                                 // Nombre de cylces d'exécution du GPU
+    std::uint16_t                                   m_nbCycles;                                                 // Nombre de cylces d'exécution du GPU
     std::uint8_t                                    m_curLine;                                                  // Numéro de la dernière ligne écrite
 
     std::uint8_t                                    m_background[GPU_BACKGROUND_WIDTH][GPU_BACKGROUND_HEIGHT];  // Background

@@ -12,7 +12,7 @@ Gpu::Gpu(Mpu* const aip_mpu, updateScreenFunction ai_updateScreen) :
     updateScreen(ai_updateScreen),
     m_fpsClock(std::chrono::high_resolution_clock::now()),
     m_mode(E_HBLANK),
-    m_nbCylces(0u),
+    m_nbCycles(0u),
     m_curLine(0u)
 {
     // Initialisation du background
@@ -40,7 +40,7 @@ Gpu::~Gpu()
 void Gpu::computeScreenImage(const std::uint8_t ai_cpuCycles)
 {
     // Mise à jour du nombre de cycles du GPU
-    m_nbCylces += ai_cpuCycles;
+    m_nbCycles += ai_cpuCycles;
 
     // Valeur du registre IF
     std::uint8_t w_ifRegister = mp_mpu->getMemVal(MPU_IF_ADDRESS);
@@ -49,10 +49,10 @@ void Gpu::computeScreenImage(const std::uint8_t ai_cpuCycles)
     switch (m_mode)
     {
         case E_HBLANK:
-            if (m_nbCylces >= GPU_COMPUTE_LINE_NB_CYCLES)
+            if (m_nbCycles >= GPU_COMPUTE_LINE_NB_CYCLES)
             {
                 // Reset du nombre de cycles
-                m_nbCylces = 0u;
+                m_nbCycles = 0u;
 
                 // Incrémentation du numéro de ligne
                 m_curLine++;
@@ -73,10 +73,10 @@ void Gpu::computeScreenImage(const std::uint8_t ai_cpuCycles)
             break;
 
         case E_VBLANK:
-            if (m_nbCylces >= GPU_COMPUTE_LINE_NB_CYCLES)
+            if (m_nbCycles >= GPU_COMPUTE_LINE_NB_CYCLES)
             {
                 // Reset du nombre de cycles
-                m_nbCylces = 0u;
+                m_nbCycles = 0u;
 
                 // Incrémentation du numéro de ligne
                 m_curLine++;
