@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     this->setWindowTitle("Game Boy Emulator");
     this->setWindowIcon(QIcon("../IMG/Icon.png"));
-    this->setFixedSize(GAMEBOY_SCREEN_WIDTH, (GAMEBOY_SCREEN_HEIGHT + 20u));
+    this->setFixedSize((GAMEBOY_SCREEN_WIDTH + 4u), (GAMEBOY_SCREEN_HEIGHT + 26u));
 
     // Initialisation de l'écran
     ui->screen->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
